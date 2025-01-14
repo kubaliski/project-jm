@@ -11,6 +11,7 @@ import BlogList from '../pages/public/blog/BlogList';
 import BlogPost from '../pages/public/blog/BlogPost';
 import Dashboard from '../pages/admin/Dashboard';
 import PostsList from '../pages/admin/posts/PostsList';
+import NotFound from '../pages/public/NotFound';
 
 export default function App() {
     return (
@@ -35,6 +36,9 @@ export default function App() {
                                 <AdminLayout><PostsList /></AdminLayout>
                             </ProtectedRoute>
                         } />
+
+                        {/* Ruta 404 - Debe ir al final */}
+                        <Route path="*" element={<NotFound />} />
                     </Routes>
                 </SEOProvider>
             </BrowserRouter>
