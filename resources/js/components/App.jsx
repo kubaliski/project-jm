@@ -6,6 +6,8 @@ import PublicLayout from '../layouts/PublicLayout';
 import AdminLayout from '../layouts/AdminLayout';
 import Login from '../pages/auth/Login';
 import Home from '../pages/public/Home';
+import BlogList from '../pages/public/blog/BlogList';
+import BlogPost from '../pages/public/blog/BlogPost';
 import Dashboard from '../pages/admin/Dashboard';
 import PostsList from '../pages/admin/posts/PostsList';
 
@@ -16,6 +18,8 @@ export default function App() {
                 <Routes>
                     {/* Rutas públicas */}
                     <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
+                    <Route path="/blog" element={<PublicLayout><BlogList /></PublicLayout>} />
+                    <Route path="/blog/:slug" element={<PublicLayout><BlogPost /></PublicLayout>} />
                     <Route path="/login" element={<Login />} />
 
                     {/* Rutas protegidas */}

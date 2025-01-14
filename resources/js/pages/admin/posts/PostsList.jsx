@@ -7,6 +7,7 @@ import ConfirmationDialog from '../../../components/common/ConfirmationDialog';
 import { formatDateForDisplay, isFutureDate } from '../../../utils/dateUtils';
 import { postsTableConfig } from '../../../config/tables/postsTable';
 import { useTableFilters } from '../../../hooks/useTableFilters';
+import { adminPostsService } from '../../../services/api';
 
 export default function PostsList() {
     const [posts, setPosts] = useState([]);
@@ -30,7 +31,7 @@ export default function PostsList() {
     const fetchPosts = async () => {
         setIsLoading(true);
         try {
-            const response = await window.axios.get('/api/posts');
+            const response = await adminPostsService.getAll();
             setPosts(Array.isArray(response.data) ? response.data : []);
         } catch (error) {
             console.error('Error al cargar los posts:', error);
@@ -62,7 +63,7 @@ export default function PostsList() {
         if (!postToDelete) return;
 
         try {
-            await window.axios.delete(`/api/posts/${postToDelete.id}`);
+            await adminPostsService.delete(postToDelete.id);
             await fetchPosts();
             setIsDeleteDialogOpen(false);
             setPostToDelete(null);

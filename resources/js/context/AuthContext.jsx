@@ -1,4 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { authService } from '../services/api';
+import { authClient } from '../services/api/httpClient';
 
 const AuthContext = createContext(null);
 
@@ -12,11 +14,18 @@ export function AuthProvider({ children }) {
 
     const login = async (credentials) => {
         try {
-            const response = await window.axios.post('/api/login', credentials);
+            const response = await authService.login(credentials);
+
+            // Guardamos el usuario del response
             setUser(response.data.user);
+
+            // Guardamos el token
             const token = response.data.token;
-            window.axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             localStorage.setItem('token', token);
+
+            // No necesitamos setear el token en axios porque
+            // el interceptor en httpClient lo maneja automáticamente
+
             return true;
         } catch (error) {
             console.error('Error en login:', error);
@@ -26,31 +35,31 @@ export function AuthProvider({ children }) {
 
     const logout = async () => {
         try {
-            // Primero hacemos la petición con el token aún válido
-            await window.axios.post('/api/logout');
+            // Intentamos hacer logout en el servidor
+            await authService.logout();
         } catch (error) {
             console.error('Error en logout:', error);
         } finally {
-            // Después de la petición (exitosa o no), limpiamos todo
+            // Limpiamos el estado local independientemente del resultado
             setUser(null);
             localStorage.removeItem('token');
-            delete window.axios.defaults.headers.common['Authorization'];
+            // No necesitamos limpiar los headers de axios porque
+            // el interceptor en httpClient lo maneja automáticamente
         }
     };
-
 
     const checkAuth = async () => {
         try {
             const token = localStorage.getItem('token');
             if (token) {
-                window.axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-                const response = await window.axios.get('/api/user');
+                // No necesitamos setear el token en axios porque
+                // el interceptor en httpClient lo maneja automáticamente
+                const response = await authService.getCurrentUser();
                 setUser(response.data);
             }
         } catch (error) {
             setUser(null);
             localStorage.removeItem('token');
-            delete window.axios.defaults.headers.common['Authorization'];
         } finally {
             setLoading(false);
         }
