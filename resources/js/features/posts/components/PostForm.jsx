@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { formatDateForInput } from '../../../utils/dateUtils';
+import { formatDateForInput } from '@utils/dateUtils';
 import { XCircleIcon } from '@heroicons/react/24/solid';
 
 export default function PostForm({ post = null, onSubmit, onCancel }) {

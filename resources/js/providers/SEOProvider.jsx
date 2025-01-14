@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import SEOManager from '../components/common/SEOManager';
+import {SEOManager} from '@components/common';
 
 const APP_NAME = window.APP_NAME || 'Mi Sitio';
 

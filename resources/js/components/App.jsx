@@ -1,18 +1,14 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from '../context/AuthContext';
-import SEOProvider from '../providers/SEOProvider';
+import { AuthProvider } from '@context/AuthContext';
+import SEOProvider from '@providers/SEOProvider';
 import ProtectedRoute from './ProtectedRoute';
-import PublicLayout from '../layouts/PublicLayout';
-import AdminLayout from '../layouts/AdminLayout';
-import Login from '../pages/auth/Login';
-import Home from '../pages/public/Home';
-import BlogList from '../pages/public/blog/BlogList';
-import BlogPost from '../pages/public/blog/BlogPost';
-import Dashboard from '../pages/admin/Dashboard';
-import PostsList from '../pages/admin/posts/PostsList';
-import NotFound from '../pages/public/NotFound';
-
+import {AdminLayout,PublicLayout} from '@layouts';
+import {Login} from '@pages/auth';
+import {Home,NotFound} from '@pages/public';
+import { BlogList, BlogPost } from '@pages/public/blog';
+import {Dashboard} from '@pages/admin';
+import {PostsList} from '@pages/admin/posts';
 export default function App() {
     return (
         <AuthProvider>

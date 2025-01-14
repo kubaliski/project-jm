@@ -1,5 +1,5 @@
 // config/tables/postsTable.js
-import { isFutureDate } from '../../utils/dateUtils';
+import { isFutureDate } from '@utils/dateUtils';
 
 export const postsTableConfig = {
     filters: [

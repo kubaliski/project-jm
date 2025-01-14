@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
-import Table from '../../../components/common/ReusableTable';
-import TableFilters from '../../../components/common/ReusableTableFilters';
-import PostModal from '../../../features/posts/components/PostModal';
-import ConfirmationDialog from '../../../components/common/ConfirmationDialog';
-import { formatDateForDisplay, isFutureDate } from '../../../utils/dateUtils';
-import { postsTableConfig } from '../../../config/tables/postsTable';
-import { useTableFilters } from '../../../hooks/useTableFilters';
-import { adminPostsService } from '../../../services/api';
+import {Table, TableFilters, ConfirmationDialog} from '@components/common';
+import PostModal from '@features/posts/components/PostModal';
+import { formatDateForDisplay, isFutureDate } from '@utils/dateUtils';
+import { postsTableConfig } from '@config/tables/postsTable';
+import { useTableFilters } from '@hooks/useTableFilters';
+import { adminPostsService } from '@services/api';
 
 export default function PostsList() {
     const [posts, setPosts] = useState([]);

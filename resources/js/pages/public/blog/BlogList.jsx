@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { publicPostsService } from '../../../services/api';
+import { publicPostsService } from '@services/api';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import SEOManager from '../../../components/common/SEOManager';
-import BlogListSkeleton from '../../../components/ui/Skeletons/BlogListSkeleton';
+import {SEOManager} from '@components/common';
+import BlogListSkeleton from '@components/ui/Skeletons/BlogListSkeleton';
 
 const POSTS_PER_PAGE = 9; // 3x3 grid
 

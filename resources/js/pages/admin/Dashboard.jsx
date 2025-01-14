@@ -1,6 +1,6 @@
 import React , {useState,useEffect}from 'react';
-import { useAuth } from '../../context/AuthContext';
-import { adminPostsService } from '../../services/api';
+import { useAuth } from '@context/AuthContext';
+import { adminPostsService } from '@services/api';
 
 export default function Dashboard() {
     const { user } = useAuth();

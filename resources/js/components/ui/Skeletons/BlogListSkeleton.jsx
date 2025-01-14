@@ -1,5 +1,5 @@
 import React from 'react';
-import SEOManager from '../../../providers/SEOProvider';
+import SEOManager from '@providers/SEOProvider';
 
 export default function BlogListSkeleton() {
     return (

@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["resources/js/*"],
+            "@components/*": ["resources/js/components/*"],
+            "@pages/*": ["resources/js/pages/*"],
+            "@layouts/*": ["resources/js/layouts/*"],
+            "@context/*": ["resources/js/context/*"],
+            "@providers/*": ["resources/js/providers/*"],
+            "@utils/*": ["resources/js/utils/*"],
+            "@assets/*": ["resources/js/assets/*"],
+            "@services/*": ["resources/js/services/*"],
+            "@hooks/*": ["resources/js/hooks/*"],
+            "@features/*": ["resources/js/features/*"],
+            "@config/*": ["resources/js/config/*"],
+        }
+    },
+    "exclude": ["node_modules", "public"]
+}

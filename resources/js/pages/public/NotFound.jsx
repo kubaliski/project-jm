@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import SEOManager from '../../components/common/SEOManager';
+import SEOManager from '@components/common/SEOManager';
 
 export default function NotFound() {
     return (

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { publicPostsService } from '../../../services/api';
+import { publicPostsService } from '@services/api';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import SEOManager from '../../../components/common/SEOManager';
-import BlogPostSkeleton from '../../../components/ui/Skeletons/BlogPostSkeleton';
+import {SEOManager} from '@components/common';
+import BlogPostSkeleton from '@components/ui/Skeletons/BlogPostSkeleton';
 
 export default function BlogPost() {
     const { slug } = useParams();

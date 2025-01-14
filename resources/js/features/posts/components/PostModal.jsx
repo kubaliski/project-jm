@@ -1,8 +1,8 @@
 import React from 'react';
-import ReusableModal from '../../../components/common/ReusableModal';
+import ReusableModal from '@components/common/ReusableModal';
 import PostForm from './PostForm';
-import { useAuth } from '../../../context/AuthContext';
-import { adminPostsService } from '../../../services/api';
+import { useAuth } from '@context/AuthContext';
+import { adminPostsService } from '@services/api';
 
 export default function PostModal({
     isOpen,
