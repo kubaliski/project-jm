@@ -13,6 +13,10 @@ const defaultSEOConfig = {
     title: `Blog | ${APP_NAME}`,
     description: 'Explora nuestros últimos artículos y novedades'
   },
+  '/contacto': {
+    title: `Contacto | ${APP_NAME}`,
+    description: 'Formulario de contacto'
+  },
   '/login': {
     title: `Iniciar Sesión | ${APP_NAME}`,
     description: 'Accede a tu cuenta para gestionar tu contenido'

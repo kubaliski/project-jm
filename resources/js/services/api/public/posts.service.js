@@ -9,6 +9,10 @@ class PublicPostsService {
     async getBySlug(slug) {
         return publicClient.get(API_ENDPOINTS.posts.public.bySlug(slug));
     }
+
+    async getRecentPosts() {
+        return publicClient.get(`${API_ENDPOINTS.posts.public.base}/latest-posts`);
+    }
 }
 
 export const publicPostsService = new PublicPostsService();

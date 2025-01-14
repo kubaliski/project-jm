@@ -1,3 +1,4 @@
+// components/pages/BlogList.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { publicPostsService } from '@services/api';
@@ -39,7 +40,6 @@ export default function BlogList() {
 
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
-        // Scroll to top when page changes
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
@@ -52,7 +52,7 @@ export default function BlogList() {
                     title="Error | Blog"
                     description="Ha ocurrido un error al cargar los artículos"
                 />
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-20">
                     <div className="bg-red-50 border-l-4 border-red-400 p-4">
                         <div className="flex">
                             <div className="ml-3">
@@ -74,7 +74,7 @@ export default function BlogList() {
                     title="Blog | No hay artículos"
                     description="No hay posts publicados todavía"
                 />
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-20">
                     <h1 className="text-4xl font-bold text-gray-900 mb-8">Blog</h1>
                     <p className="text-gray-600">No hay posts publicados todavía.</p>
                 </div>
@@ -88,7 +88,7 @@ export default function BlogList() {
                 title="Blog | Últimos artículos"
                 description="Explora nuestros últimos artículos y mantente al día con las últimas novedades"
             />
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-20">
                 <h1 className="text-4xl font-bold text-gray-900 mb-8">Blog</h1>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {currentPosts.map((post) => (
