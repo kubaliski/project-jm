@@ -6,6 +6,7 @@ import Sidebar from './Sidebar';
 export default function AdminLayout({ children }) {
     const navigate = useNavigate();
     const { logout } = useAuth();
+    const [sidebarExpanded, setSidebarExpanded] = React.useState(true);
 
     const handleLogout = async () => {
         try {
@@ -17,12 +18,14 @@ export default function AdminLayout({ children }) {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100">
-            <Sidebar />
+        <div className="min-h-screen bg-gray-100 flex">
+            <Sidebar onExpandChange={(expanded) => setSidebarExpanded(expanded)} />
 
             {/* Contenido principal con transición suave */}
-            <div className="transition-all duration-300 pl-20 lg:pl-64 flex flex-col min-h-screen">
-                <header className="bg-white shadow h-16">
+            <div className={`flex-1 transition-all duration-300 ${
+                sidebarExpanded ? 'ml-64' : 'ml-20'
+            }`}>
+                <header className="bg-white shadow h-16 sticky top-0">
                     <div className="flex justify-between items-center px-8 h-full">
                         <h2 className="text-xl font-semibold text-gray-900">
                             Dashboard
@@ -35,7 +38,7 @@ export default function AdminLayout({ children }) {
                         </button>
                     </div>
                 </header>
-                <main className="flex-1 p-8">
+                <main className="p-8">
                     {children}
                 </main>
             </div>

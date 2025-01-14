@@ -27,14 +27,12 @@ const RichTextEditor = ({ value, onChange, error }) => {
                 init={{
                     height: 500,
                     menubar: true,
-                    // Quitamos 'image' de los plugins
                     plugins: [
                         'advlist', 'autolink', 'lists', 'link', 'charmap',
                         'preview', 'anchor', 'searchreplace', 'visualblocks',
                         'fullscreen', 'insertdatetime', 'media', 'table', 'code',
                         'help', 'wordcount', 'paste'
                     ],
-                    // Quitamos 'image' de la barra de herramientas
                     toolbar: 'undo redo | formatselect | ' +
                         'bold italic backcolor | alignleft aligncenter ' +
                         'alignright alignjustify | bullist numlist outdent indent | ' +
@@ -56,38 +54,6 @@ const RichTextEditor = ({ value, onChange, error }) => {
                         bold: { inline: 'strong' },
                         italic: { inline: 'em' }
                     },
-                    translations: {
-                        'es': {
-                            'Bold': 'Negrita',
-                            'Italic': 'Cursiva',
-                            'Underline': 'Subrayado',
-                            'Strikethrough': 'Tachado',
-                            'Alignment': 'Alineación',
-                            'Left': 'Izquierda',
-                            'Center': 'Centro',
-                            'Right': 'Derecha',
-                            'Justify': 'Justificado',
-                            'Bullet list': 'Lista de viñetas',
-                            'Numbered list': 'Lista numerada',
-                            'Decrease indent': 'Disminuir sangría',
-                            'Increase indent': 'Aumentar sangría',
-                            'Insert/edit link': 'Insertar/editar enlace',
-                            'Remove link': 'Eliminar enlace',
-                            'Paste': 'Pegar',
-                            'Select all': 'Seleccionar todo',
-                            'Undo': 'Deshacer',
-                            'Redo': 'Rehacer',
-                            'Blocks': 'Bloques',
-                            'Paragraph': 'Párrafo',
-                            'Heading 1': 'Encabezado 1',
-                            'Heading 2': 'Encabezado 2',
-                            'Heading 3': 'Encabezado 3',
-                            'Heading 4': 'Encabezado 4',
-                            'Heading 5': 'Encabezado 5',
-                            'Heading 6': 'Encabezado 6',
-                        }
-                    },
-                    // Quitamos las opciones relacionadas con imágenes del menú
                     menu: {
                         file: { title: 'Archivo', items: 'newdocument restoredraft | preview | print' },
                         edit: { title: 'Editar', items: 'undo redo | cut copy paste pastetext | selectall | searchreplace' },
@@ -97,7 +63,6 @@ const RichTextEditor = ({ value, onChange, error }) => {
                         tools: { title: 'Herramientas', items: 'spellchecker spellcheckerlanguage | code wordcount' },
                         table: { title: 'Tabla', items: 'inserttable | cell row column | advtablesort | tableprops deletetable' },
                     },
-                    // Quitamos las opciones de imagen
                     paste_data_images: false,
                     automatic_uploads: false,
                     file_picker_types: '',

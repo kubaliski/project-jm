@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Bars3Icon, XMarkIcon, HomeIcon, DocumentTextIcon, NewspaperIcon } from '@heroicons/react/24/outline';
 
-export default function Sidebar() {
+export default function Sidebar({ onExpandChange }) {
     const location = useLocation();
     const [isPinned, setIsPinned] = useState(true);
     const [isHovered, setIsHovered] = useState(false);
@@ -27,11 +27,15 @@ export default function Sidebar() {
 
     const isExpanded = isPinned || isHovered;
 
+    useEffect(() => {
+        onExpandChange?.(isExpanded);
+    }, [isExpanded, onExpandChange]);
+
     return (
         <div
             onMouseEnter={() => !isPinned && setIsHovered(true)}
             onMouseLeave={() => !isPinned && setIsHovered(false)}
-            className={`fixed inset-y-0 left-0 bg-gray-900 transition-all duration-300 ${
+            className={`fixed inset-y-0 left-0 bg-gray-900 transition-all duration-300 z-10 ${
                 isExpanded ? 'w-64' : 'w-20'
             }`}
         >
