@@ -4,11 +4,15 @@ import { publicPostsService } from '../../../services/api';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import SEOManager from '../../../components/common/SEOManager';
+import BlogListSkeleton from '../../../components/ui/Skeletons/BlogListSkeleton';
+
+const POSTS_PER_PAGE = 9; // 3x3 grid
 
 export default function BlogList() {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -27,27 +31,19 @@ export default function BlogList() {
         fetchPosts();
     }, []);
 
-    if (loading) {
-        return (
-            <>
-                <SEOManager
-                    title="Blog | Cargando..."
-                    description="Cargando artículos del blog"
-                />
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                    <div className="animate-pulse">
-                        {[...Array(3)].map((_, index) => (
-                            <div key={index} className="mb-10">
-                                <div className="h-60 bg-gray-200 rounded-lg mb-4"></div>
-                                <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
-                                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </>
-        );
-    }
+    // Pagination calculations
+    const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
+    const indexOfLastPost = currentPage * POSTS_PER_PAGE;
+    const indexOfFirstPost = indexOfLastPost - POSTS_PER_PAGE;
+    const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
+
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+        // Scroll to top when page changes
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    if (loading) return <BlogListSkeleton />;
 
     if (error) {
         return (
@@ -95,13 +91,13 @@ export default function BlogList() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <h1 className="text-4xl font-bold text-gray-900 mb-8">Blog</h1>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {posts.map((post) => (
+                    {currentPosts.map((post) => (
                         <article key={post.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
                             <Link to={`/blog/${post.slug}`}>
                                 {post.featured_image ? (
                                     <img
                                         src={post.featured_image}
-                                        alt={post.title}
+                                        alt={post.seo_title || `Imagen del articulo ${post.title}`}
                                         className="w-full h-48 object-cover hover:opacity-90 transition-opacity"
                                     />
                                 ) : (
@@ -161,6 +157,51 @@ export default function BlogList() {
                         </article>
                     ))}
                 </div>
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                    <div className="mt-8 flex justify-center">
+                        <nav className="flex items-center space-x-2">
+                            <button
+                                onClick={() => handlePageChange(currentPage - 1)}
+                                disabled={currentPage === 1}
+                                className={`px-3 py-2 rounded-md ${
+                                    currentPage === 1
+                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                        : 'bg-white text-gray-700 hover:bg-gray-50'
+                                } border`}
+                            >
+                                Anterior
+                            </button>
+
+                            {[...Array(totalPages)].map((_, index) => (
+                                <button
+                                    key={index + 1}
+                                    onClick={() => handlePageChange(index + 1)}
+                                    className={`px-4 py-2 rounded-md ${
+                                        currentPage === index + 1
+                                            ? 'bg-blue-600 text-white'
+                                            : 'bg-white text-gray-700 hover:bg-gray-50'
+                                    } border`}
+                                >
+                                    {index + 1}
+                                </button>
+                            ))}
+
+                            <button
+                                onClick={() => handlePageChange(currentPage + 1)}
+                                disabled={currentPage === totalPages}
+                                className={`px-3 py-2 rounded-md ${
+                                    currentPage === totalPages
+                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                        : 'bg-white text-gray-700 hover:bg-gray-50'
+                                } border`}
+                            >
+                                Siguiente
+                            </button>
+                        </nav>
+                    </div>
+                )}
             </div>
         </>
     );

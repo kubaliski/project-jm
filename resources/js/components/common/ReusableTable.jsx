@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
-import TableSkeleton, { PaginationSkeleton } from '../ui/TableSkeleton';
+import TableSkeleton, { PaginationSkeleton } from '../ui/Skeletons/TableSkeleton';
 
 export default function Table({
     columns = [],

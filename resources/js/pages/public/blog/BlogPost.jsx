@@ -4,6 +4,7 @@ import { publicPostsService } from '../../../services/api';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import SEOManager from '../../../components/common/SEOManager';
+import BlogPostSkeleton from '../../../components/ui/Skeletons/BlogPostSkeleton';
 
 export default function BlogPost() {
     const { slug } = useParams();
@@ -33,28 +34,7 @@ export default function BlogPost() {
         fetchPost();
     }, [slug, navigate]);
 
-    if (loading) {
-        return (
-            <>
-                <SEOManager
-                    title="Cargando artículo..."
-                    description="Cargando contenido del artículo"
-                />
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                    <div className="animate-pulse">
-                        <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
-                        <div className="h-4 bg-gray-200 rounded w-1/4 mb-8"></div>
-                        <div className="h-96 bg-gray-200 rounded-lg mb-8"></div>
-                        <div className="space-y-4">
-                            <div className="h-4 bg-gray-200 rounded w-full"></div>
-                            <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-                            <div className="h-4 bg-gray-200 rounded w-4/6"></div>
-                        </div>
-                    </div>
-                </div>
-            </>
-        );
-    }
+    if (loading) return <BlogPostSkeleton />;
 
     if (error) {
         return (
@@ -105,7 +85,7 @@ export default function BlogPost() {
                 {post.featured_image && (
                     <img
                         src={post.featured_image}
-                        alt={post.title}
+                        alt={post.seo_title || `Imagen del artículo ${post.title}`}
                         className="w-full h-[400px] object-cover rounded-lg mb-8"
                     />
                 )}
