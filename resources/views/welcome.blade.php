@@ -7,6 +7,10 @@
         <title>{{ config('app.name') }}</title>
         <script>
             window.APP_NAME = "{{ config('app.name') }}";
+            window.config = {
+                appName: "{{ config('app.name') }}",
+                tinymceApiKey: "{{ config('services.tinymce.key') }}"
+            };
         </script>
         @viteReactRefresh
         @vite(['resources/css/app.css', 'resources/js/app.jsx'])

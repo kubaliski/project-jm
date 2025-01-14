@@ -3,13 +3,15 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "copy-tinymce-langs": "powershell New-Item -ItemType Directory -Force -Path public/tinymce/langs; Copy-Item -Path node_modules/tinymce-i18n/langs/es.js -Destination public/tinymce/langs/ -Force"
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.10",
         "@vitejs/plugin-react": "^4.2.1",
         "autoprefixer": "^10.4.20",
         "axios": "^1.7.9",
+        "cross-env": "^7.0.3",
         "laravel-vite-plugin": "^1.0",
         "postcss": "^8.4.47",
         "tailwindcss": "^3.4.13",
@@ -18,9 +20,11 @@
     "dependencies": {
         "@headlessui/react": "^2.2.0",
         "@heroicons/react": "^2.2.0",
+        "@tinymce/tinymce-react": "^5.1.1",
         "date-fns": "^4.1.0",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
-        "react-router-dom": "^7.1.1"
+        "react-router-dom": "^7.1.1",
+        "tinymce-i18n": "^24.12.30"
     }
 }

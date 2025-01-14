@@ -15,11 +15,9 @@ export default function PostModal({
     const handleSubmit = async (formData) => {
         try {
             if (post) {
-                // Actualizar post existente
-                formData.append('_method', 'PUT'); // Añadir el método PUT
+                formData.append('_method', 'PUT');
                 await adminPostsService.update(post.id, formData);
             } else {
-                // Crear nuevo post
                 await adminPostsService.create(formData);
             }
 
@@ -27,7 +25,7 @@ export default function PostModal({
             onClose();
         } catch (error) {
             console.error('Error:', error);
-            throw error; // Propagamos el error para que PostForm pueda manejarlo
+            throw error;
         }
     };
 
@@ -36,13 +34,15 @@ export default function PostModal({
             isOpen={isOpen}
             onClose={onClose}
             title={post ? 'Editar Post' : 'Crear Nuevo Post'}
-            size="2xl"
+            size="4xl" // Cambiamos de 2xl a 4xl para más espacio
         >
-            <PostForm
-                post={post}
-                onSubmit={handleSubmit}
-                onCancel={onClose}
-            />
+            <div className="max-h-[80vh] overflow-y-auto"> {/* Añadimos scroll vertical si el contenido es muy largo */}
+                <PostForm
+                    post={post}
+                    onSubmit={handleSubmit}
+                    onCancel={onClose}
+                />
+            </div>
         </ReusableModal>
     );
 }
