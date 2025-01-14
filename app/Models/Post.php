@@ -54,6 +54,12 @@ class Post extends Model
         });
     }
 
+
+    public static function getTotalPosts(): int
+    {
+        return static::count();
+    }
+
     public function scopePublished($query)
     {
         return $query->where('is_published', true)

@@ -27,6 +27,10 @@ class AdminPostsService {
     async delete(id) {
         return authClient.delete(API_ENDPOINTS.posts.admin.byId(id));
     }
+
+    async count() {
+        return authClient.get(`${API_ENDPOINTS.posts.admin.base}/count`);
+    }
 }
 
 export const adminPostsService = new AdminPostsService();

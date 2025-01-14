@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from '../context/AuthContext';
+import SEOProvider from '../providers/SEOProvider';
 import ProtectedRoute from './ProtectedRoute';
 import PublicLayout from '../layouts/PublicLayout';
 import AdminLayout from '../layouts/AdminLayout';
@@ -15,25 +16,27 @@ export default function App() {
     return (
         <AuthProvider>
             <BrowserRouter>
-                <Routes>
-                    {/* Rutas públicas */}
-                    <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
-                    <Route path="/blog" element={<PublicLayout><BlogList /></PublicLayout>} />
-                    <Route path="/blog/:slug" element={<PublicLayout><BlogPost /></PublicLayout>} />
-                    <Route path="/login" element={<Login />} />
+                <SEOProvider>
+                    <Routes>
+                        {/* Rutas públicas */}
+                        <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
+                        <Route path="/blog" element={<PublicLayout><BlogList /></PublicLayout>} />
+                        <Route path="/blog/:slug" element={<PublicLayout><BlogPost /></PublicLayout>} />
+                        <Route path="/login" element={<Login />} />
 
-                    {/* Rutas protegidas */}
-                    <Route path="/admin" element={
-                        <ProtectedRoute>
-                            <AdminLayout><Dashboard /></AdminLayout>
-                        </ProtectedRoute>
-                    } />
-                    <Route path="/admin/posts" element={
-                        <ProtectedRoute>
-                            <AdminLayout><PostsList /></AdminLayout>
-                        </ProtectedRoute>
-                    } />
-                </Routes>
+                        {/* Rutas protegidas */}
+                        <Route path="/admin" element={
+                            <ProtectedRoute>
+                                <AdminLayout><Dashboard /></AdminLayout>
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/admin/posts" element={
+                            <ProtectedRoute>
+                                <AdminLayout><PostsList /></AdminLayout>
+                            </ProtectedRoute>
+                        } />
+                    </Routes>
+                </SEOProvider>
             </BrowserRouter>
         </AuthProvider>
     );

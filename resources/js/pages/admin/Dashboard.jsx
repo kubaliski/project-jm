@@ -1,8 +1,26 @@
-import React from 'react';
+import React , {useState,useEffect}from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { adminPostsService } from '../../services/api';
 
 export default function Dashboard() {
     const { user } = useAuth();
+    const [stats, setStats] = useState({
+        total_posts: 0,
+
+    });
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const response = await adminPostsService.count();
+                setStats(response.data);
+            } catch (error) {
+                console.error('Error fetching stats:', error);
+            }
+        };
+
+        fetchStats();
+    }, []);
 
     return (
         <div className="space-y-6">
@@ -20,9 +38,11 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-white p-6 rounded-lg shadow">
                     <div className="flex items-center">
-                        <div className="flex-1">
+                    <div className="flex-1">
                             <h3 className="text-lg font-medium text-gray-900">Posts</h3>
-                            <p className="mt-1 text-3xl font-semibold text-indigo-600">0</p>
+                            <p className="mt-1 text-3xl font-semibold text-indigo-600">
+                                {stats.total_posts}
+                            </p>
                         </div>
                     </div>
                     <p className="mt-4 text-sm text-gray-600">

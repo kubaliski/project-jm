@@ -102,4 +102,10 @@ class PostController extends Controller
         $post->delete();
         return response()->json(null, 204);
     }
+
+    public function count()
+    {
+        $totalPosts = Post::getTotalPosts();
+        return response()->json(['total_posts' => $totalPosts]);
+    }
 }
