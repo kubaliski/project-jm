@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import CookieManager from './CookieManager';
 
 export default function PublicLayout({ children }) {
     const location = useLocation();
@@ -23,6 +24,7 @@ export default function PublicLayout({ children }) {
                 {children}
             </main>
             <Footer />
+            <CookieManager/>
         </div>
     );
 }
