@@ -83,6 +83,15 @@ export default function Navbar() {
                             </li>
                             <li>
                                 <Link
+                                    to="/nosotros"
+                                    className={`inline-block py-2 transition-colors duration-300 ${getLinkStyles()}`}
+                                    aria-current={location.pathname === '/nosotros' ? 'page' : undefined}
+                                >
+                                    Nosotros
+                                </Link>
+                            </li>
+                            <li>
+                                <Link
                                     to="/contacto"
                                     className={`inline-block py-2 transition-colors duration-300 ${getLinkStyles()}`}
                                     aria-current={location.pathname === '/contacto' ? 'page' : undefined}

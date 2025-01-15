@@ -114,22 +114,22 @@ export default function MobileNavbar({ hasScrolled, isHome }) {
                     <ul className="px-4 py-6 space-y-4">
                         <li>
                             <Link
-                                to="/blog"
+                                to="/servicios"
                                 className={`block w-full py-2 px-3 transition-colors duration-300 rounded-lg ${getLinkStyles()}`}
                                 onClick={() => setIsOpen(false)}
-                                aria-current={location.pathname === '/blog' ? 'page' : undefined}
+                                aria-current={location.pathname === '/servicios' ? 'page' : undefined}
                             >
-                                Blog
+                                Servicios
                             </Link>
                         </li>
                         <li>
                             <Link
-                                to="/noticias"
+                                to="/nosotros"
                                 className={`block w-full py-2 px-3 transition-colors duration-300 rounded-lg ${getLinkStyles()}`}
                                 onClick={() => setIsOpen(false)}
-                                aria-current={location.pathname === '/noticias' ? 'page' : undefined}
+                                aria-current={location.pathname === '/nosotros' ? 'page' : undefined}
                             >
-                                Noticias
+                                Nosotros
                             </Link>
                         </li>
                         <li>
@@ -140,6 +140,16 @@ export default function MobileNavbar({ hasScrolled, isHome }) {
                                 aria-current={location.pathname === '/contacto' ? 'page' : undefined}
                             >
                                 Contacto
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
+                                to="/blog"
+                                className={`block w-full py-2 px-3 transition-colors duration-300 rounded-lg ${getLinkStyles()}`}
+                                onClick={() => setIsOpen(false)}
+                                aria-current={location.pathname === '/blog' ? 'page' : undefined}
+                            >
+                                Blog
                             </Link>
                         </li>
                     </ul>

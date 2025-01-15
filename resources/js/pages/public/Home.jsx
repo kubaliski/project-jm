@@ -2,6 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { LatestPosts } from '@features/home';
+import { CTASection } from '@/components/common';
 
 export default function Home() {
     return (
@@ -184,26 +185,7 @@ export default function Home() {
             </section>
 
             {/* CTA Section */}
-            <section
-                className="py-20 bg-blue-600"
-                aria-labelledby="cta-heading"
-            >
-                <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-                    <h2 id="cta-heading" className="text-3xl font-bold text-white mb-6">
-                        ¿Listo para empezar?
-                    </h2>
-                    <p className="text-xl text-blue-100 mb-8">
-                        Únete a miles de clientes satisfechos y lleva tu negocio al siguiente nivel
-                    </p>
-                    <Link
-                        to="/contacto#contact-form-heading"
-                        className="inline-block bg-white text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-blue-50 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600"
-                        role="button"
-                    >
-                        Contáctanos ahora
-                    </Link>
-                </div>
-            </section>
+            <CTASection />
         </div>
     );
 }
