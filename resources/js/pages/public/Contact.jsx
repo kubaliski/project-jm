@@ -1,10 +1,26 @@
 // pages/Contact.jsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SEOManager } from '@components/common';
 import { ContactForm } from '@/features/contact';
+import { useLocation } from 'react-router-dom';
 
 export default function Contact() {
     const APP_NAME = window.APP_NAME;
+    const location = useLocation();
+
+    useEffect(() => {
+        if (location.hash) {
+            const id = location.hash.slice(1);
+            const element = document.getElementById(id);
+            if (element) {
+                setTimeout(() => {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            }
+        } else {
+            window.scrollTo(0, 0);
+        }
+    }, [location]);
 
     return (
         <>
@@ -82,7 +98,7 @@ export default function Contact() {
                                         info@tumarca.com
                                     </a>
                                     <br />
-                                    <a
+z                                   <a
                                         href="mailto:soporte@tumarca.com"
                                         className="hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
                                     >

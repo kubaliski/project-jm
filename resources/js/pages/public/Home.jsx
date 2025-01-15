@@ -180,7 +180,7 @@ export default function Home() {
                         Únete a miles de clientes satisfechos y lleva tu negocio al siguiente nivel
                     </p>
                     <Link
-                        to="/contacto"
+                        to="/contacto#contact-form-heading"
                         className="inline-block bg-white text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-blue-50 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600"
                         role="button"
                     >
