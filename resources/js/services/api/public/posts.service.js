@@ -1,3 +1,4 @@
+// js/services/api/public/posts.service.js
 import { publicClient } from '../httpClient';
 import { API_ENDPOINTS } from '../endpoints';
 

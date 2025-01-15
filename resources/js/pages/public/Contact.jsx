@@ -1,7 +1,7 @@
 // pages/Contact.jsx
 import React from 'react';
 import { SEOManager } from '@components/common';
-import {ContactForm} from '@features/contact';
+import {ContactForm} from '@/features/contact';
 
 export default function Contact() {
     const APP_NAME = window.APP_NAME;

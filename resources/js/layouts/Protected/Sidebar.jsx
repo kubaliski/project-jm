@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Bars3Icon, XMarkIcon, HomeIcon, DocumentTextIcon, NewspaperIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, XMarkIcon, HomeIcon, DocumentTextIcon, ChatBubbleBottomCenterIcon } from '@heroicons/react/24/outline';
 
 export default function Sidebar({ onExpandChange }) {
     const location = useLocation();
@@ -19,10 +19,10 @@ export default function Sidebar({ onExpandChange }) {
             icon: DocumentTextIcon
         },
         {
-            path: '/admin/noticias',
-            label: 'Noticias',
-            icon: NewspaperIcon
-        }
+            path: '/admin/contacts',
+            label: 'Comunicaciones',
+            icon: ChatBubbleBottomCenterIcon
+        },
     ];
 
     const isExpanded = isPinned || isHovered;

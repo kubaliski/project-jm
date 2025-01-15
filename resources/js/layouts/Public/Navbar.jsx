@@ -71,12 +71,6 @@ export default function Navbar() {
                             Blog
                         </Link>
                         <Link
-                            to="/noticias"
-                            className={`transition-colors duration-300 ${getLinkStyles()}`}
-                        >
-                            Noticias
-                        </Link>
-                        <Link
                             to="/contacto"
                             className={`transition-colors duration-300 ${getLinkStyles()}`}
                         >

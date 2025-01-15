@@ -9,6 +9,7 @@ import {Home,NotFound, Contact} from '@pages/public';
 import { BlogList, BlogPost } from '@pages/public/blog';
 import {Dashboard} from '@pages/admin';
 import {PostsList} from '@pages/admin/posts';
+import { ContactsList } from '@/pages/admin/contacts';
 export default function App() {
     return (
         <AuthProvider>
@@ -33,7 +34,11 @@ export default function App() {
                                 <AdminLayout><PostsList /></AdminLayout>
                             </ProtectedRoute>
                         } />
-
+                        <Route path="/admin/contacts" element={
+                            <ProtectedRoute>
+                                <AdminLayout><ContactsList /></AdminLayout>
+                            </ProtectedRoute>
+                        } />
                         {/* Ruta 404 - Debe ir al final */}
                         <Route path="*" element={<NotFound />} />
                     </Routes>

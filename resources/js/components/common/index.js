@@ -5,3 +5,4 @@ export {default as TableFilters} from './ReusableTableFilters';
 export {default as SEOManager} from './SEOManager';
 export {default as RichTextEditor} from './RichTextEditor';
 export {default as PostCard} from './PostCard';
+export {default as StatusDropdown} from './StatusDropdown';

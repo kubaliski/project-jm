@@ -30,6 +30,17 @@ export function useTableFilters(data, config) {
             result = result.filter(item => {
                 switch (filterConfig.type) {
                     case 'search':
+                        // Usar customSearch si está disponible
+                        if (config.customSearch) {
+                            return config.customSearch(item, value);
+                        }
+                        // Si no hay customSearch, buscar en los campos especificados
+                        if (config.searchFields) {
+                            return config.searchFields.some(field =>
+                                String(item[field] || '').toLowerCase().includes(String(value).toLowerCase())
+                            );
+                        }
+                        // Fallback al comportamiento anterior
                         const searchValue = String(item[key] || '').toLowerCase();
                         return searchValue.includes(String(value).toLowerCase());
 
