@@ -1,15 +1,10 @@
 // pages/Contact.jsx
 import React from 'react';
 import { SEOManager } from '@components/common';
-import {ContactForm} from '@/features/contact';
+import { ContactForm } from '@/features/contact';
 
 export default function Contact() {
     const APP_NAME = window.APP_NAME;
-
-    const handleFormSubmit = (formData) => {
-        // Aquí iría la lógica de envío del formulario
-        console.log('Form submitted:', formData);
-    };
 
     return (
         <>
@@ -17,59 +12,139 @@ export default function Contact() {
                 title={`${APP_NAME} | Contacto`}
                 description="Estamos aquí para ayudarte, envíanos un mensaje con tus dudas o comentarios"
             />
-            <div>
+            <main>
                 {/* Hero Section */}
-                <section className="relative h-72 flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 mt-20">
+                <section
+                    className="relative h-72 flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 mt-20"
+                    aria-labelledby="contact-heading"
+                >
                     <div className="text-center text-white">
-                        <h1 className="text-5xl md:text-6xl font-bold mb-6">Contáctanos</h1>
-                        <p className="text-xl md:text-2xl">Estamos aquí para ayudarte</p>
+                        <h1
+                            id="contact-heading"
+                            className="text-5xl md:text-6xl font-bold mb-6"
+                        >
+                            Contáctanos
+                        </h1>
+                        <p className="text-xl md:text-2xl">
+                            Estamos aquí para ayudarte
+                        </p>
                     </div>
                 </section>
 
                 {/* Contact Information */}
-                <section className="py-20 bg-white">
+                <section
+                    className="py-20 bg-white"
+                    aria-labelledby="contact-info-heading"
+                >
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-                            <div className="text-center p-6 bg-gray-50 rounded-lg">
-                                <div className="w-12 h-12 bg-blue-500 rounded-lg mb-4 mx-auto"></div>
+                        <h2
+                            id="contact-info-heading"
+                            className="sr-only"
+                        >
+                            Información de contacto
+                        </h2>
+                        <div
+                            className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16"
+                            role="list"
+                        >
+                            <div
+                                className="text-center p-6 bg-gray-50 rounded-lg"
+                                role="listitem"
+                            >
+                                <div
+                                    className="w-12 h-12 bg-blue-500 rounded-lg mb-4 mx-auto"
+                                    aria-hidden="true"
+                                >
+                                    {/* Aquí podrías añadir un ícono de ubicación */}
+                                </div>
                                 <h3 className="text-xl font-semibold mb-2">Ubicación</h3>
-                                <p className="text-gray-600">
-                                    Calle Principal 123<br />
-                                    Ciudad, País
-                                </p>
+                                <address className="text-gray-600 not-italic">
+                                    <p>Calle Principal 123</p>
+                                    <p>Ciudad, País</p>
+                                </address>
                             </div>
-                            <div className="text-center p-6 bg-gray-50 rounded-lg">
-                                <div className="w-12 h-12 bg-blue-500 rounded-lg mb-4 mx-auto"></div>
+                            <div
+                                className="text-center p-6 bg-gray-50 rounded-lg"
+                                role="listitem"
+                            >
+                                <div
+                                    className="w-12 h-12 bg-blue-500 rounded-lg mb-4 mx-auto"
+                                    aria-hidden="true"
+                                >
+                                    {/* Aquí podrías añadir un ícono de email */}
+                                </div>
                                 <h3 className="text-xl font-semibold mb-2">Email</h3>
-                                <p className="text-gray-600">
-                                    info@tumarca.com<br />
-                                    soporte@tumarca.com
-                                </p>
+                                <div className="text-gray-600">
+                                    <a
+                                        href="mailto:info@tumarca.com"
+                                        className="hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
+                                    >
+                                        info@tumarca.com
+                                    </a>
+                                    <br />
+                                    <a
+                                        href="mailto:soporte@tumarca.com"
+                                        className="hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
+                                    >
+                                        soporte@tumarca.com
+                                    </a>
+                                </div>
                             </div>
-                            <div className="text-center p-6 bg-gray-50 rounded-lg">
-                                <div className="w-12 h-12 bg-blue-500 rounded-lg mb-4 mx-auto"></div>
+                            <div
+                                className="text-center p-6 bg-gray-50 rounded-lg"
+                                role="listitem"
+                            >
+                                <div
+                                    className="w-12 h-12 bg-blue-500 rounded-lg mb-4 mx-auto"
+                                    aria-hidden="true"
+                                >
+                                    {/* Aquí podrías añadir un ícono de teléfono */}
+                                </div>
                                 <h3 className="text-xl font-semibold mb-2">Teléfono</h3>
-                                <p className="text-gray-600">
-                                    +1 234 567 890<br />
-                                    Lun - Vie, 9:00 - 18:00
-                                </p>
+                                <div className="text-gray-600">
+                                    <a
+                                        href="tel:+1234567890"
+                                        className="hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
+                                    >
+                                        +1 234 567 890
+                                    </a>
+                                    <p>
+                                        <span className="sr-only">Horario de atención: </span>
+                                        Lun - Vie, 9:00 - 18:00
+                                    </p>
+                                </div>
                             </div>
                         </div>
 
                         {/* Contact Form */}
-                        <ContactForm onSubmit={handleFormSubmit} />
+                        <section aria-labelledby="contact-form-heading">
+                            <h2 id="contact-form-heading" className="sr-only">
+                                Formulario de contacto
+                            </h2>
+                            <ContactForm />
+                        </section>
                     </div>
                 </section>
 
                 {/* Map Section */}
-                <section className="py-20 bg-gray-50">
+                <section
+                    className="py-20 bg-gray-50"
+                    aria-labelledby="location-map-heading"
+                >
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="h-96 bg-gray-200 rounded-lg">
+                        <h2 id="location-map-heading" className="sr-only">
+                            Nuestra ubicación
+                        </h2>
+                        <div
+                            className="h-96 bg-gray-200 rounded-lg"
+                            role="region"
+                            aria-label="Mapa de ubicación"
+                        >
                             {/* Aquí iría el componente del mapa */}
                         </div>
                     </div>
                 </section>
-            </div>
+            </main>
         </>
     );
 }

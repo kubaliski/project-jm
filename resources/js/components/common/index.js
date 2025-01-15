@@ -6,3 +6,4 @@ export {default as SEOManager} from './SEOManager';
 export {default as RichTextEditor} from './RichTextEditor';
 export {default as PostCard} from './PostCard';
 export {default as StatusDropdown} from './StatusDropdown';
+export {default as StatCard} from './StatCard';

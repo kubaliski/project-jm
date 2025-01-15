@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@context/AuthContext';
 import { adminPostsService, adminContactsService } from '@services/api';
+import {StatCard} from '@components/common';
 
 export default function Dashboard() {
     const { user } = useAuth();
@@ -19,7 +20,6 @@ export default function Dashboard() {
                     adminPostsService.count(),
                     adminContactsService.count()
                 ]);
-
                 setStats({
                     total_posts: postsResponse.data.total_posts,
                     total_contacts: contactsResponse.data.total_contacts,
@@ -31,30 +31,8 @@ export default function Dashboard() {
                 setIsLoading(false);
             }
         };
-
         fetchStats();
     }, []);
-
-    // Componente para las tarjetas de estadísticas
-    const StatCard = ({ title, value, color, description, isLoading }) => (
-        <div className="bg-white p-6 rounded-lg shadow">
-            <div className="flex items-center">
-                <div className="flex-1">
-                    <h3 className="text-lg font-medium text-gray-900">{title}</h3>
-                    <div className={`mt-1 text-3xl font-semibold text-${color}-600`}>
-                        {isLoading ? (
-                            <div className="animate-pulse h-8 w-16 bg-gray-200 rounded"></div>
-                        ) : (
-                            value
-                        )}
-                    </div>
-                </div>
-            </div>
-            <p className="mt-4 text-sm text-gray-600">
-                {description}
-            </p>
-        </div>
-    );
 
     return (
         <div className="space-y-6">
