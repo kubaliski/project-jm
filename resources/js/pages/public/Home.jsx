@@ -44,33 +44,49 @@ export default function Home() {
                         {[
                             {
                                 title: "Desarrollo Web",
-                                description: "Creamos sitios web modernos y accesibles que destacan tu marca."
+                                description: "Creamos sitios web modernos y accesibles que destacan tu marca.",
+                                link: "/servicios#desarrollo"
                             },
                             {
                                 title: "Marketing Digital",
-                                description: "Estrategias efectivas para aumentar tu presencia online."
+                                description: "Estrategias efectivas para aumentar tu presencia online.",
+                                link: "/servicios#marketing"
                             },
                             {
                                 title: "Consultoría",
-                                description: "Asesoramiento experto para optimizar tus procesos digitales."
+                                description: "Asesoramiento experto para optimizar tus procesos digitales.",
+                                link: "/servicios#consultoria"
                             }
                         ].map((servicio, index) => (
-                            <div
+                            <Link
                                 key={index}
-                                className="p-6 bg-gray-50 rounded-lg"
+                                to={servicio.link}
+                                className="block p-6 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                                 role="listitem"
                             >
                                 <div
-                                    className="w-12 h-12 bg-blue-500 rounded-lg mb-4"
+                                    className="w-12 h-12 bg-blue-500 rounded-lg mb-4 group-hover:bg-blue-600 transition-colors"
                                     aria-hidden="true"
                                 />
-                                <h3 className="text-xl font-semibold mb-2">
+                                <h3 className="text-xl font-semibold mb-2 group-hover:text-blue-600 transition-colors">
                                     {servicio.title}
                                 </h3>
                                 <p className="text-gray-600">
                                     {servicio.description}
                                 </p>
-                            </div>
+                                <span className="mt-4 inline-flex items-center text-blue-600 group-hover:text-blue-800 font-medium">
+                                    <span>Saber más</span>
+                                    <svg
+                                        className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                        aria-hidden="true"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </span>
+                            </Link>
                         ))}
                     </div>
                 </div>

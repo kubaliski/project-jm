@@ -5,8 +5,7 @@ import SEOProvider from '@providers/SEOProvider';
 import ProtectedRoute from './ProtectedRoute';
 import {AdminLayout,PublicLayout} from '@layouts';
 import {Login} from '@pages/auth';
-import {Home,NotFound, Contact} from '@pages/public';
-import { BlogList, BlogPost } from '@pages/public/blog';
+import {Home,NotFound, Contact, BlogList , BlogPost, Services} from '@pages/public';
 import {Dashboard} from '@pages/admin';
 import {PostsList} from '@pages/admin/posts';
 import { ContactsList } from '@/pages/admin/contacts';
@@ -21,6 +20,7 @@ export default function App() {
                         <Route path="/blog" element={<PublicLayout><BlogList /></PublicLayout>} />
                         <Route path="/blog/:slug" element={<PublicLayout><BlogPost /></PublicLayout>} />
                         <Route path="/contacto" element={<PublicLayout><Contact /></PublicLayout>} />
+                        <Route path="/servicios" element={<PublicLayout><Services /></PublicLayout>} />
                         <Route path="/login" element={<Login />} />
 
                         {/* Rutas protegidas */}

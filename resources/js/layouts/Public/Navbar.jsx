@@ -74,11 +74,11 @@ export default function Navbar() {
                         <ul className="flex justify-center space-x-8">
                             <li>
                                 <Link
-                                    to="/blog"
+                                    to="/servicios"
                                     className={`inline-block py-2 transition-colors duration-300 ${getLinkStyles()}`}
-                                    aria-current={location.pathname === '/blog' ? 'page' : undefined}
+                                    aria-current={location.pathname === '/servicios' ? 'page' : undefined}
                                 >
-                                    Blog
+                                    Servicios
                                 </Link>
                             </li>
                             <li>
@@ -88,6 +88,15 @@ export default function Navbar() {
                                     aria-current={location.pathname === '/contacto' ? 'page' : undefined}
                                 >
                                     Contacto
+                                </Link>
+                            </li>
+                            <li>
+                                <Link
+                                    to="/blog"
+                                    className={`inline-block py-2 transition-colors duration-300 ${getLinkStyles()}`}
+                                    aria-current={location.pathname === '/blog' ? 'page' : undefined}
+                                >
+                                    Blog
                                 </Link>
                             </li>
                         </ul>
