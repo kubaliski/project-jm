@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 
-export function useTableFilters(data, config) {
+const useTableFilters = (data, config) => {
     const [filters, setFilters] = useState({});
     const [sortConfig, setSortConfig] = useState(config.defaultSort || { key: 'created_at', direction: 'desc' });
     const [currentPage, setCurrentPage] = useState(1);
@@ -29,7 +29,7 @@ export function useTableFilters(data, config) {
 
             result = result.filter(item => {
                 switch (filterConfig.type) {
-                    case 'search':
+                    case 'search': {
                         // Usar customSearch si está disponible
                         if (config.customSearch) {
                             return config.customSearch(item, value);
@@ -43,21 +43,21 @@ export function useTableFilters(data, config) {
                         // Fallback al comportamiento anterior
                         const searchValue = String(item[key] || '').toLowerCase();
                         return searchValue.includes(String(value).toLowerCase());
-
-                    case 'select':
+                    }
+                    case 'select': {
                         if (value === 'all') return true;
                         return item[key] === value;
-
-                    case 'boolean':
+                    }
+                    case 'boolean': {
                         return item[key] === (value === 'true');
-
-                    case 'date':
+                    }
+                    case 'date': {
                         // Implementar lógica de filtrado por fecha según necesidades
                         return true;
-
-                    case 'custom':
+                    }
+                    case 'custom': {
                         return filterConfig.filterFn(item, value);
-
+                    }
                     default:
                         return true;
                 }
@@ -91,4 +91,6 @@ export function useTableFilters(data, config) {
         handleFilterChange,
         handleSortChange
     };
-}
+};
+
+export default useTableFilters;

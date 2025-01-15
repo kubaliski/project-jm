@@ -1,5 +1,3 @@
-// config/tables/contactsTable.js
-
 export const contactsTableConfig = {
     filters: [
         {
@@ -42,14 +40,17 @@ export const contactsTableConfig = {
                 const today = new Date();
 
                 switch (value) {
-                    case 'today':
+                    case 'today': {
                         return contactDate.toDateString() === today.toDateString();
-                    case 'week':
+                    }
+                    case 'week': {
                         const weekStart = new Date(today.setDate(today.getDate() - today.getDay()));
                         return contactDate >= weekStart;
-                    case 'month':
+                    }
+                    case 'month': {
                         return contactDate.getMonth() === today.getMonth() &&
                                contactDate.getFullYear() === today.getFullYear();
+                    }
                     default:
                         return true;
                 }
@@ -65,10 +66,9 @@ export const contactsTableConfig = {
         key: 'created_at',
         direction: 'desc'
     },
-    searchFields: ['full_name', 'email', 'subject'], // Campos en los que buscar cuando se usa el filtro de búsqueda
+    searchFields: ['full_name', 'email', 'subject'],
     customSearch: (contact, searchTerm) => {
         if (!searchTerm) return true;
-
         const searchLower = searchTerm.toLowerCase();
         return (
             contact.full_name.toLowerCase().includes(searchLower) ||

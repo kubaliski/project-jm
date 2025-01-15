@@ -1,5 +1,6 @@
 // resources/js/features/contacts/components/ContactModal.jsx
 import React from 'react';
+import PropTypes from 'prop-types';
 import ReusableModal from '@components/common/ReusableModal';
 import ContactForm from './ContactForm';
 import { adminContactsService } from '@services/api';
@@ -42,3 +43,10 @@ export default function ContactModal({
         </ReusableModal>
     );
 }
+
+ContactModal.propTypes = {
+    isOpen: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    contact: PropTypes.object,
+    onSuccess: PropTypes.func
+};

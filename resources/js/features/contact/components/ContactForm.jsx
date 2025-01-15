@@ -1,5 +1,6 @@
 // resources/js/features/contacts/components/ContactForm.jsx
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { XCircleIcon } from '@heroicons/react/24/solid';
 
 export default function ContactForm({ contact = null, onSubmit, onCancel }) {
@@ -257,3 +258,9 @@ export default function ContactForm({ contact = null, onSubmit, onCancel }) {
         </form>
     );
 }
+
+ContactForm.propTypes = {
+    contact: PropTypes.object,
+    onSubmit: PropTypes.func.isRequired,
+    onCancel: PropTypes.func.isRequired
+};

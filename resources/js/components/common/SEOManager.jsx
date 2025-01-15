@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 const SEOManager = ({ title, description }) => {
   useEffect(() => {
@@ -27,5 +28,12 @@ const SEOManager = ({ title, description }) => {
 
   return null;
 };
+
+
+SEOManager.propTypes = {
+  title: PropTypes.string,
+  description: PropTypes.string
+};
+
 
 export default SEOManager;

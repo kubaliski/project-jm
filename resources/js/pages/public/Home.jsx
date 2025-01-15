@@ -176,7 +176,7 @@ export default function Home() {
                                     </div>
                                 </div>
                                 <blockquote>
-                                    <p className="text-gray-600">"{testimonial.testimonial}"</p>
+                                    <p className="text-gray-600">&quot;{testimonial.testimonial}&quot;</p>
                                 </blockquote>
                             </article>
                         ))}

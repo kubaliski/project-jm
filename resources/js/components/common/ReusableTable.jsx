@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import TableSkeleton, { PaginationSkeleton } from '../ui/Skeletons/TableSkeleton';
 
@@ -183,3 +184,23 @@ export default function Table({
         </div>
     );
 }
+
+Table.propTypes = {
+    columns: PropTypes.arrayOf(
+        PropTypes.shape({
+            key: PropTypes.string.isRequired,
+            header: PropTypes.node.isRequired,
+            className: PropTypes.string,
+            cellClassName: PropTypes.string,
+            render: PropTypes.func
+        })
+    ),
+    data: PropTypes.arrayOf(PropTypes.object),
+    isLoading: PropTypes.bool,
+    emptyMessage: PropTypes.node,
+    currentPage: PropTypes.number,
+    totalPages: PropTypes.number,
+    onPageChange: PropTypes.func,
+    itemsPerPage: PropTypes.number,
+    totalItems: PropTypes.number
+};

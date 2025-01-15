@@ -1,6 +1,6 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { authService } from '@services/api';
-
 
 const AuthContext = createContext(null);
 
@@ -57,7 +57,7 @@ export function AuthProvider({ children }) {
                 const response = await authService.getCurrentUser();
                 setUser(response.data);
             }
-        } catch (error) {
+        } catch {
             setUser(null);
             localStorage.removeItem('token');
         } finally {
@@ -72,4 +72,8 @@ export function AuthProvider({ children }) {
     );
 }
 
-export const useAuth = () => useContext(AuthContext);
+AuthProvider.propTypes = {
+    children: PropTypes.node.isRequired,
+};
+
+export default AuthContext;

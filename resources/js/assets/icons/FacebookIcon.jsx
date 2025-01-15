@@ -1,3 +1,6 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
 export default function FacebookIcon({ className }) {
     return (
         <svg
@@ -10,3 +13,7 @@ export default function FacebookIcon({ className }) {
         </svg>
     );
 }
+
+FacebookIcon.propTypes = {
+    className: PropTypes.string
+};

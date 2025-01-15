@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useLocation } from 'react-router-dom';
 import {SEOManager} from '@components/common';
 
@@ -75,6 +76,11 @@ const SEOProvider = ({ children }) => {
       {children}
     </>
   );
+};
+
+
+SEOProvider.propTypes = {
+  children: PropTypes.node.isRequired
 };
 
 export default SEOProvider;

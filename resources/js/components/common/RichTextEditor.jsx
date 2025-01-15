@@ -1,28 +1,37 @@
 import React, { useRef } from 'react';
+import PropTypes from 'prop-types';
 import { Editor } from '@tinymce/tinymce-react';
 
-const RichTextEditor = ({ value, onChange, error }) => {
+const RichTextEditor = ({
+    value = '',
+    onChange,
+    error = ''
+}) => {
     const editorRef = useRef(null);
 
-    const handleEditorChange = (content, editor) => {
+    // Asegurarnos de que value nunca sea null
+    const safeValue = value ?? '';
+
+    const handleEditorChange = (content) => {
         onChange({
             target: {
                 name: 'content',
-                value: content
+                value: content || ''
             }
         });
     };
 
+    // Verificar la API key de TinyMCE
     if (!window.config?.tinymceApiKey) {
-        console.warn('TinyMCE API key no encontrada. Verifica la configuración.');
+    console.warn('TinyMCE API key no encontrada. Verifica la configuración.');
     }
 
     return (
         <div className="rich-text-editor">
             <Editor
-                onInit={(evt, editor) => editorRef.current = editor}
+                onInit={(_, editor) => editorRef.current = editor}
                 apiKey={window.config?.tinymceApiKey}
-                value={value}
+                value={safeValue}
                 onEditorChange={handleEditorChange}
                 init={{
                     height: 500,
@@ -31,7 +40,7 @@ const RichTextEditor = ({ value, onChange, error }) => {
                         'advlist', 'autolink', 'lists', 'link', 'charmap',
                         'preview', 'anchor', 'searchreplace', 'visualblocks',
                         'fullscreen', 'insertdatetime', 'media', 'table', 'code',
-                        'help', 'wordcount', 'paste'
+                        'help', 'wordcount'
                     ],
                     toolbar: 'undo redo | formatselect | ' +
                         'bold italic backcolor | alignleft aligncenter ' +
@@ -56,7 +65,7 @@ const RichTextEditor = ({ value, onChange, error }) => {
                     },
                     menu: {
                         file: { title: 'Archivo', items: 'newdocument restoredraft | preview | print' },
-                        edit: { title: 'Editar', items: 'undo redo | cut copy paste pastetext | selectall | searchreplace' },
+                        edit: { title: 'Editar', items: 'undo redo | cut copy | selectall | searchreplace' },
                         view: { title: 'Ver', items: 'code | visualaid visualchars visualblocks | preview fullscreen' },
                         insert: { title: 'Insertar', items: 'link media template codesample inserttable | charmap emoticons hr | pagebreak nonbreaking anchor toc | insertdatetime' },
                         format: { title: 'Formato', items: 'bold italic underline strikethrough superscript subscript codeformat | formats blockformats fontformats fontsizes align lineheight | forecolor backcolor | removeformat' },
@@ -81,6 +90,12 @@ const RichTextEditor = ({ value, onChange, error }) => {
             )}
         </div>
     );
+};
+
+RichTextEditor.propTypes = {
+    value: PropTypes.string,
+    onChange: PropTypes.func.isRequired,
+    error: PropTypes.string
 };
 
 export default RichTextEditor;

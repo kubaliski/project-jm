@@ -99,7 +99,7 @@ const ContactForm = () => {
     };
 
     // Función para anunciar mensajes a lectores de pantalla
-    const announceMessage = (message, type = 'polite') => {
+    const announceMessage = (message = 'polite') => {
         const announcement = document.getElementById('announcement');
         if (announcement) {
             announcement.textContent = message;

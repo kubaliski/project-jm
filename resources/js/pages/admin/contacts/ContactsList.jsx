@@ -3,7 +3,7 @@ import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { Table, TableFilters, ConfirmationDialog, StatusDropdown } from '@components/common';
 import { ContactModal } from '@features/contact';
 import { formatDateForDisplay } from '@utils/dateUtils';
-import { useTableFilters } from '@hooks/useTableFilters';
+import { useTableFilters } from '@hooks';
 import { adminContactsService } from '@services/api';
 import { contactsTableConfig } from '@config/tables/contactsTable';
 

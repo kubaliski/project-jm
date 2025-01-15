@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import PropTypes from 'prop-types';
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 
@@ -77,3 +78,22 @@ export default function ReusableModal({
         </Transition>
     );
 }
+
+ReusableModal.propTypes = {
+    isOpen: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    title: PropTypes.node.isRequired,
+    children: PropTypes.node.isRequired,
+    size: PropTypes.oneOf([
+        'sm',
+        'md',
+        'lg',
+        'xl',
+        '2xl',
+        '3xl',
+        '4xl',
+        '5xl',
+        'full'
+    ]),
+    showClose: PropTypes.bool
+};

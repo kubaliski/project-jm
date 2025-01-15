@@ -1,5 +1,6 @@
 // components/MobileNavbar.jsx
 import React, { useState, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { Link, useLocation } from 'react-router-dom';
 import { PhoneIcon } from '@heroicons/react/24/solid';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
@@ -167,3 +168,8 @@ export default function MobileNavbar({ hasScrolled, isHome }) {
         </>
     );
 }
+
+MobileNavbar.propTypes = {
+    hasScrolled: PropTypes.bool.isRequired,
+    isHome: PropTypes.bool.isRequired
+};

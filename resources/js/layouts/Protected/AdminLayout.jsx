@@ -1,6 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@context/AuthContext';
+import { useAuth } from '@hooks';
 import Sidebar from './Sidebar';
 
 export default function AdminLayout({ children }) {
@@ -25,7 +26,7 @@ export default function AdminLayout({ children }) {
             <div className={`flex-1 transition-all duration-300 ${
                 sidebarExpanded ? 'ml-64' : 'ml-20'
             }`}>
-                <header className="bg-white shadow h-16 sticky top-0">
+                <header className="bg-white shadow h-16 sticky top-0 z-10">
                     <div className="flex justify-between items-center px-8 h-full">
                         <h2 className="text-xl font-semibold text-gray-900">
                             Dashboard
@@ -45,3 +46,7 @@ export default function AdminLayout({ children }) {
         </div>
     );
 }
+
+AdminLayout.propTypes = {
+    children: PropTypes.node.isRequired,
+};

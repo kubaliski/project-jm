@@ -4,7 +4,7 @@ import {Table, TableFilters, ConfirmationDialog} from '@components/common';
 import PostModal from '@features/posts/components/PostModal';
 import { formatDateForDisplay, isFutureDate } from '@utils/dateUtils';
 import { postsTableConfig } from '@config/tables/postsTable';
-import { useTableFilters } from '@hooks/useTableFilters';
+import { useTableFilters } from '@hooks';
 import { adminPostsService } from '@services/api';
 
 export default function PostsList() {

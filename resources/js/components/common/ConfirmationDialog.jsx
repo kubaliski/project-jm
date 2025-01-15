@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import ReusableModal from './ReusableModal';
 
 export default function ConfirmationDialog({
@@ -51,3 +52,14 @@ export default function ConfirmationDialog({
         </ReusableModal>
     );
 }
+
+ConfirmationDialog.propTypes = {
+    isOpen: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    onConfirm: PropTypes.func.isRequired,
+    title: PropTypes.string,
+    message: PropTypes.string,
+    confirmText: PropTypes.string,
+    cancelText: PropTypes.string,
+    confirmButtonStyle: PropTypes.oneOf(['danger', 'primary'])
+};

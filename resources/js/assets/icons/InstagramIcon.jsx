@@ -1,3 +1,6 @@
+import React from "react";
+import PropTypes from "prop-types";
+
 export default function InstagramIcon({ className }) {
     return (
         <svg
@@ -10,3 +13,7 @@ export default function InstagramIcon({ className }) {
         </svg>
     );
 }
+
+InstagramIcon.propTypes = {
+    className: PropTypes.string
+};

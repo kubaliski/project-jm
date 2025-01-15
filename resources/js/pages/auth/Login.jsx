@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '@context/AuthContext';
+import { useAuth } from '@hooks';
 
 export default function Login() {
     const [email, setEmail] = useState('');
@@ -26,7 +26,7 @@ export default function Login() {
             } else {
                 setError('Credenciales inválidas');
             }
-        } catch (error) {
+        } catch {
             setError('Error al intentar iniciar sesión');
         } finally {
             setIsLoading(false);

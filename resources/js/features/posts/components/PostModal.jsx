@@ -1,7 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import ReusableModal from '@components/common/ReusableModal';
 import PostForm from './PostForm';
-import { useAuth } from '@context/AuthContext';
 import { adminPostsService } from '@services/api';
 
 export default function PostModal({
@@ -10,7 +10,7 @@ export default function PostModal({
     post = null,
     onSuccess
 }) {
-    const { user } = useAuth();
+
 
     const handleSubmit = async (formData) => {
         try {
@@ -46,3 +46,10 @@ export default function PostModal({
         </ReusableModal>
     );
 }
+
+PostModal.propTypes = {
+    isOpen: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    post: PropTypes.object,
+    onSuccess: PropTypes.func
+};

@@ -9,6 +9,7 @@ import {Home,NotFound, Contact, BlogList , BlogPost, Services, About} from '@pag
 import {Dashboard} from '@pages/admin';
 import {PostsList} from '@pages/admin/posts';
 import { ContactsList } from '@/pages/admin/contacts';
+
 export default function App() {
     return (
         <AuthProvider>

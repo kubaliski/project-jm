@@ -1,11 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 export const TableSkeleton = ({ columns, rowCount = 5 }) => {
   return (
     <tbody className="bg-white divide-y divide-gray-200">
       {[...Array(rowCount)].map((_, rowIndex) => (
         <tr key={rowIndex} className="animate-pulse">
-          {columns.map((column, colIndex) => (
+          {columns.map((_, colIndex) => ( // Cambiado column por _ ya que no se usa
             <td key={`${rowIndex}-${colIndex}`} className="px-6 py-4 whitespace-nowrap">
               <div className="h-4 bg-gray-200 rounded w-3/4"></div>
               {colIndex === 0 && (
@@ -17,6 +18,11 @@ export const TableSkeleton = ({ columns, rowCount = 5 }) => {
       ))}
     </tbody>
   );
+};
+
+TableSkeleton.propTypes = {
+  columns: PropTypes.arrayOf(PropTypes.any).isRequired, // Puede ser array de cualquier tipo ya que solo se usa para length
+  rowCount: PropTypes.number
 };
 
 export const PaginationSkeleton = () => (
@@ -33,5 +39,6 @@ export const PaginationSkeleton = () => (
     </div>
   </div>
 );
+
 
 export default TableSkeleton;

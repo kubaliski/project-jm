@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 export default function TableFilters({
@@ -176,3 +177,46 @@ export default function TableFilters({
         </div>
     );
 }
+
+TableFilters.propTypes = {
+    config: PropTypes.shape({
+        filters: PropTypes.arrayOf(
+            PropTypes.shape({
+                key: PropTypes.string.isRequired,
+                label: PropTypes.string.isRequired,
+                type: PropTypes.oneOf(['select', 'search', 'date', 'boolean', 'custom']).isRequired,
+                placeholder: PropTypes.string,
+                defaultValue: PropTypes.string,
+                options: PropTypes.arrayOf(
+                    PropTypes.shape({
+                        value: PropTypes.oneOfType([
+                            PropTypes.string,
+                            PropTypes.number,
+                            PropTypes.bool
+                        ]).isRequired,
+                        label: PropTypes.string.isRequired
+                    })
+                )
+            })
+        ).isRequired,
+        sortOptions: PropTypes.arrayOf(
+            PropTypes.shape({
+                key: PropTypes.string.isRequired,
+                label: PropTypes.string.isRequired
+            })
+        )
+    }).isRequired,
+    onFilterChange: PropTypes.func.isRequired,
+    onSortChange: PropTypes.func.isRequired,
+    filters: PropTypes.objectOf(
+        PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.number,
+            PropTypes.bool
+        ])
+    ),
+    sortConfig: PropTypes.shape({
+        key: PropTypes.string,
+        direction: PropTypes.oneOf(['asc', 'desc'])
+    })
+};

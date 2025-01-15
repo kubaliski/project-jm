@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { formatDateForInput } from '@utils/dateUtils';
 import { XCircleIcon } from '@heroicons/react/24/solid';
 import {RichTextEditor} from '@components/common';
@@ -6,33 +7,20 @@ import {RichTextEditor} from '@components/common';
 export default function PostForm({ post = null, onSubmit, onCancel }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState({});
+    // Inicializamos el formData directamente con los datos del post o valores por defecto
     const [formData, setFormData] = useState({
-        title: '',
-        content: '',
-        excerpt: '',
-        featured_image: null,
-        seo_title: '',
-        seo_description: '',
-        is_published: false,
-        published_at: null,
-        schedule_publication: false
+        title: post?.title || '',
+        content: post?.content || '',
+        excerpt: post?.excerpt || '',
+        featured_image: post?.featured_image || null,
+        seo_title: post?.seo_title || '',
+        seo_description: post?.seo_description || '',
+        is_published: post?.is_published || false,
+        published_at: post?.published_at ? formatDateForInput(post.published_at) : null,
+        schedule_publication: post?.published_at !== null && !post?.is_published || false
     });
 
-    const [previewImage, setPreviewImage] = useState(null);
-
-    useEffect(() => {
-        if (post) {
-            setFormData({
-                ...post,
-                schedule_publication: post.published_at !== null && !post.is_published,
-                published_at: formatDateForInput(post.published_at)
-            });
-
-            if (post.featured_image) {
-                setPreviewImage(post.featured_image);
-            }
-        }
-    }, [post]);
+    const [previewImage, setPreviewImage] = useState(post?.featured_image || null);
 
     const handleChange = (e) => {
         const { name, value, type, checked, files } = e.target;
@@ -65,9 +53,10 @@ export default function PostForm({ post = null, onSubmit, onCancel }) {
                 }));
             }
         } else {
+            const newValue = name === 'content' ? (value || '') : value;
             setFormData(prev => ({
                 ...prev,
-                [name]: value
+                [name]: newValue
             }));
         }
 
@@ -166,7 +155,7 @@ export default function PostForm({ post = null, onSubmit, onCancel }) {
                     Contenido
                 </label>
                 <RichTextEditor
-                    value={formData.content}
+                    value={formData.content || ''}
                     onChange={handleChange}
                     error={errors.content}
                 />
@@ -385,3 +374,9 @@ export default function PostForm({ post = null, onSubmit, onCancel }) {
         </form>
     );
 }
+
+PostForm.propTypes = {
+    post: PropTypes.object,
+    onSubmit: PropTypes.func.isRequired,
+    onCancel: PropTypes.func.isRequired
+};

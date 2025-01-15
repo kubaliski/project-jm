@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@context/AuthContext';
+import { useAuth } from '@hooks';
 import { adminPostsService, adminContactsService } from '@services/api';
 import {StatCard} from '@components/common';
 

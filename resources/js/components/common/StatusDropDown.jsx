@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const StatusDropdown = ({
   item,
@@ -63,6 +64,23 @@ const StatusDropdown = ({
       </div>
     </div>
   );
+};
+
+StatusDropdown.propTypes = {
+  item: PropTypes.object.isRequired,
+  onStatusChange: PropTypes.func.isRequired,
+  isUpdating: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  statusField: PropTypes.string,
+  idField: PropTypes.string,
+  options: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
+      bgColor: PropTypes.string.isRequired,
+      textColor: PropTypes.string.isRequired
+    })
+  ),
+  width: PropTypes.string
 };
 
 export default StatusDropdown;
