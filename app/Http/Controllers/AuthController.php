@@ -19,8 +19,15 @@ class AuthController extends Controller
             $user = Auth::user();
             $token = $user->createToken('auth-token')->plainTextToken;
 
+            // Cargar roles y permisos
+            $user->load('roles.permissions');
+
+            // Crear una estructura más limpia y plana de permisos
+            $permissions = $user->getAllPermissions()->pluck('name')->unique()->values();
+
             return response()->json([
                 'user' => $user,
+                'permissions' => $permissions,
                 'token' => $token
             ]);
         }
@@ -48,7 +55,14 @@ class AuthController extends Controller
         try {
             $user = $request->user();
             if ($user) {
-                return response()->json($user);
+                // Cargar roles y permisos también aquí
+                $user->load('roles.permissions');
+                $permissions = $user->getAllPermissions()->pluck('name')->unique()->values();
+
+                return response()->json([
+                    'user' => $user,
+                    'permissions' => $permissions,
+                ]);
             }
             return response()->json(['message' => 'Usuario no autenticado'], 401);
         } catch (\Exception $e) {

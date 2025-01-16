@@ -8,6 +8,11 @@ use Illuminate\Http\JsonResponse;
 
 class ContactController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Contact::class, 'contact');
+    }
+
     public function index(): JsonResponse
     {
         $contacts = Contact::orderBy('created_at', 'desc')->get();
@@ -61,6 +66,8 @@ class ContactController extends Controller
 
     public function updateStatus(Request $request, Contact $contact): JsonResponse
     {
+        $this->authorize('updateStatus', $contact);
+
         $validated = $request->validate([
             'status' => 'required|in:pending,in_progress,completed,spam'
         ]);
@@ -84,6 +91,8 @@ class ContactController extends Controller
 
     public function count(): JsonResponse
     {
+        $this->authorize('viewStats', Contact::class);
+
         $totalContacts = Contact::count();
         return response()->json(['total_contacts' => $totalContacts]);
     }
