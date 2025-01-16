@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Link, useLocation } from 'react-router-dom';
 import { Bars3Icon, XMarkIcon, HomeIcon, DocumentTextIcon, ChatBubbleBottomCenterIcon } from '@heroicons/react/24/outline';
+import { useAuth } from '@hooks';
 
 export default function Sidebar({ onExpandChange }) {
     const location = useLocation();
+    const { hasPermission } = useAuth();
     const [isPinned, setIsPinned] = useState(true);
     const [isHovered, setIsHovered] = useState(false);
 
@@ -12,19 +14,29 @@ export default function Sidebar({ onExpandChange }) {
         {
             path: '/admin',
             label: 'Dashboard',
-            icon: HomeIcon
+            icon: HomeIcon,
+            // El dashboard no necesita permisos específicos, pero podrías agregar si es necesario
+            permissions: []
         },
         {
             path: '/admin/posts',
             label: 'Posts',
-            icon: DocumentTextIcon
+            icon: DocumentTextIcon,
+            permissions: ['post.index']
         },
         {
             path: '/admin/contacts',
             label: 'Comunicaciones',
-            icon: ChatBubbleBottomCenterIcon
+            icon: ChatBubbleBottomCenterIcon,
+            permissions: ['contact.index']
         },
     ];
+
+    // Filtramos los elementos de navegación basados en los permisos
+    const authorizedNavItems = navItems.filter(item =>
+        item.permissions.length === 0 || // Si no requiere permisos, se muestra
+        item.permissions.every(permission => hasPermission(permission)) // Si requiere permisos, verificamos que los tenga todos
+    );
 
     const isExpanded = isPinned || isHovered;
 
@@ -61,7 +73,7 @@ export default function Sidebar({ onExpandChange }) {
                     </button>
                 </div>
                 <nav className="flex-1 px-4 py-4 space-y-1">
-                    {navItems.map((item) => {
+                    {authorizedNavItems.map((item) => {
                         const Icon = item.icon;
                         const isActive = item.path === '/admin'
                             ? location.pathname === item.path
