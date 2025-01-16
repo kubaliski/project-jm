@@ -82,8 +82,12 @@ export default function PostsList() {
         }
     };
 
-    const handleFilterChange = (newFilters) => {
-        dispatch(setFilters({ ...filters, ...newFilters }));
+    const handleFilterChange = (key, value) => {
+        console.log('Applying filter:', key, value);
+        dispatch(setFilters({
+            ...filters,
+            [key]: value
+        }));
     };
 
     const handleSortChange = (field, direction) => {

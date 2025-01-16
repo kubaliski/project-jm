@@ -76,11 +76,41 @@ const postsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // ... resto de los reducers permanecen igual ...
+      // Fetch posts
+      .addCase(fetchPosts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchPosts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.items = action.payload;
+        state.error = null;
+      })
+      .addCase(fetchPosts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Create post
+      .addCase(createPost.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(createPost.fulfilled, (state, action) => {
         state.loading = false;
         state.items.unshift(action.payload);
-        state.editModal.isOpen = false; // Actualizar referencia correcta
+        state.editModal.isOpen = false;  // Actualizado para usar editModal
+        state.editModal.mode = null;     // Limpiar el modo
+        state.error = null;
+      })
+      .addCase(createPost.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Update post
+      .addCase(updatePost.pending, (state) => {
+        state.loading = true;
         state.error = null;
       })
       .addCase(updatePost.fulfilled, (state, action) => {
@@ -89,14 +119,44 @@ const postsSlice = createSlice({
         if (index !== -1) {
           state.items[index] = action.payload;
         }
-        state.editModal.isOpen = false; // Actualizar referencia correcta
+        state.editModal.isOpen = false;  // Actualizado para usar editModal
+        state.editModal.mode = null;     // Limpiar el modo
+        state.error = null;
+      })
+      .addCase(updatePost.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Delete post
+      .addCase(deletePost.pending, (state) => {
+        state.loading = true;
         state.error = null;
       })
       .addCase(deletePost.fulfilled, (state, action) => {
         state.loading = false;
         state.items = state.items.filter(item => item.id !== action.payload);
-        state.deleteModal.isOpen = false; // Actualizar referencia correcta
+        state.deleteModal.isOpen = false;  // Actualizado para usar deleteModal
         state.error = null;
+      })
+      .addCase(deletePost.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Count posts
+      .addCase(countPosts.pending, (state) => {
+        state.stats.loading = true;
+        state.stats.error = null;
+      })
+      .addCase(countPosts.fulfilled, (state, action) => {
+        state.stats.loading = false;
+        state.stats.total_posts = action.payload.total_posts;
+        state.stats.error = null;
+      })
+      .addCase(countPosts.rejected, (state, action) => {
+        state.stats.loading = false;
+        state.stats.error = action.payload;
       });
   }
 });
