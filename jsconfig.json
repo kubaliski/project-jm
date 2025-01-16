@@ -14,6 +14,7 @@
             "@hooks/*": ["resources/js/hooks/*"],
             "@features/*": ["resources/js/features/*"],
             "@config/*": ["resources/js/config/*"],
+            "@store/*": ["resources/js/store/*"],
         }
     },
     "exclude": ["node_modules", "public"]

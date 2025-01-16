@@ -53,6 +53,13 @@ class PostPolicy
     {
         return $user->hasPermission('post.delete');
     }
+    /**
+     * Determine whether the user can publish any posts.
+     */
+    public function publishAny(User $user): bool
+    {
+        return $user->hasPermission('post.publish');
+    }
 
     /**
      * Determine whether the user can publish the post.

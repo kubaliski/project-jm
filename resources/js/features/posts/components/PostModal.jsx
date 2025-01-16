@@ -1,30 +1,45 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
 import ReusableModal from '@components/common/ReusableModal';
 import PostForm from './PostForm';
-import { adminPostsService } from '@services/api';
+import {
+    selectSelectedPost,
+    selectEditModalState,
+    selectPostsLoading
+} from '@store/admin/selectors/postsSelectors';
+import {
+    createPost,
+    updatePost
+} from '@store/admin/thunks/postsThunks';
+import {
+    setEditModalState,
+    setSelectedPost
+} from '@store/admin/slices/postsSlice';
 
-export default function PostModal({
-    isOpen,
-    onClose,
-    post = null,
-    onSuccess
-}) {
+export default function PostModal() {
+    const dispatch = useDispatch();
+    const selectedPost = useSelector(selectSelectedPost);
+    const { isOpen, mode } = useSelector(selectEditModalState);
+    const isLoading = useSelector(selectPostsLoading);
 
+    const handleClose = () => {
+        dispatch(setEditModalState({ isOpen: false, mode: null }));
+        dispatch(setSelectedPost(null));
+    };
 
     const handleSubmit = async (formData) => {
         try {
-            if (post) {
-                formData.append('_method', 'PUT');
-                await adminPostsService.update(post.id, formData);
+            console.log('formData desde el Modal', formData);
+            if (mode === 'edit' && selectedPost) {
+                await dispatch(updatePost({
+                    id: selectedPost.id,
+                    formData
+                })).unwrap();
             } else {
-                await adminPostsService.create(formData);
+                await dispatch(createPost(formData)).unwrap();
             }
-
-            onSuccess?.();
-            onClose();
+            handleClose();
         } catch (error) {
-            console.error('Error:', error);
             throw error;
         }
     };
@@ -32,24 +47,18 @@ export default function PostModal({
     return (
         <ReusableModal
             isOpen={isOpen}
-            onClose={onClose}
-            title={post ? 'Editar Post' : 'Crear Nuevo Post'}
-            size="4xl" // Cambiamos de 2xl a 4xl para más espacio
+            onClose={handleClose}
+            title={mode === 'edit' ? 'Editar Post' : 'Crear Nuevo Post'}
+            size="4xl"
         >
-            <div className="max-h-[80vh] overflow-y-auto"> {/* Añadimos scroll vertical si el contenido es muy largo */}
+            <div className="max-h-[80vh] overflow-y-auto">
                 <PostForm
-                    post={post}
+                    post={selectedPost}
                     onSubmit={handleSubmit}
-                    onCancel={onClose}
+                    onCancel={handleClose}
+                    isSubmitting={isLoading}
                 />
             </div>
         </ReusableModal>
     );
 }
-
-PostModal.propTypes = {
-    isOpen: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-    post: PropTypes.object,
-    onSuccess: PropTypes.func
-};

@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 import { formatDateForInput } from '@utils/dateUtils';
 import { XCircleIcon } from '@heroicons/react/24/solid';
-import {RichTextEditor} from '@components/common';
+import { RichTextEditor } from '@components/common';
+import { selectPostsError } from '@store/admin/selectors/postsSelectors';
 
 export default function PostForm({ post = null, onSubmit, onCancel }) {
+    const serverErrors = useSelector(selectPostsError);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [errors, setErrors] = useState({});
-    // Inicializamos el formData directamente con los datos del post o valores por defecto
+
     const [formData, setFormData] = useState({
         title: post?.title || '',
-        content: post?.content || '',
+        content: typeof post?.content === 'string' ? post.content : '',
         excerpt: post?.excerpt || '',
         featured_image: post?.featured_image || null,
         seo_title: post?.seo_title || '',
@@ -20,12 +22,35 @@ export default function PostForm({ post = null, onSubmit, onCancel }) {
         schedule_publication: post?.published_at !== null && !post?.is_published || false
     });
 
+    const [errors, setErrors] = useState({});
     const [previewImage, setPreviewImage] = useState(post?.featured_image || null);
+
+    useEffect(() => {
+        if (serverErrors?.errors) {
+            setErrors(serverErrors.errors);
+        }
+    }, [serverErrors]);
+
+    useEffect(() => {
+        setFormData({
+            title: post?.title || '',
+            content: typeof post?.content === 'string' ? post.content : '',
+            excerpt: post?.excerpt || '',
+            featured_image: post?.featured_image || null,
+            seo_title: post?.seo_title || '',
+            seo_description: post?.seo_description || '',
+            is_published: post?.is_published || false,
+            published_at: post?.published_at ? formatDateForInput(post.published_at) : null,
+            schedule_publication: post?.published_at !== null && !post?.is_published || false
+        });
+        setPreviewImage(post?.featured_image || null);
+        setErrors({});
+    }, [post]);
 
     const handleChange = (e) => {
         const { name, value, type, checked, files } = e.target;
 
-        if (type === 'file' && files[0]) {
+        if (type === 'file' && files?.[0]) {
             setFormData(prev => ({
                 ...prev,
                 [name]: files[0]
@@ -52,11 +77,16 @@ export default function PostForm({ post = null, onSubmit, onCancel }) {
                     [name]: checked
                 }));
             }
-        } else {
-            const newValue = name === 'content' ? (value || '') : value;
+        } else if (name === 'content') {
+            // Manejo especial para el contenido del editor
             setFormData(prev => ({
                 ...prev,
-                [name]: newValue
+                content: typeof value === 'string' ? value : ''
+            }));
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                [name]: value
             }));
         }
 
@@ -77,12 +107,27 @@ export default function PostForm({ post = null, onSubmit, onCancel }) {
         e.preventDefault();
         setIsSubmitting(true);
         setErrors({});
-
+        console.log('Form data:', formData);
         try {
+            // Validaciones
+            const validationErrors = {};
+            if (!formData.title.trim()) {
+                validationErrors.title = 'El título es requerido';
+            }
+            if (!formData.content.trim()) {
+                validationErrors.content = 'El contenido es requerido';
+            }
+
+            if (Object.keys(validationErrors).length > 0) {
+                setErrors(validationErrors);
+                throw new Error('Hay errores de validación');
+            }
+
             const formDataToSend = new FormData();
 
             Object.keys(formData).forEach(key => {
                 if (key === 'featured_image') {
+                    // Solo agregar featured_image si es un archivo
                     if (formData[key] instanceof File) {
                         formDataToSend.append(key, formData[key]);
                     }
@@ -96,12 +141,12 @@ export default function PostForm({ post = null, onSubmit, onCancel }) {
                     }
                 }
             });
-
+            console.log('Form data to send:', formDataToSend);
             await onSubmit(formDataToSend);
         } catch (error) {
             if (error.response?.data?.errors) {
                 setErrors(error.response.data.errors);
-            } else {
+            } else if (!error.message.includes('validación')) {
                 setErrors({
                     general: 'Ocurrió un error al guardar el post.'
                 });
@@ -110,6 +155,7 @@ export default function PostForm({ post = null, onSubmit, onCancel }) {
             setIsSubmitting(false);
         }
     };
+
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -149,14 +195,17 @@ export default function PostForm({ post = null, onSubmit, onCancel }) {
                 )}
             </div>
 
-            {/* Editor de Contenido */}
+           {/* Editor de Contenido */}
             <div>
                 <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
                     Contenido
                 </label>
                 <RichTextEditor
-                    value={formData.content || ''}
-                    onChange={handleChange}
+                    value={formData.content}
+                    onChange={(content) => setFormData(prev => ({
+                        ...prev,
+                        content: content
+                    }))}
                     error={errors.content}
                 />
                 {errors.content && (
@@ -348,26 +397,25 @@ export default function PostForm({ post = null, onSubmit, onCancel }) {
                 <button
                     type="button"
                     onClick={onCancel}
-                    disabled={isSubmitting}
                     className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                     Cancelar
                 </button>
                 <button
-                     type="submit"
-                     disabled={isSubmitting}
-                     className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {isSubmitting ? (
-                    <span className="flex items-center">
-                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
-                        </svg>
-                        Guardando...
-                    </span>
+                        <span className="flex items-center">
+                            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                            </svg>
+                            Guardando...
+                        </span>
                     ) : (
-                    post ? 'Actualizar' : 'Crear'
+                        post ? 'Actualizar' : 'Crear'
                     )}
                 </button>
             </div>
@@ -378,5 +426,6 @@ export default function PostForm({ post = null, onSubmit, onCancel }) {
 PostForm.propTypes = {
     post: PropTypes.object,
     onSubmit: PropTypes.func.isRequired,
-    onCancel: PropTypes.func.isRequired
+    onCancel: PropTypes.func.isRequired,
+    isSubmitting: PropTypes.bool
 };

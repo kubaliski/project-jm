@@ -1,73 +1,93 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
-import {Table, TableFilters, ConfirmationDialog} from '@components/common';
+import { Table, TableFilters, ConfirmationDialog } from '@components/common';
 import PostModal from '@features/posts/components/PostModal';
 import { formatDateForDisplay, isFutureDate } from '@utils/dateUtils';
 import { postsTableConfig } from '@config/tables/postsTable';
-import { useTableFilters } from '@hooks';
-import { adminPostsService } from '@services/api';
+import {
+    selectPaginatedPosts,
+    selectPostsLoading,
+    selectFilteredAndSortedPosts,
+    selectPostsFilters,
+    selectPostsSortConfig,
+    selectPostsPagination,
+    selectEditModalState,
+    selectDeleteModalState,
+    selectSelectedPost
+} from '@store/admin/selectors/postsSelectors';
+import {
+    fetchPosts,
+    deletePost
+} from '@store/admin/thunks/postsThunks';
+import {
+    setFilters,
+    setSortConfig,
+    setCurrentPage,
+    setSelectedPost,
+    setEditModalState,
+    setDeleteModalState,
+} from '@store/admin/slices/postsSlice';
+import { useAuth } from '@hooks';
+
 
 export default function PostsList() {
-    const [posts, setPosts] = useState([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedPost, setSelectedPost] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-    const [postToDelete, setPostToDelete] = useState(null);
-    const itemsPerPage = 10;
+    const dispatch = useDispatch();
+    const { permissions } = useAuth();
 
-    const {
-        filteredData: filteredPosts,
-        filters,
-        sortConfig,
-        currentPage,
-        setCurrentPage,
-        handleFilterChange,
-        handleSortChange
-    } = useTableFilters(posts, postsTableConfig);
+    // Selectores
+    const paginatedPosts = useSelector(selectPaginatedPosts);
+    const isLoading = useSelector(selectPostsLoading);
+    const filters = useSelector(selectPostsFilters);
+    const sortConfig = useSelector(selectPostsSortConfig);
+    const { currentPage, itemsPerPage } = useSelector(selectPostsPagination);
+    const editModalState = useSelector(selectEditModalState);
+    const deleteModalState = useSelector(selectDeleteModalState);
+    const filteredPosts = useSelector(selectFilteredAndSortedPosts);
+    const selectedPost = useSelector(selectSelectedPost);
 
-    const fetchPosts = async () => {
-        setIsLoading(true);
-        try {
-            const response = await adminPostsService.getAll();
-            setPosts(Array.isArray(response.data) ? response.data : []);
-        } catch (error) {
-            console.error('Error al cargar los posts:', error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    // Permisos
+    const canEdit = permissions.includes('post.edit');
+    const canDelete = permissions.includes('post.delete');
+    const canCreate = permissions.includes('post.create');
 
     useEffect(() => {
-        fetchPosts();
-    }, []);
+        dispatch(fetchPosts());
+    }, [dispatch]);
 
     const handleCreateClick = () => {
-        setSelectedPost(null);
-        setIsModalOpen(true);
+        dispatch(setSelectedPost(null));
+        dispatch(setEditModalState({ isOpen: true, mode: 'create' }));
     };
 
     const handleEditClick = (post) => {
-        setSelectedPost(post);
-        setIsModalOpen(true);
+        dispatch(setSelectedPost(post));
+        dispatch(setEditModalState({ isOpen: true, mode: 'edit' }));
     };
 
     const handleDeleteClick = (post) => {
-        setPostToDelete(post);
-        setIsDeleteDialogOpen(true);
+        dispatch(setSelectedPost(post));
+        dispatch(setDeleteModalState({ isOpen: true}));
     };
 
     const handleConfirmDelete = async () => {
-        if (!postToDelete) return;
+        if (!selectedPost) return;
 
         try {
-            await adminPostsService.delete(postToDelete.id);
-            await fetchPosts();
-            setIsDeleteDialogOpen(false);
-            setPostToDelete(null);
+            await dispatch(deletePost(selectedPost.id)).unwrap();
+            dispatch(setDeleteModalState({ isOpen: false}));
+            dispatch(setSelectedPost(null));
         } catch (error) {
             console.error('Error al eliminar el post:', error);
         }
+    };
+
+    const handleFilterChange = (newFilters) => {
+        dispatch(setFilters({ ...filters, ...newFilters }));
+    };
+
+    const handleSortChange = (field, direction) => {
+        dispatch(setSortConfig({ field, direction }));
     };
 
     const getStatusBadge = (post) => {
@@ -128,30 +148,28 @@ export default function PostsList() {
             cellClassName: 'text-right',
             render: (post) => (
                 <>
-                    <button
-                        onClick={() => handleEditClick(post)}
-                        className="text-indigo-600 hover:text-indigo-900 mr-4"
-                        title="Editar"
-                    >
-                        <PencilIcon className="h-5 w-5" />
-                    </button>
-                    <button
-                        onClick={() => handleDeleteClick(post)}
-                        className="text-red-600 hover:text-red-900"
-                        title="Eliminar"
-                    >
-                        <TrashIcon className="h-5 w-5" />
-                    </button>
+                    {canEdit && (
+                        <button
+                            onClick={() => handleEditClick(post)}
+                            className="text-indigo-600 hover:text-indigo-900 mr-4"
+                            title="Editar"
+                        >
+                            <PencilIcon className="h-5 w-5" />
+                        </button>
+                    )}
+                    {canDelete && (
+                        <button
+                            onClick={() => handleDeleteClick(post)}
+                            className="text-red-600 hover:text-red-900"
+                            title="Eliminar"
+                        >
+                            <TrashIcon className="h-5 w-5" />
+                        </button>
+                    )}
                 </>
             )
         }
     ];
-
-    // Calcular posts paginados
-    const paginatedPosts = useMemo(() => {
-        const start = (currentPage - 1) * itemsPerPage;
-        return filteredPosts.slice(start, start + itemsPerPage);
-    }, [filteredPosts, currentPage]);
 
     return (
         <div className="space-y-6">
@@ -162,14 +180,16 @@ export default function PostsList() {
                         Listado de posts y artículos
                     </p>
                 </div>
-                <div className="mt-4 sm:mt-0">
-                    <button
-                        onClick={handleCreateClick}
-                        className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    >
-                        Crear Post
-                    </button>
-                </div>
+                {canCreate && (
+                    <div className="mt-4 sm:mt-0">
+                        <button
+                            onClick={handleCreateClick}
+                            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        >
+                            Crear Post
+                        </button>
+                    </div>
+                )}
             </div>
 
             <TableFilters
@@ -188,29 +208,27 @@ export default function PostsList() {
                 totalPages={Math.ceil(filteredPosts.length / itemsPerPage)}
                 totalItems={filteredPosts.length}
                 itemsPerPage={itemsPerPage}
-                onPageChange={setCurrentPage}
+                onPageChange={(page) => dispatch(setCurrentPage(page))}
                 emptyMessage="No hay posts creados"
             />
 
+            {/* Modal de creación/edición */}
             <PostModal
-                isOpen={isModalOpen}
-                onClose={() => {
-                    setIsModalOpen(false);
-                    setSelectedPost(null);
-                }}
-                post={selectedPost}
-                onSuccess={fetchPosts}
+                isOpen={editModalState.isOpen}
+                mode={editModalState.mode}
+                onClose={() => dispatch(setEditModalState({ isOpen: false, mode: null }))}
             />
 
+            {/* Modal de confirmación de eliminación */}
             <ConfirmationDialog
-                isOpen={isDeleteDialogOpen}
+                isOpen={deleteModalState.isOpen}
                 onClose={() => {
-                    setIsDeleteDialogOpen(false);
-                    setPostToDelete(null);
+                    dispatch(setDeleteModalState({ isOpen: false }));
+                    dispatch(setSelectedPost(null));
                 }}
                 onConfirm={handleConfirmDelete}
                 title="Confirmar eliminación"
-                message={`¿Estás seguro de que quieres eliminar el post "${postToDelete?.title}"?`}
+                message={`¿Estás seguro de que quieres eliminar el post "${selectedPost?.title}"?`}
                 confirmText="Eliminar"
                 cancelText="Cancelar"
                 confirmButtonStyle="danger"

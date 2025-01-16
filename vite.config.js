@@ -26,6 +26,7 @@ export default defineConfig({
             '@hooks': path.resolve(__dirname, './resources/js/hooks'),
             '@features': path.resolve(__dirname, './resources/js/features'),
             '@config': path.resolve(__dirname, './resources/js/config'),
+            '@store': path.resolve(__dirname, './resources/js/store'),
         }
     },
 });

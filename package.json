@@ -26,11 +26,13 @@
     "dependencies": {
         "@headlessui/react": "^2.2.0",
         "@heroicons/react": "^2.2.0",
+        "@reduxjs/toolkit": "^2.5.0",
         "@tinymce/tinymce-react": "^5.1.1",
         "date-fns": "^4.1.0",
         "dompurify": "^3.2.3",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
+        "react-redux": "^9.2.0",
         "react-router-dom": "^7.1.1",
         "tinymce-i18n": "^24.12.30"
     }

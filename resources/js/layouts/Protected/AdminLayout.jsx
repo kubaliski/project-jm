@@ -12,6 +12,7 @@ export default function AdminLayout({ children }) {
     const handleLogout = async () => {
         try {
             await logout();
+            // La navegación se mantiene después del logout
             navigate('/login');
         } catch (error) {
             console.error('Error al cerrar sesión:', error);
@@ -20,8 +21,9 @@ export default function AdminLayout({ children }) {
 
     return (
         <div className="min-h-screen bg-gray-100 flex">
-            <Sidebar onExpandChange={(expanded) => setSidebarExpanded(expanded)} />
-
+            <Sidebar
+                onExpandChange={(expanded) => setSidebarExpanded(expanded)}
+            />
             {/* Contenido principal con transición suave */}
             <div className={`flex-1 transition-all duration-300 ${
                 sidebarExpanded ? 'ml-64' : 'ml-20'
