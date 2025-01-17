@@ -1,3 +1,4 @@
+// StatusDropdown.jsx
 import React from 'react';
 import PropTypes from 'prop-types';
 
@@ -5,6 +6,7 @@ const StatusDropdown = ({
   item,
   onStatusChange,
   isUpdating,
+  disabled = false,
   statusField = 'status',
   idField = 'id',
   options = [
@@ -13,24 +15,40 @@ const StatusDropdown = ({
     { value: 'completed', label: 'Finalizado', bgColor: 'bg-green-100', textColor: 'text-green-800' },
     { value: 'spam', label: 'Spam', bgColor: 'bg-red-100', textColor: 'text-red-800' }
   ],
-  width = 'w-32'
+  width = 'w-32',
+  viewOnly = false
 }) => {
   const getStatusColors = (status) => {
     const option = options.find(opt => opt.value === status);
     return option ? `${option.bgColor} ${option.textColor}` : '';
   };
 
+  const getCurrentLabel = () => {
+    const option = options.find(opt => opt.value === item[statusField]);
+    return option ? option.label : '';
+  };
+
+  const isDisabled = disabled || isUpdating === item[idField];
+
+  if (viewOnly) {
+    return (
+      <span className={`inline-flex items-center px-2 py-1 text-xs rounded-full font-semibold ${getStatusColors(item[statusField])}`}>
+        {getCurrentLabel()}
+      </span>
+    );
+  }
+
   return (
     <div className={`relative inline-block ${width}`}>
       <select
         value={item[statusField]}
         onChange={(e) => onStatusChange(item[idField], e.target.value)}
-        disabled={isUpdating === item[idField]}
+        disabled={isDisabled}
         className={`w-full px-2 py-1 text-xs rounded-full font-semibold border-0
           appearance-none select-none
           focus:ring-1 focus:ring-offset-1 focus:ring-indigo-500
           transition-opacity duration-200
-          ${isUpdating === item[idField] ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'}
+          ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'}
           ${getStatusColors(item[statusField])}
         `}
         style={{
@@ -70,6 +88,7 @@ StatusDropdown.propTypes = {
   item: PropTypes.object.isRequired,
   onStatusChange: PropTypes.func.isRequired,
   isUpdating: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  disabled: PropTypes.bool,
   statusField: PropTypes.string,
   idField: PropTypes.string,
   options: PropTypes.arrayOf(
@@ -80,7 +99,8 @@ StatusDropdown.propTypes = {
       textColor: PropTypes.string.isRequired
     })
   ),
-  width: PropTypes.string
+  width: PropTypes.string,
+  viewOnly: PropTypes.bool
 };
 
 export default StatusDropdown;

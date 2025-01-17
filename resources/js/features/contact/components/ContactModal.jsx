@@ -1,27 +1,44 @@
-// resources/js/features/contacts/components/ContactModal.jsx
 import React from 'react';
-import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
 import ReusableModal from '@components/common/ReusableModal';
 import ContactForm from './ContactForm';
-import { adminContactsService } from '@services/api';
+import {
+    selectSelectedContact,
+    selectEditModalState,
+    selectContactsLoading
+} from '@store/admin/selectors/contactsSelectors';
+import {
+    createContact,
+    updateContact
+} from '@store/admin/thunks/contactsThunks';
+import {
+    setEditModalState,
+    setSelectedContact
+} from '@store/admin/slices/contactsSlice';
 
-export default function ContactModal({
-    isOpen,
-    onClose,
-    contact = null,
-    onSuccess
-}) {
+export default function ContactModal() {
+    const dispatch = useDispatch();
+    const selectedContact = useSelector(selectSelectedContact);
+    const { isOpen, mode } = useSelector(selectEditModalState);
+    const isLoading = useSelector(selectContactsLoading);
+
+    const handleClose = () => {
+        dispatch(setEditModalState({ isOpen: false, mode: null }));
+        dispatch(setSelectedContact(null));
+    };
+
     const handleSubmit = async (formData) => {
         try {
-            if (contact) {
-                await adminContactsService.update(contact.id, formData);
+            if (mode === 'edit' && selectedContact) {
+                await dispatch(updateContact({
+                    id: selectedContact.id,
+                    formData
+                })).unwrap();
             } else {
-                await adminContactsService.create(formData);
+                await dispatch(createContact(formData)).unwrap();
             }
-            onSuccess?.();
-            onClose();
+            handleClose();
         } catch (error) {
-            console.error('Error:', error);
             throw error;
         }
     };
@@ -29,24 +46,18 @@ export default function ContactModal({
     return (
         <ReusableModal
             isOpen={isOpen}
-            onClose={onClose}
-            title={contact ? 'Editar Contacto' : 'Nuevo Contacto'}
+            onClose={handleClose}
+            title={mode === 'edit' ? 'Editar Contacto' : 'Nuevo Contacto'}
             size="2xl"
         >
             <div className="max-h-[80vh] overflow-y-auto">
                 <ContactForm
-                    contact={contact}
+                    contact={selectedContact}
                     onSubmit={handleSubmit}
-                    onCancel={onClose}
+                    onCancel={handleClose}
+                    isSubmitting={isLoading}
                 />
             </div>
         </ReusableModal>
     );
 }
-
-ContactModal.propTypes = {
-    isOpen: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-    contact: PropTypes.object,
-    onSuccess: PropTypes.func
-};

@@ -9,21 +9,19 @@ export default function TableFilters({
     filters = {},
     sortConfig = {}
 }) {
-    // Función para resetear un filtro específico
-    const handleReset = (key) => {
-        onFilterChange(key, '');
+    const handleReset = (filterConfig) => {
+        onFilterChange(filterConfig.key, filterConfig.defaultValue || '');
     };
 
-    // Renderiza diferentes tipos de filtros basados en la configuración
     const renderFilter = (filterConfig) => {
-        const currentValue = filters[filterConfig.key] || '';
+        const currentValue = filters[filterConfig.key] || filterConfig.defaultValue || '';
 
         switch (filterConfig.type) {
             case 'select':
                 return (
                     <div className="relative">
                         <select
-                            value={currentValue || filterConfig.defaultValue}
+                            value={currentValue}
                             onChange={(e) => onFilterChange(filterConfig.key, e.target.value)}
                             className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                         >
@@ -33,9 +31,9 @@ export default function TableFilters({
                                 </option>
                             ))}
                         </select>
-                        {currentValue && (
+                        {currentValue !== filterConfig.defaultValue && (
                             <button
-                                onClick={() => handleReset(filterConfig.key)}
+                                onClick={() => handleReset(filterConfig)}
                                 className="absolute right-8 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                             >
                                 <XMarkIcon className="h-4 w-4" />
@@ -59,51 +57,8 @@ export default function TableFilters({
                         />
                         {currentValue && (
                             <button
-                                onClick={() => handleReset(filterConfig.key)}
+                                onClick={() => handleReset(filterConfig)}
                                 className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                            >
-                                <XMarkIcon className="h-4 w-4" />
-                            </button>
-                        )}
-                    </div>
-                );
-
-            case 'date':
-                return (
-                    <div className="relative">
-                        <input
-                            type="date"
-                            className="block w-full pl-3 pr-8 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-                            value={currentValue}
-                            onChange={(e) => onFilterChange(filterConfig.key, e.target.value)}
-                        />
-                        {currentValue && (
-                            <button
-                                onClick={() => handleReset(filterConfig.key)}
-                                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                            >
-                                <XMarkIcon className="h-4 w-4" />
-                            </button>
-                        )}
-                    </div>
-                );
-
-            case 'boolean':
-                return (
-                    <div className="relative">
-                        <select
-                            value={currentValue}
-                            onChange={(e) => onFilterChange(filterConfig.key, e.target.value)}
-                            className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-                        >
-                            <option value="">Todos</option>
-                            <option value="true">Sí</option>
-                            <option value="false">No</option>
-                        </select>
-                        {currentValue && (
-                            <button
-                                onClick={() => handleReset(filterConfig.key)}
-                                className="absolute right-8 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                             >
                                 <XMarkIcon className="h-4 w-4" />
                             </button>
@@ -115,7 +70,7 @@ export default function TableFilters({
                 return (
                     <div className="relative">
                         <select
-                            value={currentValue || filterConfig.defaultValue}
+                            value={currentValue}
                             onChange={(e) => onFilterChange(filterConfig.key, e.target.value)}
                             className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                         >
@@ -125,9 +80,9 @@ export default function TableFilters({
                                 </option>
                             ))}
                         </select>
-                        {currentValue && (
+                        {currentValue !== filterConfig.defaultValue && (
                             <button
-                                onClick={() => handleReset(filterConfig.key)}
+                                onClick={() => handleReset(filterConfig)}
                                 className="absolute right-8 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                             >
                                 <XMarkIcon className="h-4 w-4" />
@@ -158,10 +113,10 @@ export default function TableFilters({
                         Ordenar por
                     </label>
                     <select
-                        value={`${sortConfig.key}-${sortConfig.direction}`}
+                        value={`${sortConfig.field || sortConfig.key}-${sortConfig.direction}`}
                         onChange={(e) => {
-                            const [key, direction] = e.target.value.split('-');
-                            onSortChange(key, direction);
+                            const [field, direction] = e.target.value.split('-');
+                            onSortChange(field, direction);
                         }}
                         className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                     >
@@ -177,46 +132,3 @@ export default function TableFilters({
         </div>
     );
 }
-
-TableFilters.propTypes = {
-    config: PropTypes.shape({
-        filters: PropTypes.arrayOf(
-            PropTypes.shape({
-                key: PropTypes.string.isRequired,
-                label: PropTypes.string.isRequired,
-                type: PropTypes.oneOf(['select', 'search', 'date', 'boolean', 'custom']).isRequired,
-                placeholder: PropTypes.string,
-                defaultValue: PropTypes.string,
-                options: PropTypes.arrayOf(
-                    PropTypes.shape({
-                        value: PropTypes.oneOfType([
-                            PropTypes.string,
-                            PropTypes.number,
-                            PropTypes.bool
-                        ]).isRequired,
-                        label: PropTypes.string.isRequired
-                    })
-                )
-            })
-        ).isRequired,
-        sortOptions: PropTypes.arrayOf(
-            PropTypes.shape({
-                key: PropTypes.string.isRequired,
-                label: PropTypes.string.isRequired
-            })
-        )
-    }).isRequired,
-    onFilterChange: PropTypes.func.isRequired,
-    onSortChange: PropTypes.func.isRequired,
-    filters: PropTypes.objectOf(
-        PropTypes.oneOfType([
-            PropTypes.string,
-            PropTypes.number,
-            PropTypes.bool
-        ])
-    ),
-    sortConfig: PropTypes.shape({
-        key: PropTypes.string,
-        direction: PropTypes.oneOf(['asc', 'desc'])
-    })
-};
