@@ -37,7 +37,7 @@ import {
   selectDeleteModalState,
   selectFilteredAndSortedContacts,
   selectTotalContacts,
-  selectStatsLoading
+  selectContactStatsLoading
 } from '@store/admin/selectors/contactsSelectors';
 
 export default function ContactsList() {
@@ -65,7 +65,7 @@ export default function ContactsList() {
   const filteredContacts = useSelector(selectFilteredAndSortedContacts);
   const selectedContact = useSelector(selectSelectedContact);
   const totalContacts = useSelector(selectTotalContacts);
-  const isStatsLoading = useSelector(selectStatsLoading);
+  const isStatsLoading = useSelector(selectContactStatsLoading);
 
   // Initial data fetch
   useEffect(() => {

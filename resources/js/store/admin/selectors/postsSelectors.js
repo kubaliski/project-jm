@@ -15,7 +15,7 @@ export const selectDeleteModalState = (state) => state.admin.posts.deleteModal;
 // Selectores para estadísticas
 export const selectPostsStats = (state) => state.admin.posts.stats;
 export const selectTotalPosts = (state) => state.admin.posts.stats.total_posts;
-export const selectStatsLoading = (state) => state.admin.posts.stats.loading;
+export const selectPostStatsLoading = (state) => state.admin.posts.stats.loading;
 export const selectStatsError = (state) => state.admin.posts.stats.error;
 
 // Selector para filtrar y ordenar posts

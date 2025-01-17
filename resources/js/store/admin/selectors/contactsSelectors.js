@@ -13,7 +13,7 @@ export const selectEditModalState = (state) => state.admin.contacts.editModal;
 export const selectDeleteModalState = (state) => state.admin.contacts.deleteModal;
 export const selectContactsStats = (state) => state.admin.contacts.stats;
 export const selectTotalContacts = (state) => state.admin.contacts.stats.total_contacts;
-export const selectStatsLoading = (state) => state.admin.contacts.stats.loading;
+export const selectContactStatsLoading = (state) => state.admin.contacts.stats.loading;
 
 const getDateRange = (rangeType) => {
     const now = new Date();
