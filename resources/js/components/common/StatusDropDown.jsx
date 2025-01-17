@@ -87,7 +87,7 @@ const StatusDropdown = ({
 StatusDropdown.propTypes = {
   item: PropTypes.object.isRequired,
   onStatusChange: PropTypes.func.isRequired,
-  isUpdating: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  isUpdating: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]),
   disabled: PropTypes.bool,
   statusField: PropTypes.string,
   idField: PropTypes.string,
