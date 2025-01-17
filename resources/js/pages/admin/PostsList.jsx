@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { Table, TableFilters, ConfirmationDialog } from '@components/common';
-import PostModal from '@features/posts/components/PostModal';
+import { PostModal } from '@/features/posts';
 import { formatDateForDisplay, isFutureDate } from '@utils/dateUtils';
 import { postsTableConfig } from '@config/tables/postsTable';
 import {
@@ -83,7 +83,6 @@ export default function PostsList() {
     };
 
     const handleFilterChange = (key, value) => {
-        console.log('Applying filter:', key, value);
         dispatch(setFilters({
             ...filters,
             [key]: value

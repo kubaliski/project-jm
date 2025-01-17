@@ -79,7 +79,6 @@ export default function ContactsList() {
 
   // Event Handlers
   const handleFilterChange = (key, value) => {
-    console.log('Applying filter:', key, value);
     dispatch(setFilters({
       ...filters,
       [key]: value

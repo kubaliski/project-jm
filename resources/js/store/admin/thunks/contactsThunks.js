@@ -7,7 +7,6 @@ export const fetchContacts = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await adminContactsService.getAll();
-      console.log('Fetch Contacts Response:', response.data); // Debug log
       return response.data;
     } catch (error) {
       console.error('Fetch Contacts Error:', error); // Debug log

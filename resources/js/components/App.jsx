@@ -7,9 +7,7 @@ import ProtectedRoute from './ProtectedRoute';
 import { AdminLayout, PublicLayout } from '@layouts';
 import { Login } from '@pages/auth';
 import { Home, NotFound, Contact, BlogList, BlogPost, Services, About } from '@pages/public';
-import { Dashboard } from '@pages/admin';
-import { PostsList } from '@pages/admin/posts';
-import { ContactsList } from '@/pages/admin/contacts';
+import { Dashboard, PostsList, ContactsList } from '@pages/admin';
 
 export default function App() {
     return (

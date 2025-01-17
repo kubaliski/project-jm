@@ -29,7 +29,6 @@ export default function PostModal() {
 
     const handleSubmit = async (formData) => {
         try {
-            console.log('formData desde el Modal', formData);
             if (mode === 'edit' && selectedPost) {
                 await dispatch(updatePost({
                     id: selectedPost.id,

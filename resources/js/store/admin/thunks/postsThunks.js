@@ -7,7 +7,6 @@ export const fetchPosts = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await adminPostsService.getAll();
-      console.log('Fetch Posts Response:', response.data); // Debug log
       return response.data;
     } catch (error) {
       console.error('Fetch Posts Error:', error); // Debug log

@@ -1,2 +1,2 @@
-export {default as ContactForm} from './PublicContactForm';
-export {default as ContactModal} from './components/ContactModal';
+export {default as ContactForm} from './public/PublicContactForm';
+export {default as ContactModal} from './admin/ContactModal';

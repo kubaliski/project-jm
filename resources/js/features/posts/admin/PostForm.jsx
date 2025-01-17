@@ -107,7 +107,6 @@ export default function PostForm({ post = null, onSubmit, onCancel }) {
         e.preventDefault();
         setIsSubmitting(true);
         setErrors({});
-        console.log('Form data:', formData);
         try {
             // Validaciones
             const validationErrors = {};
@@ -141,7 +140,6 @@ export default function PostForm({ post = null, onSubmit, onCancel }) {
                     }
                 }
             });
-            console.log('Form data to send:', formDataToSend);
             await onSubmit(formDataToSend);
         } catch (error) {
             if (error.response?.data?.errors) {
