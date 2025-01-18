@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { PencilIcon, TrashIcon, EyeIcon } from '@heroicons/react/24/solid';
-import { Table, TableFilters, ConfirmationDialog, StatusDropdown } from '@components/common';
+import { Table, TableFilters, ConfirmationDialog, StatusDropdown, Paper } from '@components/common';
 import { ContactModal } from '@features/contact';
 import { formatDateForDisplay } from '@utils/dateUtils';
 import { contactsTableConfig } from '@config/tables/contactsTable';
@@ -225,20 +225,21 @@ export default function ContactsList() {
   // Si no tiene permiso para ver la lista, mostrar mensaje o redireccionar
   if (!canViewList) {
     return (
-      <div className="text-center py-12">
+      <Paper title="Acceso denegado" titleLevel="h1">
         <p className="text-gray-500">No tienes permisos para ver esta sección.</p>
-      </div>
+      </Paper>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="sm:flex sm:items-center sm:justify-between">
+       <Paper
+          title="Mensaje de Contacto"
+          titleLevel="h1"
+          subtitle="Gestión de consultas y mensajes recibidos"
+          contentClassName="sm:flex sm:items-center sm:justify-between"
+      >
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Mensajes de Contacto</h1>
-          <p className="mt-2 text-sm text-gray-700">
-            Gestión de consultas y mensajes recibidos
-          </p>
           {canViewStats && !isStatsLoading && (
             <p className="mt-1 text-sm text-gray-500">
               Total de mensajes: {totalContacts}
@@ -255,8 +256,8 @@ export default function ContactsList() {
             </button>
           </div>
         )}
-      </div>
-
+      </Paper>
+      <Paper contentClassName='space-y-4'>
       <TableFilters
         config={contactsTableConfig}
         filters={filters}
@@ -291,7 +292,7 @@ export default function ContactsList() {
         onPageChange={handlePageChange}
         emptyMessage="No hay mensajes de contacto"
       />
-
+      </Paper>
       <ContactModal
         isOpen={editModal.isOpen}
         mode={editModal.mode}

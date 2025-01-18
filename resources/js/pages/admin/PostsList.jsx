@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { PencilIcon, TrashIcon, EyeIcon } from '@heroicons/react/24/solid';
-import { Table, TableFilters, ConfirmationDialog } from '@components/common';
+import { Table, TableFilters, ConfirmationDialog, Paper } from '@components/common';
 import { PostModal } from '@/features/posts';
 import { formatDateForDisplay, isFutureDate } from '@utils/dateUtils';
 import { postsTableConfig } from '@config/tables/postsTable';
@@ -208,22 +208,23 @@ export default function PostsList() {
     // Si no tiene permiso para ver la lista, mostrar mensaje o redireccionar
     if (!canViewList) {
         return (
-        <div className="text-center py-12">
+        <Paper title="Acceso denegado" titleLevel="h1">
             <p className="text-gray-500">No tienes permisos para ver esta sección.</p>
-        </div>
+        </Paper>
         );
     }
     return (
         <div className="space-y-6">
-            <div className="sm:flex sm:items-center sm:justify-between">
+            <Paper
+                title="Posts"
+                titleLevel="h1"
+                subtitle="Listado de posts y artículos"
+                contentClassName="sm:flex sm:items-center sm:justify-between"
+            >
                 <div>
-                    <h1 className="text-2xl font-semibold text-gray-900">Posts</h1>
-                    <p className="mt-2 text-sm text-gray-700">
-                        Listado de posts y artículos
-                    </p>
                     {canViewStats && !isStatsLoading && (
                         <p className="mt-1 text-sm text-gray-500">
-                        Total de posts: {totalPosts}
+                            Total de posts: {totalPosts}
                         </p>
                     )}
                 </div>
@@ -237,28 +238,28 @@ export default function PostsList() {
                         </button>
                     </div>
                 )}
-            </div>
+            </Paper>
 
-            <TableFilters
-                config={postsTableConfig}
-                filters={filters}
-                sortConfig={sortConfig}
-                onFilterChange={handleFilterChange}
-                onSortChange={handleSortChange}
-            />
-
-            <Table
-                columns={columns}
-                data={paginatedPosts}
-                isLoading={isLoading}
-                currentPage={currentPage}
-                totalPages={Math.ceil(filteredPosts.length / itemsPerPage)}
-                totalItems={filteredPosts.length}
-                itemsPerPage={itemsPerPage}
-                onPageChange={(page) => dispatch(setCurrentPage(page))}
-                emptyMessage="No hay posts creados"
-            />
-
+            <Paper contentClassName="space-y-4">
+                <TableFilters
+                    config={postsTableConfig}
+                    filters={filters}
+                    sortConfig={sortConfig}
+                    onFilterChange={handleFilterChange}
+                    onSortChange={handleSortChange}
+                />
+                <Table
+                    columns={columns}
+                    data={paginatedPosts}
+                    isLoading={isLoading}
+                    currentPage={currentPage}
+                    totalPages={Math.ceil(filteredPosts.length / itemsPerPage)}
+                    totalItems={filteredPosts.length}
+                    itemsPerPage={itemsPerPage}
+                    onPageChange={(page) => dispatch(setCurrentPage(page))}
+                    emptyMessage="No hay posts creados"
+                />
+            </Paper>
             {/* Modal de creación/edición */}
             <PostModal
                 isOpen={editModalState.isOpen}

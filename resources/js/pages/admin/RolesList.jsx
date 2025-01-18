@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { PencilIcon, TrashIcon, KeyIcon, EyeIcon } from '@heroicons/react/24/solid';
-import { Table, TableFilters, ConfirmationDialog } from '@components/common';
+import { Table, TableFilters, ConfirmationDialog,Paper } from '@components/common';
 import { RoleModal, RolePermissionsModal } from '@features/role';
 import { formatDateForDisplay } from '@utils/dateUtils';
 import { rolesTableConfig } from '@config/tables/rolesTable';
@@ -204,21 +204,20 @@ export default function RoleList() {
   // If no permission to view list
   if (!canViewList) {
     return (
-      <div className="text-center py-12">
+      <Paper title="Acceso denegado" titleLevel="h1">
         <p className="text-gray-500">No tienes permisos para ver esta sección.</p>
-      </div>
+      </Paper>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="sm:flex sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Roles</h1>
-          <p className="mt-2 text-sm text-gray-700">
-            Gestión de roles y sus permisos
-          </p>
-        </div>
+      <Paper
+        title="Roles"
+        titleLevel="h1"
+        subtitle="Gestión de roles y sus permisos"
+        contentclassName="sm:flex sm:items-center sm:justify-between"
+      >
         {canCreate && (
           <div className="mt-4 sm:mt-0">
             <button
@@ -229,7 +228,8 @@ export default function RoleList() {
             </button>
           </div>
         )}
-      </div>
+      </Paper>
+      <Paper>
 
       <TableFilters
         config={tableConfig}
@@ -237,7 +237,7 @@ export default function RoleList() {
         sortConfig={sortConfig}
         onFilterChange={handleFilterChange}
         onSortChange={handleSortChange}
-      />
+        />
 
       {error && (
         <div className="rounded-md bg-red-50 p-4">
@@ -264,7 +264,8 @@ export default function RoleList() {
         itemsPerPage={itemsPerPage}
         onPageChange={handlePageChange}
         emptyMessage="No hay roles registrados"
-      />
+        />
+      </Paper>
 
       <RoleModal
         isOpen={editModal.isOpen}

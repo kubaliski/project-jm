@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { PencilIcon, TrashIcon, KeyIcon, EyeIcon } from '@heroicons/react/24/solid';
-import { Table, TableFilters, ConfirmationDialog } from '@components/common';
+import { Table, TableFilters, ConfirmationDialog,Paper } from '@components/common';
 import { UserModal, UserRolesModal } from '@features/user';
 import { formatDateForDisplay } from '@utils/dateUtils';
 import { usersTableConfig } from '@config/tables/usersTable';
@@ -247,9 +247,9 @@ export default function UsersList() {
   // Si no tiene permiso para ver la lista
   if (!canViewList) {
     return (
-      <div className="text-center py-12">
+      <Paper title="Acceso denegado" titleLevel="h1">
         <p className="text-gray-500">No tienes permisos para ver esta sección.</p>
-      </div>
+      </Paper>
     );
   }
 
@@ -257,13 +257,12 @@ export default function UsersList() {
 
   return (
     <div className="space-y-6">
-      <div className="sm:flex sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Usuarios</h1>
-          <p className="mt-2 text-sm text-gray-700">
-            Gestión de usuarios y sus roles
-          </p>
-        </div>
+      <Paper
+        title="Usuarios"
+        titleLevel="h1"
+        subtitle="Gestión de usuarios"
+        contentClassName='sm:flex sm:items-center sm:justify-between'
+        >
         {canCreate && (
           <div className="mt-4 sm:mt-0">
             <button
@@ -274,15 +273,15 @@ export default function UsersList() {
             </button>
           </div>
         )}
-      </div>
-
+      </Paper>
+      <Paper>
       <TableFilters
         config={tableConfig}
         filters={filters}
         sortConfig={sortConfig}
         onFilterChange={handleFilterChange}
         onSortChange={handleSortChange}
-      />
+        />
 
       {error && (
         <div className="rounded-md bg-red-50 p-4">
@@ -299,6 +298,7 @@ export default function UsersList() {
         </div>
       )}
 
+
       <Table
         columns={columns}
         data={users}
@@ -309,7 +309,8 @@ export default function UsersList() {
         itemsPerPage={itemsPerPage}
         onPageChange={handlePageChange}
         emptyMessage="No hay usuarios registrados"
-      />
+        />
+      </Paper>
 
       <UserModal
         isOpen={editModal.isOpen}
