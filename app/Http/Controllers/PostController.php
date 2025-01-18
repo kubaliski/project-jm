@@ -24,7 +24,7 @@ class PostController extends Controller
         return response()->json($posts);
     }
 
-    public function store(StorePostRequest $request)
+    public function store(StoreRequest $request)
     {
         $validated = $request->validated();
 
@@ -55,7 +55,7 @@ class PostController extends Controller
         return response()->json($post->load('user'));
     }
 
-    public function update(UpdatePostRequest $request, Post $post)
+    public function update(UpdateRequest $request, Post $post)
     {
         $validated = $request->validated();
 

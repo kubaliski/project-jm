@@ -1,10 +1,10 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import ReusableModal from '@components/common/ReusableModal';
 import PostForm from './PostForm';
 import {
     selectSelectedPost,
-    selectEditModalState,
     selectPostsLoading
 } from '@store/admin/selectors/postsSelectors';
 import {
@@ -12,19 +12,17 @@ import {
     updatePost
 } from '@store/admin/thunks/postsThunks';
 import {
-    setEditModalState,
     setSelectedPost
 } from '@store/admin/slices/postsSlice';
 
-export default function PostModal() {
+export default function PostModal({ isOpen, mode, onClose, onSuccess, readOnly = false }) {
     const dispatch = useDispatch();
     const selectedPost = useSelector(selectSelectedPost);
-    const { isOpen, mode } = useSelector(selectEditModalState);
     const isLoading = useSelector(selectPostsLoading);
 
     const handleClose = () => {
-        dispatch(setEditModalState({ isOpen: false, mode: null }));
         dispatch(setSelectedPost(null));
+        onClose();
     };
 
     const handleSubmit = async (formData) => {
@@ -38,6 +36,9 @@ export default function PostModal() {
                 await dispatch(createPost(formData)).unwrap();
             }
             handleClose();
+            if (onSuccess) {
+                onSuccess();
+            }
         } catch (error) {
             throw error;
         }
@@ -47,7 +48,11 @@ export default function PostModal() {
         <ReusableModal
             isOpen={isOpen}
             onClose={handleClose}
-            title={mode === 'edit' ? 'Editar Post' : 'Crear Nuevo Post'}
+            title={mode === 'view'
+                ? 'Ver Post'
+                : mode === 'edit'
+                    ? 'Editar Post'
+                    : 'Crear Nuevo Post'}
             size="4xl"
         >
             <div className="max-h-[80vh] overflow-y-auto">
@@ -56,6 +61,7 @@ export default function PostModal() {
                     onSubmit={handleSubmit}
                     onCancel={handleClose}
                     isSubmitting={isLoading}
+                    readOnly={readOnly || mode === 'view'}
                 />
             </div>
         </ReusableModal>

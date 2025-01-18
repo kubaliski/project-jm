@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Http\Request;
+use App\Http\Requests\User\StoreRequest;
+use App\Http\Requests\User\UpdateRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -24,15 +25,9 @@ class UserController extends Controller
         return response()->json($users);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => ['required', Password::defaults()],
-            'roles' => 'array|exists:roles,id'
-        ]);
+        $validated = $request->validated();
 
         $user = User::create([
             'name' => $validated['name'],
@@ -57,20 +52,12 @@ class UserController extends Controller
         return response()->json($user->load('roles.permissions'));
     }
 
-    public function update(Request $request, User $user): JsonResponse
+    public function update(UpdateRequest $request, User $user): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'password' => ['sometimes', Password::defaults()],
-            'roles' => 'array|exists:roles,id'
-        ]);
+        $validated = $request->validated();
 
         if (isset($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);
-        } else {
-            unset($validated['password']);
         }
 
         $user->update($validated);

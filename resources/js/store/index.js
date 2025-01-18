@@ -3,6 +3,8 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import authReducer from './auth/slices/authSlice';
 import postsReducer from './admin/slices/postsSlice';
 import contactsReducer from './admin/slices/contactsSlice';
+import rolesReducer from './admin/slices/rolesSlice';
+import usersReducer from './admin/slices/usersSlice';
 
 // Reducer para la parte pública (landing)
 // const landingReducer = combineReducers({
@@ -13,8 +15,10 @@ import contactsReducer from './admin/slices/contactsSlice';
 
 // Reducer para la parte de administración
 const adminReducer = combineReducers({
-    posts: postsReducer,
     contacts: contactsReducer,
+    posts: postsReducer,
+    roles: rolesReducer,
+    users: usersReducer,
 });
 
 // Root reducer

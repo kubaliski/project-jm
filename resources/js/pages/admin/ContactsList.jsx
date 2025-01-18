@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { PencilIcon, TrashIcon, EyeIcon } from '@heroicons/react/24/solid';
 import { Table, TableFilters, ConfirmationDialog, StatusDropdown } from '@components/common';
 import { ContactModal } from '@features/contact';
 import { formatDateForDisplay } from '@utils/dateUtils';
@@ -198,10 +198,14 @@ export default function ContactsList() {
           {(canView || canEdit) && (
             <button
               onClick={() => handleEditClick(contact)}
-              className="text-indigo-600 hover:text-indigo-900"
+              className="text-indigo-600 hover:text-indigo-900 mr-4"
               title={canEdit ? "Editar" : "Ver"}
             >
-              <PencilIcon className="h-5 w-5" />
+               {canEdit ? (
+                  <PencilIcon className="h-5 w-5" />
+                ) : (
+                  <EyeIcon className="h-5 w-5" />
+                )}
             </button>
           )}
           {canDelete && (
@@ -295,7 +299,6 @@ export default function ContactsList() {
           dispatch(setEditModalState({ isOpen: false, mode: null }));
           dispatch(setSelectedContact(null));
         }}
-        contact={selectedContact}
         onSuccess={() => {
           dispatch(fetchContacts());
           if (canViewStats) {

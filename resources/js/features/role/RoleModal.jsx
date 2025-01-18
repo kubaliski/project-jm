@@ -2,39 +2,39 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import ReusableModal from '@components/common/ReusableModal';
-import ContactForm from './ContactForm';
+import RoleForm from './RoleForm';
 import {
-    selectSelectedContact,
-    selectContactsLoading
-} from '@store/admin/selectors/contactsSelectors';
+    selectSelectedRole,
+    selectRolesLoading
+} from '@store/admin/selectors/rolesSelectors';
 import {
-    createContact,
-    updateContact
-} from '@store/admin/thunks/contactsThunks';
+    createRole,
+    updateRole
+} from '@store/admin/thunks/rolesThunks';
 import {
     setEditModalState,
-    setSelectedContact
-} from '@store/admin/slices/contactsSlice';
+    setSelectedRole
+} from '@store/admin/slices/rolesSlice';
 
-export default function ContactModal({ isOpen, mode, onClose, onSuccess, readOnly = false }) {
+export default function RoleModal({ isOpen, mode, onClose, onSuccess, readOnly = false }) {
     const dispatch = useDispatch();
-    const selectedContact = useSelector(selectSelectedContact);
-    const isLoading = useSelector(selectContactsLoading);
+    const selectedRole = useSelector(selectSelectedRole);
+    const isLoading = useSelector(selectRolesLoading);
 
     const handleClose = () => {
-        dispatch(setSelectedContact(null));
+        dispatch(setSelectedRole(null));
         onClose();
     };
 
     const handleSubmit = async (formData) => {
         try {
-            if (mode === 'edit' && selectedContact) {
-                await dispatch(updateContact({
-                    id: selectedContact.id,
+            if (mode === 'edit' && selectedRole) {
+                await dispatch(updateRole({
+                    id: selectedRole.id,
                     formData
                 })).unwrap();
             } else {
-                await dispatch(createContact(formData)).unwrap();
+                await dispatch(createRole(formData)).unwrap();
             }
             handleClose();
             if (onSuccess) {
@@ -50,15 +50,15 @@ export default function ContactModal({ isOpen, mode, onClose, onSuccess, readOnl
             isOpen={isOpen}
             onClose={handleClose}
             title={mode === 'view'
-                ? 'Ver Contacto'
+                ? 'Ver Rol'
                 : mode === 'edit'
-                    ? 'Editar Contacto'
-                    : 'Nuevo Contacto'}
+                    ? 'Editar Rol'
+                    : 'Nuevo Rol'}
             size="2xl"
         >
             <div className="max-h-[80vh] overflow-y-auto">
-                <ContactForm
-                    contact={selectedContact}
+                <RoleForm
+                    role={selectedRole}
                     onSubmit={handleSubmit}
                     onCancel={handleClose}
                     isSubmitting={isLoading}
@@ -69,7 +69,7 @@ export default function ContactModal({ isOpen, mode, onClose, onSuccess, readOnl
     );
 }
 
-ContactModal.propTypes = {
+RoleModal.propTypes = {
     isOpen: PropTypes.bool.isRequired,
     mode: PropTypes.oneOf(['create', 'edit', 'view']),
     onClose: PropTypes.func.isRequired,

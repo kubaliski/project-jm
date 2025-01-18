@@ -7,7 +7,7 @@ import ProtectedRoute from './ProtectedRoute';
 import { AdminLayout, PublicLayout } from '@layouts';
 import { Login } from '@pages/auth';
 import { Home, NotFound, Contact, BlogList, BlogPost, Services, About } from '@pages/public';
-import { Dashboard, PostsList, ContactsList } from '@pages/admin';
+import { Dashboard, PostsList, ContactsList, UsersList, RolesList } from '@pages/admin';
 
 export default function App() {
     return (
@@ -40,6 +40,18 @@ export default function App() {
                         <Route path="/admin/contacts" element={
                             <ProtectedRoute requiredPermissions={['contact.index']}>
                                 <AdminLayout><ContactsList /></AdminLayout>
+                            </ProtectedRoute>
+                        } />
+
+                        <Route path="/admin/users" element={
+                            <ProtectedRoute requiredPermissions={['user.index']}>
+                                <AdminLayout><UsersList /></AdminLayout>
+                            </ProtectedRoute>
+                        } />
+
+                        <Route path="/admin/roles" element={
+                            <ProtectedRoute requiredPermissions={['role.index']}>
+                                <AdminLayout><RolesList /></AdminLayout>
                             </ProtectedRoute>
                         } />
 

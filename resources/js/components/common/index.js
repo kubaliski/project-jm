@@ -8,3 +8,4 @@ export {default as PostCard} from './PostCard';
 export {default as StatusDropdown} from './StatusDropdown';
 export {default as StatCard} from './StatCard';
 export {default as CTASection} from './CTASection';
+export {default as SubmitButton} from './SubmitButton';

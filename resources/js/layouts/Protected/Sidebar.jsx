@@ -1,48 +1,88 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { Link, useLocation } from 'react-router-dom';
-import { Bars3Icon, XMarkIcon, HomeIcon, DocumentTextIcon, ChatBubbleBottomCenterIcon } from '@heroicons/react/24/outline';
-import { useAuth } from '@hooks';
+import {
+  Bars3Icon,
+  XMarkIcon,
+  HomeIcon,
+  DocumentTextIcon,
+  ChatBubbleBottomCenterIcon,
+  UserGroupIcon,
+  DocumentCheckIcon,
+  ChevronDownIcon
+} from '@heroicons/react/24/outline';
 
-export default function Sidebar({ onExpandChange }) {
+const Sidebar = ({ onExpandChange }) => {
     const location = useLocation();
-    const { hasPermission } = useAuth();
     const [isPinned, setIsPinned] = useState(true);
     const [isHovered, setIsHovered] = useState(false);
+    const APP_NAME = window.APP_NAME || 'Mi Sitio';
 
     const navItems = [
         {
-            path: '/admin',
-            label: 'Dashboard',
-            icon: HomeIcon,
-            // El dashboard no necesita permisos específicos, pero podrías agregar si es necesario
-            permissions: []
+            group: 'General',
+            items: [
+                {
+                    path: '/admin',
+                    label: 'Dashboard',
+                    icon: HomeIcon,
+                    permissions: []
+                },
+                {
+                    path: '/admin/posts',
+                    label: 'Posts',
+                    icon: DocumentTextIcon,
+                    permissions: ['post.index']
+                },
+                {
+                    path: '/admin/contacts',
+                    label: 'Comunicaciones',
+                    icon: ChatBubbleBottomCenterIcon,
+                    permissions: ['contact.index']
+                }
+            ]
         },
         {
-            path: '/admin/posts',
-            label: 'Posts',
-            icon: DocumentTextIcon,
-            permissions: ['post.index']
-        },
-        {
-            path: '/admin/contacts',
-            label: 'Comunicaciones',
-            icon: ChatBubbleBottomCenterIcon,
-            permissions: ['contact.index']
-        },
+            group: 'Gestión',
+            items: [
+                {
+                    path: '/admin/users',
+                    label: 'Usuarios',
+                    icon: UserGroupIcon,
+                    permissions: ['user.index']
+                },
+                {
+                    path: '/admin/roles',
+                    label: 'Roles',
+                    icon: DocumentCheckIcon,
+                    permissions: ['role.index']
+                }
+            ]
+        }
     ];
 
-    // Filtramos los elementos de navegación basados en los permisos
-    const authorizedNavItems = navItems.filter(item =>
-        item.permissions.length === 0 || // Si no requiere permisos, se muestra
-        item.permissions.every(permission => hasPermission(permission)) // Si requiere permisos, verificamos que los tenga todos
-    );
+    // Inicializar los grupos expandidos después de la declaración de navItems
+    const [expandedGroups, setExpandedGroups] = useState(() => {
+        const initialState = {};
+        navItems.forEach(group => {
+            initialState[group.group] = true; // Todos los grupos inician expandidos
+        });
+        return initialState;
+    });
 
     const isExpanded = isPinned || isHovered;
 
     useEffect(() => {
         onExpandChange?.(isExpanded);
     }, [isExpanded, onExpandChange]);
+
+    const toggleGroup = (group) => {
+        if (isExpanded) {
+            setExpandedGroups(prev => ({
+                ...prev,
+                [group]: !prev[group]
+            }));
+        }
+    };
 
     return (
         <div
@@ -53,11 +93,12 @@ export default function Sidebar({ onExpandChange }) {
             }`}
         >
             <div className="flex flex-col h-full">
-                <div className="flex items-center h-16 px-4 bg-gray-800 overflow-hidden">
+                {/* Header */}
+                <div className="flex items-center h-16 px-4 bg-gray-800">
                     <div className={`transition-all duration-300 overflow-hidden ${
                         isExpanded ? 'w-40 opacity-100' : 'w-0 opacity-0'
                     }`}>
-                        <h1 className="text-xl font-bold text-white whitespace-nowrap">Panel Admin</h1>
+                        <h1 className="text-xl font-bold text-white whitespace-nowrap">{APP_NAME}</h1>
                     </div>
                     <button
                         onClick={() => setIsPinned(!isPinned)}
@@ -72,38 +113,66 @@ export default function Sidebar({ onExpandChange }) {
                         )}
                     </button>
                 </div>
-                <nav className="flex-1 px-4 py-4 space-y-1">
-                    {authorizedNavItems.map((item) => {
-                        const Icon = item.icon;
-                        const isActive = item.path === '/admin'
-                            ? location.pathname === item.path
-                            : location.pathname.startsWith(item.path);
 
-                        return (
-                            <Link
-                                key={item.path}
-                                to={item.path}
-                                className={`flex items-center px-2 py-2 text-sm font-medium rounded-md ${
-                                    isActive
-                                        ? 'bg-gray-800 text-white'
-                                        : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                                }`}
-                            >
-                                <Icon className="w-6 h-6" />
-                                <span className={`transition-all duration-300 overflow-hidden ${
-                                    isExpanded ? 'ml-3 w-32 opacity-100' : 'w-0 opacity-0'
-                                }`}>
-                                    {item.label}
-                                </span>
-                            </Link>
-                        );
-                    })}
+                {/* Navigation */}
+                <nav className="flex-1 px-2 py-4 space-y-2 overflow-y-auto">
+                    {navItems.map((group) => (
+                        <div key={group.group} className="border-b border-gray-700 pb-2">
+                            {/* Group Header - Solo visible cuando está expandido */}
+                            {isExpanded && (
+                                <button
+                                    onClick={() => toggleGroup(group.group)}
+                                    className="w-full flex items-center px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-md transition-colors justify-between"
+                                >
+                                    <span className="text-xs font-semibold uppercase tracking-wider">
+                                        {group.group}
+                                    </span>
+                                    <ChevronDownIcon
+                                        className={`w-4 h-4 transition-transform duration-200 ${
+                                            expandedGroups[group.group] ? 'rotate-180' : ''
+                                        }`}
+                                    />
+                                </button>
+                            )}
+
+                            {/* Group Items */}
+                            <div className={`mt-1 space-y-1 transition-all duration-200 ${
+                                !isExpanded || expandedGroups[group.group] ? 'block' : 'hidden'
+                            }`}>
+                                {group.items.map((item) => {
+                                    const Icon = item.icon;
+                                    const isActive = location.pathname === item.path ||
+                                        (item.path !== '/admin' && location.pathname.startsWith(item.path));
+
+                                    return (
+                                        <Link
+                                            key={item.path}
+                                            to={item.path}
+                                            className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                                                isActive
+                                                    ? 'bg-blue-600 text-white'
+                                                    : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                                            } ${!isExpanded ? 'justify-center' : ''}`}
+                                            title={!isExpanded ? item.label : ''}
+                                        >
+                                            <Icon className={`w-6 h-6 transition-all duration-200 ${
+                                                isActive ? 'text-white' : 'text-gray-400 group-hover:text-white'
+                                            }`} />
+                                            {isExpanded && (
+                                                <span className="ml-3 whitespace-nowrap">
+                                                    {item.label}
+                                                </span>
+                                            )}
+                                        </Link>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    ))}
                 </nav>
             </div>
         </div>
     );
-}
-
-Sidebar.propTypes = {
-    onExpandChange: PropTypes.func
 };
+
+export default Sidebar;

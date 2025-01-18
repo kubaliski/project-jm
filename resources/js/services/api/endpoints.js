@@ -21,9 +21,24 @@ export const API_ENDPOINTS = {
             create: '/api/public/contacts'
         }
     },
+    users: {
+        base: '/api/users',
+        byId: (id) => `/api/users/${id}`,
+        assignRoles: (id) => `/api/users/${id}/roles`
+    },
     auth: {
         login: '/api/login',
         logout: '/api/logout',
         user: '/api/user'
-    }
+    },
+    roles: {
+        base: '/api/roles',
+        byId: (id) => `/api/roles/${id}`,
+        permissions: {
+            get: '/api/permissions',
+            update: (roleId) => `/api/roles/${roleId}/permissions`,
+            add: (roleId) => `/api/roles/${roleId}/permissions`,
+            remove: (roleId) => `/api/roles/${roleId}/permissions`
+        }
+    },
 };

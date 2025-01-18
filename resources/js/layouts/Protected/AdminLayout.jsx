@@ -31,7 +31,7 @@ export default function AdminLayout({ children }) {
                 <header className="bg-white shadow h-16 sticky top-0 z-10">
                     <div className="flex justify-between items-center px-8 h-full">
                         <h2 className="text-xl font-semibold text-gray-900">
-                            Dashboard
+                            Panel de Administración
                         </h2>
                         <button
                             onClick={handleLogout}

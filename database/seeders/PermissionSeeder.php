@@ -127,6 +127,44 @@ class PermissionSeeder extends Seeder
                 'description' => 'Can assign roles to users'
             ],
         ];
+        $rolePermissions = [
+            [
+                'name' => 'role.index',
+                'display_name' => 'List Roles',
+                'group' => 'role',
+                'description' => 'Can view list of roles'
+            ],
+            [
+                'name' => 'role.create',
+                'display_name' => 'Create Roles',
+                'group' => 'role',
+                'description' => 'Can create new roles'
+            ],
+            [
+                'name' => 'role.edit',
+                'display_name' => 'Edit Roles',
+                'group' => 'role',
+                'description' => 'Can edit existing roles'
+            ],
+            [
+                'name' => 'role.delete',
+                'display_name' => 'Delete Roles',
+                'group' => 'role',
+                'description' => 'Can delete roles'
+            ],
+            [
+                'name' => 'role.view',
+                'display_name' => 'View Role Details',
+                'group' => 'role',
+                'description' => 'Can view role details'
+            ],
+            [
+                'name' => 'role.manage-permissions',
+                'display_name' => 'Manage Role Permissions',
+                'group' => 'role',
+                'description' => 'Can manage permissions assigned to roles'
+            ],
+        ];
         // Permisos para estadísticas/conteos
         $statsPermissions = [
             [
@@ -147,7 +185,8 @@ class PermissionSeeder extends Seeder
             $postPermissions,
             $contactPermissions,
             $statsPermissions,
-            $userPermissions
+            $userPermissions,
+            $rolePermissions
         );
 
         foreach ($allPermissions as $permission) {

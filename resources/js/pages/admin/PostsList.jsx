@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { PencilIcon, TrashIcon, EyeIcon } from '@heroicons/react/24/solid';
 import { Table, TableFilters, ConfirmationDialog } from '@components/common';
 import { PostModal } from '@/features/posts';
 import { formatDateForDisplay, isFutureDate } from '@utils/dateUtils';
@@ -14,11 +14,14 @@ import {
     selectPostsPagination,
     selectEditModalState,
     selectDeleteModalState,
-    selectSelectedPost
+    selectSelectedPost,
+    selectTotalPosts,
+    selectPostStatsLoading,
 } from '@store/admin/selectors/postsSelectors';
 import {
     fetchPosts,
-    deletePost
+    deletePost,
+    countPosts
 } from '@store/admin/thunks/postsThunks';
 import {
     setFilters,
@@ -29,6 +32,7 @@ import {
     setDeleteModalState,
 } from '@store/admin/slices/postsSlice';
 import { useAuth } from '@hooks';
+
 
 
 export default function PostsList() {
@@ -45,40 +49,64 @@ export default function PostsList() {
     const deleteModalState = useSelector(selectDeleteModalState);
     const filteredPosts = useSelector(selectFilteredAndSortedPosts);
     const selectedPost = useSelector(selectSelectedPost);
+    const totalPosts = useSelector(selectTotalPosts);
+    const isStatsLoading = useSelector(selectPostStatsLoading);
 
     // Permisos
+    const canViewList = permissions.includes('post.index');
+    const canView = permissions.includes('post.view');
     const canEdit = permissions.includes('post.edit');
     const canDelete = permissions.includes('post.delete');
     const canCreate = permissions.includes('post.create');
+    const canViewStats = permissions.includes('stats.contacts');
 
     useEffect(() => {
-        dispatch(fetchPosts());
-    }, [dispatch]);
+       if(canViewList){
+            dispatch(fetchPosts());
+       }
+       if (canViewStats) {
+            dispatch(countPosts());
+       }
+    }, [dispatch, canViewList, canViewStats]);
 
     const handleCreateClick = () => {
-        dispatch(setSelectedPost(null));
-        dispatch(setEditModalState({ isOpen: true, mode: 'create' }));
+        if(canCreate){
+            dispatch(setSelectedPost(null));
+            dispatch(setEditModalState({ isOpen: true, mode: 'create' }));
+        }
     };
 
     const handleEditClick = (post) => {
-        dispatch(setSelectedPost(post));
-        dispatch(setEditModalState({ isOpen: true, mode: 'edit' }));
+       if(canEdit || (canView && !canEdit)){
+            dispatch(setSelectedPost(post));
+            dispatch(setEditModalState({
+                isOpen: true,
+                mode: canEdit ? 'edit' : 'view' }));
+         }
     };
 
     const handleDeleteClick = (post) => {
-        dispatch(setSelectedPost(post));
-        dispatch(setDeleteModalState({ isOpen: true}));
+        if (canDelete) {
+            dispatch(setSelectedPost(post));
+            dispatch(setDeleteModalState({ isOpen: true}));
+        }
     };
 
     const handleConfirmDelete = async () => {
         if (!selectedPost) return;
+        if (canDelete && selectedPost){
+            try {
+                await dispatch(deletePost(selectedPost.id)).unwrap();
+                dispatch(setDeleteModalState({ isOpen: false}));
+                dispatch(setSelectedPost(null));
 
-        try {
-            await dispatch(deletePost(selectedPost.id)).unwrap();
-            dispatch(setDeleteModalState({ isOpen: false}));
-            dispatch(setSelectedPost(null));
-        } catch (error) {
-            console.error('Error al eliminar el post:', error);
+                if (canViewStats) {
+                    dispatch(countPosts());
+                }
+
+            } catch (error) {
+                console.error('Error al eliminar el post:', error);
+            }
         }
     };
 
@@ -151,13 +179,17 @@ export default function PostsList() {
             cellClassName: 'text-right',
             render: (post) => (
                 <>
-                    {canEdit && (
+                    {(canView || canEdit) && (
                         <button
                             onClick={() => handleEditClick(post)}
                             className="text-indigo-600 hover:text-indigo-900 mr-4"
-                            title="Editar"
+                            title={canEdit ? "Editar" : "Ver"}
                         >
-                            <PencilIcon className="h-5 w-5" />
+                            {canEdit ? (
+                                <PencilIcon className="h-5 w-5" />
+                            ) : (
+                                <EyeIcon className="h-5 w-5" />
+                            )}
                         </button>
                     )}
                     {canDelete && (
@@ -173,7 +205,14 @@ export default function PostsList() {
             )
         }
     ];
-
+    // Si no tiene permiso para ver la lista, mostrar mensaje o redireccionar
+    if (!canViewList) {
+        return (
+        <div className="text-center py-12">
+            <p className="text-gray-500">No tienes permisos para ver esta sección.</p>
+        </div>
+        );
+    }
     return (
         <div className="space-y-6">
             <div className="sm:flex sm:items-center sm:justify-between">
@@ -182,6 +221,11 @@ export default function PostsList() {
                     <p className="mt-2 text-sm text-gray-700">
                         Listado de posts y artículos
                     </p>
+                    {canViewStats && !isStatsLoading && (
+                        <p className="mt-1 text-sm text-gray-500">
+                        Total de posts: {totalPosts}
+                        </p>
+                    )}
                 </div>
                 {canCreate && (
                     <div className="mt-4 sm:mt-0">
@@ -220,6 +264,7 @@ export default function PostsList() {
                 isOpen={editModalState.isOpen}
                 mode={editModalState.mode}
                 onClose={() => dispatch(setEditModalState({ isOpen: false, mode: null }))}
+
             />
 
             {/* Modal de confirmación de eliminación */}
