@@ -1,10 +1,16 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { PencilIcon, TrashIcon, EyeIcon } from '@heroicons/react/24/solid';
-import { Table, TableFilters, ConfirmationDialog, Paper } from '@components/common';
-import { PostModal } from '@/features/posts';
-import { formatDateForDisplay, isFutureDate } from '@utils/dateUtils';
-import { postsTableConfig } from '@config/tables/postsTable';
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { PencilIcon, TrashIcon, EyeIcon } from "@heroicons/react/24/solid";
+import {
+    Table,
+    TableFilters,
+    ConfirmationDialog,
+    Paper,
+    Button,
+} from "@components/common";
+import { PostModal } from "@/features/posts";
+import { formatDateForDisplay, isFutureDate } from "@utils/dateUtils";
+import { postsTableConfig } from "@config/tables/postsTable";
 import {
     selectPaginatedPosts,
     selectPostsLoading,
@@ -17,12 +23,12 @@ import {
     selectSelectedPost,
     selectTotalPosts,
     selectPostStatsLoading,
-} from '@store/admin/selectors/postsSelectors';
+} from "@store/admin/selectors/postsSelectors";
 import {
     fetchPosts,
     deletePost,
-    countPosts
-} from '@store/admin/thunks/postsThunks';
+    countPosts,
+} from "@store/admin/thunks/postsThunks";
 import {
     setFilters,
     setSortConfig,
@@ -30,10 +36,8 @@ import {
     setSelectedPost,
     setEditModalState,
     setDeleteModalState,
-} from '@store/admin/slices/postsSlice';
-import { useAuth } from '@hooks';
-
-
+} from "@store/admin/slices/postsSlice";
+import { useAuth } from "@hooks";
 
 export default function PostsList() {
     const dispatch = useDispatch();
@@ -53,68 +57,72 @@ export default function PostsList() {
     const isStatsLoading = useSelector(selectPostStatsLoading);
 
     // Permisos
-    const canViewList = permissions.includes('post.index');
-    const canView = permissions.includes('post.view');
-    const canEdit = permissions.includes('post.edit');
-    const canDelete = permissions.includes('post.delete');
-    const canCreate = permissions.includes('post.create');
-    const canViewStats = permissions.includes('stats.contacts');
+    const canViewList = permissions.includes("post.index");
+    const canView = permissions.includes("post.view");
+    const canEdit = permissions.includes("post.edit");
+    const canDelete = permissions.includes("post.delete");
+    const canCreate = permissions.includes("post.create");
+    const canViewStats = permissions.includes("stats.contacts");
 
     useEffect(() => {
-       if(canViewList){
+        if (canViewList) {
             dispatch(fetchPosts());
-       }
-       if (canViewStats) {
+        }
+        if (canViewStats) {
             dispatch(countPosts());
-       }
+        }
     }, [dispatch, canViewList, canViewStats]);
 
     const handleCreateClick = () => {
-        if(canCreate){
+        if (canCreate) {
             dispatch(setSelectedPost(null));
-            dispatch(setEditModalState({ isOpen: true, mode: 'create' }));
+            dispatch(setEditModalState({ isOpen: true, mode: "create" }));
         }
     };
 
     const handleEditClick = (post) => {
-       if(canEdit || (canView && !canEdit)){
+        if (canEdit || (canView && !canEdit)) {
             dispatch(setSelectedPost(post));
-            dispatch(setEditModalState({
-                isOpen: true,
-                mode: canEdit ? 'edit' : 'view' }));
-         }
+            dispatch(
+                setEditModalState({
+                    isOpen: true,
+                    mode: canEdit ? "edit" : "view",
+                })
+            );
+        }
     };
 
     const handleDeleteClick = (post) => {
         if (canDelete) {
             dispatch(setSelectedPost(post));
-            dispatch(setDeleteModalState({ isOpen: true}));
+            dispatch(setDeleteModalState({ isOpen: true }));
         }
     };
 
     const handleConfirmDelete = async () => {
         if (!selectedPost) return;
-        if (canDelete && selectedPost){
+        if (canDelete && selectedPost) {
             try {
                 await dispatch(deletePost(selectedPost.id)).unwrap();
-                dispatch(setDeleteModalState({ isOpen: false}));
+                dispatch(setDeleteModalState({ isOpen: false }));
                 dispatch(setSelectedPost(null));
 
                 if (canViewStats) {
                     dispatch(countPosts());
                 }
-
             } catch (error) {
-                console.error('Error al eliminar el post:', error);
+                console.error("Error al eliminar el post:", error);
             }
         }
     };
 
     const handleFilterChange = (key, value) => {
-        dispatch(setFilters({
-            ...filters,
-            [key]: value
-        }));
+        dispatch(
+            setFilters({
+                ...filters,
+                [key]: value,
+            })
+        );
     };
 
     const handleSortChange = (field, direction) => {
@@ -145,38 +153,40 @@ export default function PostsList() {
 
     const columns = [
         {
-            key: 'title',
-            header: 'Título',
+            key: "title",
+            header: "Título",
             render: (post) => (
                 <>
-                    <div className="text-sm font-medium text-gray-900">{post.title}</div>
+                    <div className="text-sm font-medium text-gray-900">
+                        {post.title}
+                    </div>
                     {post.excerpt && (
                         <div className="text-sm text-gray-500 truncate max-w-xs">
                             {post.excerpt}
                         </div>
                     )}
                 </>
-            )
+            ),
         },
         {
-            key: 'status',
-            header: 'Estado',
-            render: (post) => getStatusBadge(post)
+            key: "status",
+            header: "Estado",
+            render: (post) => getStatusBadge(post),
         },
         {
-            key: 'created_at',
-            header: 'Fecha de creación',
+            key: "created_at",
+            header: "Fecha de creación",
             render: (post) => (
                 <span className="text-sm text-gray-500">
                     {formatDateForDisplay(post.created_at)}
                 </span>
-            )
+            ),
         },
         {
-            key: 'actions',
-            header: 'Acciones',
-            className: 'text-right',
-            cellClassName: 'text-right',
+            key: "actions",
+            header: "Acciones",
+            className: "text-right",
+            cellClassName: "text-right",
             render: (post) => (
                 <>
                     {(canView || canEdit) && (
@@ -202,15 +212,17 @@ export default function PostsList() {
                         </button>
                     )}
                 </>
-            )
-        }
+            ),
+        },
     ];
     // Si no tiene permiso para ver la lista, mostrar mensaje o redireccionar
     if (!canViewList) {
         return (
-        <Paper title="Acceso denegado" titleLevel="h1">
-            <p className="text-gray-500">No tienes permisos para ver esta sección.</p>
-        </Paper>
+            <Paper title="Acceso denegado" titleLevel="h1">
+                <p className="text-gray-500">
+                    No tienes permisos para ver esta sección.
+                </p>
+            </Paper>
         );
     }
     return (
@@ -228,19 +240,12 @@ export default function PostsList() {
                         </p>
                     )}
                 </div>
-                {canCreate && (
-                    <div className="mt-4 sm:mt-0">
-                        <button
-                            onClick={handleCreateClick}
-                            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        >
-                            Crear Post
-                        </button>
-                    </div>
-                )}
             </Paper>
 
             <Paper contentClassName="space-y-4">
+                {canCreate && (
+                    <Button onClick={handleCreateClick}>Crear post</Button>
+                )}
                 <TableFilters
                     config={postsTableConfig}
                     filters={filters}
@@ -264,8 +269,9 @@ export default function PostsList() {
             <PostModal
                 isOpen={editModalState.isOpen}
                 mode={editModalState.mode}
-                onClose={() => dispatch(setEditModalState({ isOpen: false, mode: null }))}
-
+                onClose={() =>
+                    dispatch(setEditModalState({ isOpen: false, mode: null }))
+                }
             />
 
             {/* Modal de confirmación de eliminación */}

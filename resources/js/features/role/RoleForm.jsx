@@ -1,17 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
-import { XCircleIcon } from '@heroicons/react/24/solid';
-import { selectRolesError } from '@store/admin/selectors/rolesSelectors';
-import { SubmitButton } from '@/components/common';
+import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import { useSelector } from "react-redux";
+import { XCircleIcon } from "@heroicons/react/24/solid";
+import { selectRolesError } from "@store/admin/selectors/rolesSelectors";
+import { SubmitButton, FormInput } from "@/components/common";
 
-export default function RoleForm({ role = null, onSubmit, onCancel, isSubmitting = false, readOnly = false }) {
+export default function RoleForm({
+    role = null,
+    onSubmit,
+    onCancel,
+    isSubmitting = false,
+    readOnly = false,
+}) {
     const serverErrors = useSelector(selectRolesError);
     const [errors, setErrors] = useState({});
-
     const [formData, setFormData] = useState({
-        name: '',
-        description: ''
+        name: "",
+        description: "",
     });
 
     // Efecto para manejar errores del servidor
@@ -25,8 +30,8 @@ export default function RoleForm({ role = null, onSubmit, onCancel, isSubmitting
     useEffect(() => {
         if (role) {
             setFormData({
-                name: role.name || '',
-                description: role.description || ''
+                name: role.name || "",
+                description: role.description || "",
             });
         }
         setErrors({});
@@ -34,13 +39,13 @@ export default function RoleForm({ role = null, onSubmit, onCancel, isSubmitting
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
-            [name]: value
+            [name]: value,
         }));
 
         if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: null }));
+            setErrors((prev) => ({ ...prev, [name]: null }));
         }
     };
 
@@ -50,12 +55,13 @@ export default function RoleForm({ role = null, onSubmit, onCancel, isSubmitting
         // Validaciones
         const validationErrors = {};
         if (!formData.name.trim()) {
-            validationErrors.name = 'El nombre es requerido';
+            validationErrors.name = "El nombre es requerido";
         } else if (formData.name.length < 3) {
-            validationErrors.name = 'El nombre debe tener al menos 3 caracteres';
+            validationErrors.name =
+                "El nombre debe tener al menos 3 caracteres";
         }
         if (!formData.description.trim()) {
-            validationErrors.description = 'La descripción es requerida';
+            validationErrors.description = "La descripción es requerida";
         }
 
         if (Object.keys(validationErrors).length > 0) {
@@ -70,7 +76,7 @@ export default function RoleForm({ role = null, onSubmit, onCancel, isSubmitting
                 setErrors(error.response.data.errors);
             } else {
                 setErrors({
-                    general: 'Ocurrió un error al guardar el rol.'
+                    general: "Ocurrió un error al guardar el rol.",
                 });
             }
         }
@@ -82,64 +88,47 @@ export default function RoleForm({ role = null, onSubmit, onCancel, isSubmitting
                 <div className="bg-red-50 border-l-4 border-red-400 p-4">
                     <div className="flex">
                         <div className="flex-shrink-0">
-                            <XCircleIcon className="h-5 w-5 text-red-400" aria-hidden="true" />
+                            <XCircleIcon
+                                className="h-5 w-5 text-red-400"
+                                aria-hidden="true"
+                            />
                         </div>
                         <div className="ml-3">
-                            <p className="text-sm text-red-700">{errors.general}</p>
+                            <p className="text-sm text-red-700">
+                                {errors.general}
+                            </p>
                         </div>
                     </div>
                 </div>
             )}
 
             {/* Nombre */}
-            <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                    Nombre
-                </label>
-                <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    readOnly={readOnly}
-                    disabled={readOnly}
-                    className={`mt-1 block w-full rounded-md shadow-sm py-2 px-3 sm:text-sm
-                        ${errors.name
-                            ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
-                            : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
-                        } ${readOnly ? 'bg-gray-50' : ''}`}
-                    required
-                />
-                {errors.name && (
-                    <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-                )}
-            </div>
+            <FormInput
+                id="name"
+                name="name"
+                label="Nombre"
+                value={formData.name}
+                onChange={handleChange}
+                error={errors.name}
+                required
+                readOnly={readOnly}
+                disabled={readOnly}
+            />
 
             {/* Descripción */}
-            <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-                    Descripción
-                </label>
-                <textarea
-                    id="description"
-                    name="description"
-                    rows="3"
-                    value={formData.description}
-                    onChange={handleChange}
-                    readOnly={readOnly}
-                    disabled={readOnly}
-                    className={`mt-1 block w-full rounded-md shadow-sm py-2 px-3 sm:text-sm
-                        ${errors.description
-                            ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
-                            : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
-                        } ${readOnly ? 'bg-gray-50' : ''}`}
-                    required
-                />
-                {errors.description && (
-                    <p className="mt-1 text-sm text-red-600">{errors.description}</p>
-                )}
-            </div>
+            <FormInput
+                id="description"
+                name="description"
+                type="textarea"
+                label="Descripción"
+                value={formData.description}
+                onChange={handleChange}
+                error={errors.description}
+                required
+                readOnly={readOnly}
+                disabled={readOnly}
+                rows={3}
+            />
 
             {/* Botones de acción */}
             <div className="flex justify-end space-x-3 pt-4">
@@ -177,5 +166,5 @@ RoleForm.propTypes = {
     onSubmit: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
     isSubmitting: PropTypes.bool,
-    readOnly: PropTypes.bool
+    readOnly: PropTypes.bool,
 };

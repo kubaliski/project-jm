@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
-import { XCircleIcon } from '@heroicons/react/24/solid';
-import { selectUsersError } from '@store/admin/selectors/usersSelectors';
-import RoleForm from './UserRoleForm';
-import { SubmitButton } from '@/components/common';
+import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import { useSelector } from "react-redux";
+import { XCircleIcon } from "@heroicons/react/24/solid";
+import { selectUsersError } from "@store/admin/selectors/usersSelectors";
+import RoleForm from "./UserRoleForm";
+import { SubmitButton, FormInput } from "@/components/common";
 
 export default function UserForm({
     user = null,
@@ -13,71 +13,70 @@ export default function UserForm({
     onCancel,
     isSubmitting = false,
     readOnly = false,
-    mode
+    mode,
 }) {
     const serverErrors = useSelector(selectUsersError);
     const [errors, setErrors] = useState({});
-
     const [formData, setFormData] = useState({
-        name: '',
-        last_name: '',
-        email: '',
-        password: '',
-        password_confirmation: '',
-        role_id: null
+        name: "",
+        last_name: "",
+        email: "",
+        password: "",
+        password_confirmation: "",
+        role_id: null,
     });
 
-    // Efecto para manejar errores del servidor
+    // Efectos se mantienen igual
     useEffect(() => {
         if (serverErrors?.errors) {
             setErrors(serverErrors.errors);
         }
     }, [serverErrors]);
 
-    // Efecto para inicializar el formulario con los datos del usuario
     useEffect(() => {
         if (user) {
             setFormData({
-                name: user.name || '',
-                last_name: user.last_name || '',
-                email: user.email || '',
-                password: '',
-                password_confirmation: '',
-                role_id: user.roles?.[0]?.id || null // Tomamos el primer rol
+                name: user.name || "",
+                last_name: user.last_name || "",
+                email: user.email || "",
+                password: "",
+                password_confirmation: "",
+                role_id: user.roles?.[0]?.id || null,
             });
         } else {
             setFormData({
-                name: '',
-                last_name: '',
-                email: '',
-                password: '',
-                password_confirmation: '',
-                role_id: null
+                name: "",
+                last_name: "",
+                email: "",
+                password: "",
+                password_confirmation: "",
+                role_id: null,
             });
         }
         setErrors({});
     }, [user]);
 
+    // Handlers se mantienen igual
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
-            [name]: value
+            [name]: value,
         }));
 
         if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: null }));
+            setErrors((prev) => ({ ...prev, [name]: null }));
         }
     };
 
     const handleRoleChange = (roleId) => {
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
-            role_id: roleId
+            role_id: roleId,
         }));
 
         if (errors.role_id) {
-            setErrors(prev => ({ ...prev, role_id: null }));
+            setErrors((prev) => ({ ...prev, role_id: null }));
         }
     };
 
@@ -87,29 +86,30 @@ export default function UserForm({
         // Validaciones
         const validationErrors = {};
         if (!formData.name.trim()) {
-            validationErrors.name = 'El nombre es requerido';
+            validationErrors.name = "El nombre es requerido";
         }
         if (!formData.last_name.trim()) {
-            validationErrors.last_name = 'El apellido es requerido';
+            validationErrors.last_name = "El apellido es requerido";
         }
         if (!formData.email.trim()) {
-            validationErrors.email = 'El email es requerido';
+            validationErrors.email = "El email es requerido";
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            validationErrors.email = 'El email no es válido';
+            validationErrors.email = "El email no es válido";
         }
         if (!formData.role_id) {
-            validationErrors.role_id = 'Debe seleccionar un rol';
+            validationErrors.role_id = "Debe seleccionar un rol";
         }
 
-        // Validación de contraseña solo para nuevos usuarios o si se intenta cambiar
         if (!user && !formData.password) {
-            validationErrors.password = 'La contraseña es requerida';
+            validationErrors.password = "La contraseña es requerida";
         }
         if (formData.password && formData.password.length < 8) {
-            validationErrors.password = 'La contraseña debe tener al menos 8 caracteres';
+            validationErrors.password =
+                "La contraseña debe tener al menos 8 caracteres";
         }
         if (formData.password !== formData.password_confirmation) {
-            validationErrors.password_confirmation = 'Las contraseñas no coinciden';
+            validationErrors.password_confirmation =
+                "Las contraseñas no coinciden";
         }
 
         if (Object.keys(validationErrors).length > 0) {
@@ -120,10 +120,10 @@ export default function UserForm({
         try {
             const dataToSubmit = {
                 ...formData,
-                roles: formData.role_id ? [formData.role_id] : []
+                roles: formData.role_id ? [formData.role_id] : [],
             };
 
-            if (mode === 'edit' && !formData.password) {
+            if (mode === "edit" && !formData.password) {
                 delete dataToSubmit.password;
                 delete dataToSubmit.password_confirmation;
             }
@@ -134,7 +134,7 @@ export default function UserForm({
                 setErrors(error.response.data.errors);
             } else {
                 setErrors({
-                    general: 'Ocurrió un error al guardar el usuario.'
+                    general: "Ocurrió un error al guardar el usuario.",
                 });
             }
         }
@@ -146,10 +146,15 @@ export default function UserForm({
                 <div className="bg-red-50 border-l-4 border-red-400 p-4">
                     <div className="flex">
                         <div className="flex-shrink-0">
-                            <XCircleIcon className="h-5 w-5 text-red-400" aria-hidden="true" />
+                            <XCircleIcon
+                                className="h-5 w-5 text-red-400"
+                                aria-hidden="true"
+                            />
                         </div>
                         <div className="ml-3">
-                            <p className="text-sm text-red-700">{errors.general}</p>
+                            <p className="text-sm text-red-700">
+                                {errors.general}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -157,126 +162,75 @@ export default function UserForm({
 
             <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
                 {/* Nombre */}
-                <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                        Nombre
-                    </label>
-                    <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        readOnly={readOnly}
-                        disabled={readOnly}
-                        className={`mt-1 block w-full rounded-md shadow-sm py-2 px-3 sm:text-sm
-                            ${errors.name
-                                ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
-                                : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
-                            } ${readOnly ? 'bg-gray-50' : ''}`}
-                        required
-                    />
-                    {errors.name && (
-                        <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-                    )}
-                </div>
+                <FormInput
+                    id="name"
+                    name="name"
+                    label="Nombre"
+                    value={formData.name}
+                    onChange={handleChange}
+                    error={errors.name}
+                    required
+                    readOnly={readOnly}
+                    disabled={readOnly}
+                />
 
                 {/* Apellido */}
-                <div>
-                    <label htmlFor="last_name" className="block text-sm font-medium text-gray-700">
-                        Apellido
-                    </label>
-                    <input
-                        type="text"
-                        id="last_name"
-                        name="last_name"
-                        value={formData.last_name}
-                        onChange={handleChange}
-                        readOnly={readOnly}
-                        disabled={readOnly}
-                        className={`mt-1 block w-full rounded-md shadow-sm py-2 px-3 sm:text-sm
-                            ${errors.last_name
-                                ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
-                                : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
-                            } ${readOnly ? 'bg-gray-50' : ''}`}
-                        required
-                    />
-                    {errors.last_name && (
-                        <p className="mt-1 text-sm text-red-600">{errors.last_name}</p>
-                    )}
-                </div>
+                <FormInput
+                    id="last_name"
+                    name="last_name"
+                    label="Apellido"
+                    value={formData.last_name}
+                    onChange={handleChange}
+                    error={errors.last_name}
+                    required
+                    readOnly={readOnly}
+                    disabled={readOnly}
+                />
 
                 {/* Email */}
                 <div className="sm:col-span-2">
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                        Email
-                    </label>
-                    <input
-                        type="email"
+                    <FormInput
                         id="email"
                         name="email"
+                        type="email"
+                        label="Email"
                         value={formData.email}
                         onChange={handleChange}
+                        error={errors.email}
+                        required
                         readOnly={readOnly}
                         disabled={readOnly}
-                        className={`mt-1 block w-full rounded-md shadow-sm py-2 px-3 sm:text-sm
-                            ${errors.email
-                                ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
-                                : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
-                            } ${readOnly ? 'bg-gray-50' : ''}`}
-                        required
                     />
-                    {errors.email && (
-                        <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-                    )}
                 </div>
 
-                {/* Password - Solo mostrar en crear o editar */}
+                {/* Password fields - Solo mostrar en crear o editar */}
                 {!readOnly && (
                     <>
-                        <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                                {mode === 'edit' ? 'Nueva contraseña (opcional)' : 'Contraseña'}
-                            </label>
-                            <input
-                                type="password"
-                                id="password"
-                                name="password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                className={`mt-1 block w-full rounded-md shadow-sm py-2 px-3 sm:text-sm
-                                    ${errors.password
-                                        ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
-                                        : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
-                                    }`}
-                                required={!user}
-                            />
-                            {errors.password && (
-                                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
-                            )}
-                        </div>
+                        <FormInput
+                            id="password"
+                            name="password"
+                            type="password"
+                            label={
+                                mode === "edit"
+                                    ? "Nueva contraseña (opcional)"
+                                    : "Contraseña"
+                            }
+                            value={formData.password}
+                            onChange={handleChange}
+                            error={errors.password}
+                            required={!user}
+                        />
 
-                        <div>
-                            <label htmlFor="password_confirmation" className="block text-sm font-medium text-gray-700">
-                                Confirmar contraseña
-                            </label>
-                            <input
-                                type="password"
-                                id="password_confirmation"
-                                name="password_confirmation"
-                                value={formData.password_confirmation}
-                                onChange={handleChange}
-                                className={`mt-1 block w-full rounded-md shadow-sm py-2 px-3 sm:text-sm
-                                    ${errors.password_confirmation
-                                        ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
-                                        : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
-                                    }`}
-                                required={!!formData.password}
-                            />
-                            {errors.password_confirmation && (
-                                <p className="mt-1 text-sm text-red-600">{errors.password_confirmation}</p>
-                            )}
-                        </div>
+                        <FormInput
+                            id="password_confirmation"
+                            name="password_confirmation"
+                            type="password"
+                            label="Confirmar contraseña"
+                            value={formData.password_confirmation}
+                            onChange={handleChange}
+                            error={errors.password_confirmation}
+                            required={!!formData.password}
+                        />
                     </>
                 )}
             </div>
@@ -315,7 +269,7 @@ export default function UserForm({
                         </button>
                         <SubmitButton
                             isSubmitting={isSubmitting}
-                            isUpdate={mode === 'edit'}
+                            isUpdate={mode === "edit"}
                             submitText="Crear usuario"
                             updateText="Actualizar usuario"
                             loadingText="Guardando usuario..."
@@ -329,14 +283,16 @@ export default function UserForm({
 
 UserForm.propTypes = {
     user: PropTypes.object,
-    roles: PropTypes.arrayOf(PropTypes.shape({
-        id: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
-        description: PropTypes.string
-    })),
+    roles: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.number.isRequired,
+            name: PropTypes.string.isRequired,
+            description: PropTypes.string,
+        })
+    ),
     onSubmit: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
     isSubmitting: PropTypes.bool,
     readOnly: PropTypes.bool,
-    mode: PropTypes.oneOf(['create', 'edit', 'view'])
+    mode: PropTypes.oneOf(["create", "edit", "view"]),
 };

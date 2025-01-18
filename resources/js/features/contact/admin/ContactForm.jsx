@@ -1,22 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
-import { XCircleIcon } from '@heroicons/react/24/solid';
-import { selectContactsError } from '@store/admin/selectors/contactsSelectors';
-import { SubmitButton } from '@/components/common';
+import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import { useSelector } from "react-redux";
+import { XCircleIcon } from "@heroicons/react/24/solid";
+import { selectContactsError } from "@store/admin/selectors/contactsSelectors";
+import { SubmitButton, FormInput, FormSelect } from "@/components/common";
 
-export default function ContactForm({ contact = null, onSubmit, onCancel, isSubmitting = false, readOnly = false }) {
+export default function ContactForm({
+    contact = null,
+    onSubmit,
+    onCancel,
+    isSubmitting = false,
+    readOnly = false,
+}) {
     const serverErrors = useSelector(selectContactsError);
     const [errors, setErrors] = useState({});
 
     const [formData, setFormData] = useState({
-        full_name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: '',
-        status: 'pending',
-        observations: ''
+        full_name: "",
+        email: "",
+        phone: "",
+        subject: "",
+        message: "",
+        status: "pending",
+        observations: "",
     });
 
     // Efecto para manejar errores del servidor
@@ -30,13 +36,13 @@ export default function ContactForm({ contact = null, onSubmit, onCancel, isSubm
     useEffect(() => {
         if (contact) {
             setFormData({
-                full_name: contact.full_name || '',
-                email: contact.email || '',
-                phone: contact.phone || '',
-                subject: contact.subject || '',
-                message: contact.message || '',
-                status: contact.status || 'pending',
-                observations: contact.observations || ''
+                full_name: contact.full_name || "",
+                email: contact.email || "",
+                phone: contact.phone || "",
+                subject: contact.subject || "",
+                message: contact.message || "",
+                status: contact.status || "pending",
+                observations: contact.observations || "",
             });
         }
         setErrors({});
@@ -44,13 +50,13 @@ export default function ContactForm({ contact = null, onSubmit, onCancel, isSubm
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
-            [name]: value
+            [name]: value,
         }));
 
         if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: null }));
+            setErrors((prev) => ({ ...prev, [name]: null }));
         }
     };
 
@@ -60,18 +66,18 @@ export default function ContactForm({ contact = null, onSubmit, onCancel, isSubm
         // Validaciones
         const validationErrors = {};
         if (!formData.full_name.trim()) {
-            validationErrors.full_name = 'El nombre es requerido';
+            validationErrors.full_name = "El nombre es requerido";
         }
         if (!formData.email.trim()) {
-            validationErrors.email = 'El email es requerido';
+            validationErrors.email = "El email es requerido";
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            validationErrors.email = 'El email no es válido';
+            validationErrors.email = "El email no es válido";
         }
         if (!formData.subject.trim()) {
-            validationErrors.subject = 'El asunto es requerido';
+            validationErrors.subject = "El asunto es requerido";
         }
         if (!formData.message.trim()) {
-            validationErrors.message = 'El mensaje es requerido';
+            validationErrors.message = "El mensaje es requerido";
         }
 
         if (Object.keys(validationErrors).length > 0) {
@@ -86,17 +92,17 @@ export default function ContactForm({ contact = null, onSubmit, onCancel, isSubm
                 setErrors(error.response.data.errors);
             } else {
                 setErrors({
-                    general: 'Ocurrió un error al guardar el contacto.'
+                    general: "Ocurrió un error al guardar el contacto.",
                 });
             }
         }
     };
 
     const statusOptions = [
-        { value: 'pending', label: 'Pendiente' },
-        { value: 'in_progress', label: 'En tramitación' },
-        { value: 'completed', label: 'Finalizado' },
-        { value: 'spam', label: 'Spam' }
+        { value: "pending", label: "Pendiente" },
+        { value: "in_progress", label: "En tramitación" },
+        { value: "completed", label: "Finalizado" },
+        { value: "spam", label: "Spam" },
     ];
 
     return (
@@ -105,189 +111,112 @@ export default function ContactForm({ contact = null, onSubmit, onCancel, isSubm
                 <div className="bg-red-50 border-l-4 border-red-400 p-4">
                     <div className="flex">
                         <div className="flex-shrink-0">
-                            <XCircleIcon className="h-5 w-5 text-red-400" aria-hidden="true" />
+                            <XCircleIcon
+                                className="h-5 w-5 text-red-400"
+                                aria-hidden="true"
+                            />
                         </div>
                         <div className="ml-3">
-                            <p className="text-sm text-red-700">{errors.general}</p>
+                            <p className="text-sm text-red-700">
+                                {errors.general}
+                            </p>
                         </div>
                     </div>
                 </div>
             )}
 
             <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
-                {/* Nombre completo */}
-                <div>
-                    <label htmlFor="full_name" className="block text-sm font-medium text-gray-700">
-                        Nombre completo
-                    </label>
-                    <input
-                        type="text"
-                        id="full_name"
-                        name="full_name"
-                        value={formData.full_name}
-                        onChange={handleChange}
-                        readOnly={readOnly}
-                        disabled={readOnly}
-                        className={`mt-1 block w-full rounded-md shadow-sm py-2 px-3 sm:text-sm
-                            ${errors.full_name
-                                ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
-                                : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
-                            } ${readOnly ? 'bg-gray-50' : ''}`}
-                        required
-                    />
-                    {errors.full_name && (
-                        <p className="mt-1 text-sm text-red-600">{errors.full_name}</p>
-                    )}
-                </div>
-
-                {/* Email */}
-                <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                        Email
-                    </label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        readOnly={readOnly}
-                        disabled={readOnly}
-                        className={`mt-1 block w-full rounded-md shadow-sm py-2 px-3 sm:text-sm
-                            ${errors.email
-                                ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
-                                : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
-                            } ${readOnly ? 'bg-gray-50' : ''}`}
-                        required
-                    />
-                    {errors.email && (
-                        <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-                    )}
-                </div>
-
-                {/* Teléfono */}
-                <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                        Teléfono
-                    </label>
-                    <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        readOnly={readOnly}
-                        disabled={readOnly}
-                        className={`mt-1 block w-full rounded-md shadow-sm py-2 px-3 sm:text-sm
-                            ${errors.phone
-                                ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
-                                : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
-                            } ${readOnly ? 'bg-gray-50' : ''}`}
-                    />
-                    {errors.phone && (
-                        <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
-                    )}
-                </div>
-
-                {/* Estado */}
-                <div>
-                    <label htmlFor="status" className="block text-sm font-medium text-gray-700">
-                        Estado
-                    </label>
-                    <select
-                        id="status"
-                        name="status"
-                        value={formData.status}
-                        onChange={handleChange}
-                        disabled={readOnly}
-                        className={`mt-1 block w-full rounded-md shadow-sm py-2 px-3 sm:text-sm
-                            border-gray-300 focus:ring-indigo-500 focus:border-indigo-500
-                            ${readOnly ? 'bg-gray-50' : ''}`}
-                    >
-                        {statusOptions.map(option => (
-                            <option key={option.value} value={option.value}>
-                                {option.label}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            </div>
-
-            {/* Asunto */}
-            <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-gray-700">
-                    Asunto
-                </label>
-                <input
-                    type="text"
-                    id="subject"
-                    name="subject"
-                    value={formData.subject}
+                <FormInput
+                    id="full_name"
+                    name="full_name"
+                    label="Nombre completo"
+                    value={formData.full_name}
                     onChange={handleChange}
-                    readOnly={readOnly}
-                    disabled={readOnly}
-                    className={`mt-1 block w-full rounded-md shadow-sm py-2 px-3 sm:text-sm
-                        ${errors.subject
-                            ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
-                            : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
-                        } ${readOnly ? 'bg-gray-50' : ''}`}
+                    error={errors.full_name}
                     required
-                />
-                {errors.subject && (
-                    <p className="mt-1 text-sm text-red-600">{errors.subject}</p>
-                )}
-            </div>
-
-            {/* Mensaje */}
-            <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700">
-                    Mensaje
-                </label>
-                <textarea
-                    id="message"
-                    name="message"
-                    rows="4"
-                    value={formData.message}
-                    onChange={handleChange}
                     readOnly={readOnly}
                     disabled={readOnly}
-                    className={`mt-1 block w-full rounded-md shadow-sm py-2 px-3 sm:text-sm
-                        ${errors.message
-                            ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
-                            : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
-                        } ${readOnly ? 'bg-gray-50' : ''}`}
+                />
+
+                <FormInput
+                    id="email"
+                    name="email"
+                    type="email"
+                    label="Email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    error={errors.email}
                     required
-                />
-                {errors.message && (
-                    <p className="mt-1 text-sm text-red-600">{errors.message}</p>
-                )}
-            </div>
-
-            {/* Observaciones */}
-            <div>
-                <label htmlFor="observations" className="block text-sm font-medium text-gray-700">
-                    Observaciones internas
-                </label>
-                <textarea
-                    id="observations"
-                    name="observations"
-                    rows="3"
-                    value={formData.observations}
-                    onChange={handleChange}
                     readOnly={readOnly}
                     disabled={readOnly}
-                    className={`mt-1 block w-full rounded-md shadow-sm py-2 px-3 sm:text-sm
-                        border-gray-300 focus:ring-indigo-500 focus:border-indigo-500
-                        ${readOnly ? 'bg-gray-50' : ''}`}
-                    placeholder="Añade notas o comentarios internos sobre este contacto..."
                 />
-                {errors.observations && (
-                    <p className="mt-1 text-sm text-red-600">{errors.observations}</p>
-                )}
+
+                <FormInput
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    label="Teléfono"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    error={errors.phone}
+                    readOnly={readOnly}
+                    disabled={readOnly}
+                />
+
+                <FormSelect
+                    id="status"
+                    name="status"
+                    label="Estado"
+                    value={formData.status}
+                    onChange={handleChange}
+                    options={statusOptions}
+                    disabled={readOnly}
+                    readOnly={readOnly}
+                />
             </div>
 
-             {/* Botones de acción */}
-             <div className="flex justify-end space-x-3 pt-4">
+            <FormInput
+                id="subject"
+                name="subject"
+                label="Asunto"
+                value={formData.subject}
+                onChange={handleChange}
+                error={errors.subject}
+                required
+                readOnly={readOnly}
+                disabled={readOnly}
+            />
+
+            <FormInput
+                id="message"
+                name="message"
+                type="textarea"
+                label="Mensaje"
+                value={formData.message}
+                onChange={handleChange}
+                error={errors.message}
+                required
+                readOnly={readOnly}
+                disabled={readOnly}
+                rows={4}
+            />
+
+            <FormInput
+                id="observations"
+                name="observations"
+                type="textarea"
+                label="Observaciones internas"
+                value={formData.observations}
+                onChange={handleChange}
+                error={errors.observations}
+                readOnly={readOnly}
+                disabled={readOnly}
+                placeholder="Añade notas o comentarios internos sobre este contacto..."
+                rows={3}
+            />
+
+            {/* Botones de acción */}
+            <div className="flex justify-end space-x-3 pt-4">
                 {readOnly ? (
                     <button
                         type="button"
@@ -322,5 +251,5 @@ ContactForm.propTypes = {
     onSubmit: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
     isSubmitting: PropTypes.bool,
-    readOnly: PropTypes.bool
+    readOnly: PropTypes.bool,
 };
