@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Contact;
-use Illuminate\Http\Request;
+use App\Http\Requests\Contact\StoreRequest;
+use App\Http\Requests\Contact\UpdateRequest;
+use App\Http\Requests\Contact\UpdateStatusRequest;
 use Illuminate\Http\JsonResponse;
 
 class ContactController extends Controller
@@ -19,19 +21,9 @@ class ContactController extends Controller
         return response()->json($contacts);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'full_name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:20',
-            'subject' => 'required|string|max:255',
-            'message' => 'required|string',
-            'status' => 'required|in:pending,in_progress,completed,spam',
-            'observations' => 'nullable|string'
-        ]);
-
-        $contact = Contact::create($validated);
+        $contact = Contact::create($request->validated());
 
         return response()->json([
             'message' => 'Contacto creado correctamente',
@@ -44,19 +36,9 @@ class ContactController extends Controller
         return response()->json($contact);
     }
 
-    public function update(Request $request, Contact $contact): JsonResponse
+    public function update(UpdateRequest $request, Contact $contact): JsonResponse
     {
-        $validated = $request->validate([
-            'full_name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:20',
-            'subject' => 'required|string|max:255',
-            'message' => 'required|string',
-            'status' => 'required|in:pending,in_progress,completed,spam',
-            'observations' => 'nullable|string'
-        ]);
-
-        $contact->update($validated);
+        $contact->update($request->validated());
 
         return response()->json([
             'message' => 'Contacto actualizado correctamente',
@@ -64,15 +46,9 @@ class ContactController extends Controller
         ]);
     }
 
-    public function updateStatus(Request $request, Contact $contact): JsonResponse
+    public function updateStatus(UpdateStatusRequest $request, Contact $contact): JsonResponse
     {
-        $this->authorize('updateStatus', $contact);
-
-        $validated = $request->validate([
-            'status' => 'required|in:pending,in_progress,completed,spam'
-        ]);
-
-        $contact->update($validated);
+        $contact->update($request->validated());
 
         return response()->json([
             'message' => 'Estado actualizado correctamente',
@@ -92,8 +68,8 @@ class ContactController extends Controller
     public function count(): JsonResponse
     {
         $this->authorize('viewStats', Contact::class);
-
         $totalContacts = Contact::count();
+
         return response()->json(['total_contacts' => $totalContacts]);
     }
 }
