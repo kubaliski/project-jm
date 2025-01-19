@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
     selectUser,
     selectProfileLoading,
-    selectProfileError
-} from '@store/auth/selectors/authSelectors';
-import { updateProfile } from '@store/auth/thunks/authThunks';
-import { FormInput, SubmitButton, Paper, Button } from '@components/common';
-import { useToast, useAuth } from '@/hooks';
+    selectProfileError,
+} from "@store/auth/selectors/authSelectors";
+import { updateProfile } from "@store/auth/thunks/authThunks";
+import { FormInput, SubmitButton, Paper, Button } from "@components/common";
+import { useToast, useAuth } from "@/hooks";
 
 const Profile = () => {
     const dispatch = useDispatch();
@@ -17,36 +17,36 @@ const Profile = () => {
     const isLoading = useSelector(selectProfileLoading);
     const error = useSelector(selectProfileError);
 
-    const canEditProfile = hasPermission('user.update-profile');
+    const canEditProfile = hasPermission("user.update-profile");
 
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
-        name: '',
-        last_name: '',
-        email: '',
-        current_password: '',
-        password: '',
-        password_confirmation: ''
+        name: "",
+        last_name: "",
+        email: "",
+        current_password: "",
+        password: "",
+        password_confirmation: "",
     });
     const [formErrors, setFormErrors] = useState({});
 
     useEffect(() => {
         if (user) {
-            setFormData(prev => ({
+            setFormData((prev) => ({
                 ...prev,
-                name: user.name || '',
-                email: user.email || '',
-                last_name: user.last_name || ''
+                name: user.name || "",
+                email: user.email || "",
+                last_name: user.last_name || "",
             }));
         }
     }, [user]);
 
     useEffect(() => {
         if (error) {
-            if (typeof error === 'object') {
+            if (typeof error === "object") {
                 setFormErrors(error);
                 const firstError = Object.values(error)[0];
-                if (firstError && typeof firstError === 'string') {
+                if (firstError && typeof firstError === "string") {
                     toast.error(firstError);
                 }
             } else {
@@ -57,24 +57,24 @@ const Profile = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
-            [name]: value
+            [name]: value,
         }));
         if (formErrors[name]) {
-            setFormErrors(prev => ({
+            setFormErrors((prev) => ({
                 ...prev,
-                [name]: null
+                [name]: null,
             }));
         }
     };
 
     const resetPasswordFields = () => {
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
-            current_password: '',
-            password: '',
-            password_confirmation: ''
+            current_password: "",
+            password: "",
+            password_confirmation: "",
         }));
     };
 
@@ -86,7 +86,7 @@ const Profile = () => {
         const updateData = {
             name: formData.name,
             email: formData.email,
-            last_name: formData.last_name
+            last_name: formData.last_name,
         };
 
         if (formData.password) {
@@ -97,10 +97,10 @@ const Profile = () => {
 
         try {
             await dispatch(updateProfile(updateData)).unwrap();
-            toast.success('Perfil actualizado correctamente');
+            toast.success("Perfil actualizado correctamente");
             setIsEditing(false);
             resetPasswordFields();
-        } catch (error) {
+        } catch {
             // Los errores se manejan en el useEffect
         }
     };
@@ -110,22 +110,18 @@ const Profile = () => {
         setFormErrors({});
         resetPasswordFields();
         if (user) {
-            setFormData(prev => ({
+            setFormData((prev) => ({
                 ...prev,
-                name: user.name || '',
-                email: user.email || '',
-                last_name: user.last_name || ''
+                name: user.name || "",
+                email: user.email || "",
+                last_name: user.last_name || "",
             }));
         }
     };
 
     return (
         <div className="max-w-3xl mx-auto py-6">
-            <Paper
-                title="Perfil de Usuario"
-                className="shadow-sm"
-
-            >
+            <Paper title="Perfil de Usuario" className="shadow-sm">
                 <div className="flex justify-between items-center mb-6">
                     {canEditProfile && !isEditing && (
                         <Button

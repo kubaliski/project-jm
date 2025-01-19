@@ -1,22 +1,22 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
-import ReusableModal from '@components/common/ReusableModal';
-import RoleForm from './RoleForm';
+import React from "react";
+import PropTypes from "prop-types";
+import { useDispatch, useSelector } from "react-redux";
+import ReusableModal from "@components/common/ReusableModal";
+import RoleForm from "./RoleForm";
 import {
     selectSelectedRole,
-    selectRolesLoading
-} from '@store/admin/selectors/rolesSelectors';
-import {
-    createRole,
-    updateRole
-} from '@store/admin/thunks/rolesThunks';
-import {
-    setEditModalState,
-    setSelectedRole
-} from '@store/admin/slices/rolesSlice';
+    selectRolesLoading,
+} from "@store/admin/selectors/rolesSelectors";
+import { createRole, updateRole } from "@store/admin/thunks/rolesThunks";
+import { setSelectedRole } from "@store/admin/slices/rolesSlice";
 
-export default function RoleModal({ isOpen, mode, onClose, onSuccess, readOnly = false }) {
+export default function RoleModal({
+    isOpen,
+    mode,
+    onClose,
+    onSuccess,
+    readOnly = false,
+}) {
     const dispatch = useDispatch();
     const selectedRole = useSelector(selectSelectedRole);
     const isLoading = useSelector(selectRolesLoading);
@@ -27,21 +27,19 @@ export default function RoleModal({ isOpen, mode, onClose, onSuccess, readOnly =
     };
 
     const handleSubmit = async (formData) => {
-        try {
-            if (mode === 'edit' && selectedRole) {
-                await dispatch(updateRole({
+        if (mode === "edit" && selectedRole) {
+            await dispatch(
+                updateRole({
                     id: selectedRole.id,
-                    formData
-                })).unwrap();
-            } else {
-                await dispatch(createRole(formData)).unwrap();
-            }
-            handleClose();
-            if (onSuccess) {
-                onSuccess();
-            }
-        } catch (error) {
-            throw error;
+                    formData,
+                })
+            ).unwrap();
+        } else {
+            await dispatch(createRole(formData)).unwrap();
+        }
+        handleClose();
+        if (onSuccess) {
+            onSuccess();
         }
     };
 
@@ -49,11 +47,13 @@ export default function RoleModal({ isOpen, mode, onClose, onSuccess, readOnly =
         <ReusableModal
             isOpen={isOpen}
             onClose={handleClose}
-            title={mode === 'view'
-                ? 'Ver Rol'
-                : mode === 'edit'
-                    ? 'Editar Rol'
-                    : 'Nuevo Rol'}
+            title={
+                mode === "view"
+                    ? "Ver Rol"
+                    : mode === "edit"
+                    ? "Editar Rol"
+                    : "Nuevo Rol"
+            }
             size="2xl"
         >
             <div className="max-h-[80vh] overflow-y-auto">
@@ -62,7 +62,7 @@ export default function RoleModal({ isOpen, mode, onClose, onSuccess, readOnly =
                     onSubmit={handleSubmit}
                     onCancel={handleClose}
                     isSubmitting={isLoading}
-                    readOnly={readOnly || mode === 'view'}
+                    readOnly={readOnly || mode === "view"}
                 />
             </div>
         </ReusableModal>
@@ -71,8 +71,8 @@ export default function RoleModal({ isOpen, mode, onClose, onSuccess, readOnly =
 
 RoleModal.propTypes = {
     isOpen: PropTypes.bool.isRequired,
-    mode: PropTypes.oneOf(['create', 'edit', 'view']),
+    mode: PropTypes.oneOf(["create", "edit", "view"]),
     onClose: PropTypes.func.isRequired,
     onSuccess: PropTypes.func,
-    readOnly: PropTypes.bool
+    readOnly: PropTypes.bool,
 };

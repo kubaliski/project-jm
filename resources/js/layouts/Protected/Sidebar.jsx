@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '@hooks';
+import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@hooks";
 import {
     Bars3Icon,
     XMarkIcon,
@@ -10,8 +11,8 @@ import {
     UserGroupIcon,
     DocumentCheckIcon,
     ChevronDownIcon,
-    ArrowLeftOnRectangleIcon
-} from '@heroicons/react/24/outline';
+    ArrowLeftOnRectangleIcon,
+} from "@heroicons/react/24/outline";
 
 const Sidebar = ({ onExpandChange }) => {
     const location = useLocation();
@@ -19,63 +20,63 @@ const Sidebar = ({ onExpandChange }) => {
     const { logout } = useAuth();
     const [isPinned, setIsPinned] = useState(true);
     const [isHovered, setIsHovered] = useState(false);
-    const APP_NAME = window.APP_NAME || 'Mi Sitio';
+    const APP_NAME = window.APP_NAME || "Mi Sitio";
 
     const handleLogout = async () => {
         try {
             await logout();
-            navigate('/login');
+            navigate("/login");
         } catch (error) {
-            console.error('Error al cerrar sesión:', error);
+            console.error("Error al cerrar sesión:", error);
         }
     };
 
     const navItems = [
         {
-            group: 'General',
+            group: "General",
             items: [
                 {
-                    path: '/admin',
-                    label: 'Dashboard',
+                    path: "/admin",
+                    label: "Dashboard",
                     icon: HomeIcon,
-                    permissions: []
+                    permissions: [],
                 },
                 {
-                    path: '/admin/posts',
-                    label: 'Posts',
+                    path: "/admin/posts",
+                    label: "Posts",
                     icon: DocumentTextIcon,
-                    permissions: ['post.index']
+                    permissions: ["post.index"],
                 },
                 {
-                    path: '/admin/contacts',
-                    label: 'Comunicaciones',
+                    path: "/admin/contacts",
+                    label: "Comunicaciones",
                     icon: ChatBubbleBottomCenterIcon,
-                    permissions: ['contact.index']
-                }
-            ]
+                    permissions: ["contact.index"],
+                },
+            ],
         },
         {
-            group: 'Gestión',
+            group: "Gestión",
             items: [
                 {
-                    path: '/admin/users',
-                    label: 'Usuarios',
+                    path: "/admin/users",
+                    label: "Usuarios",
                     icon: UserGroupIcon,
-                    permissions: ['user.index']
+                    permissions: ["user.index"],
                 },
                 {
-                    path: '/admin/roles',
-                    label: 'Roles',
+                    path: "/admin/roles",
+                    label: "Roles",
                     icon: DocumentCheckIcon,
-                    permissions: ['role.index']
-                }
-            ]
-        }
+                    permissions: ["role.index"],
+                },
+            ],
+        },
     ];
 
     const [expandedGroups, setExpandedGroups] = useState(() => {
         const initialState = {};
-        navItems.forEach(group => {
+        navItems.forEach((group) => {
             initialState[group.group] = true;
         });
         return initialState;
@@ -89,9 +90,9 @@ const Sidebar = ({ onExpandChange }) => {
 
     const toggleGroup = (group) => {
         if (isExpanded) {
-            setExpandedGroups(prev => ({
+            setExpandedGroups((prev) => ({
                 ...prev,
-                [group]: !prev[group]
+                [group]: !prev[group],
             }));
         }
     };
@@ -101,21 +102,25 @@ const Sidebar = ({ onExpandChange }) => {
             onMouseEnter={() => !isPinned && setIsHovered(true)}
             onMouseLeave={() => !isPinned && setIsHovered(false)}
             className={`fixed inset-y-0 left-0 bg-gray-900 transition-all duration-300 z-10 ${
-                isExpanded ? 'w-64' : 'w-20'
+                isExpanded ? "w-64" : "w-20"
             }`}
         >
             <div className="flex flex-col h-full">
                 {/* Header */}
                 <div className="flex items-center h-16 px-4 bg-gray-800">
-                    <div className={`transition-all duration-300 overflow-hidden ${
-                        isExpanded ? 'w-40 opacity-100' : 'w-0 opacity-0'
-                    }`}>
-                        <h1 className="text-xl font-bold text-white whitespace-nowrap">{APP_NAME}</h1>
+                    <div
+                        className={`transition-all duration-300 overflow-hidden ${
+                            isExpanded ? "w-40 opacity-100" : "w-0 opacity-0"
+                        }`}
+                    >
+                        <h1 className="text-xl font-bold text-white whitespace-nowrap">
+                            {APP_NAME}
+                        </h1>
                     </div>
                     <button
                         onClick={() => setIsPinned(!isPinned)}
                         className={`p-1 text-gray-300 hover:text-white transition-colors ${
-                            !isExpanded ? 'mx-auto' : 'ml-auto'
+                            !isExpanded ? "mx-auto" : "ml-auto"
                         }`}
                     >
                         {isPinned ? (
@@ -129,7 +134,10 @@ const Sidebar = ({ onExpandChange }) => {
                 {/* Navigation */}
                 <nav className="flex-1 px-2 py-4 space-y-2 overflow-y-auto">
                     {navItems.map((group) => (
-                        <div key={group.group} className="border-b border-gray-700 pb-2">
+                        <div
+                            key={group.group}
+                            className="border-b border-gray-700 pb-2"
+                        >
                             {isExpanded && (
                                 <button
                                     onClick={() => toggleGroup(group.group)}
@@ -140,19 +148,29 @@ const Sidebar = ({ onExpandChange }) => {
                                     </span>
                                     <ChevronDownIcon
                                         className={`w-4 h-4 transition-transform duration-200 ${
-                                            expandedGroups[group.group] ? 'rotate-180' : ''
+                                            expandedGroups[group.group]
+                                                ? "rotate-180"
+                                                : ""
                                         }`}
                                     />
                                 </button>
                             )}
 
-                            <div className={`mt-1 space-y-1 transition-all duration-200 ${
-                                !isExpanded || expandedGroups[group.group] ? 'block' : 'hidden'
-                            }`}>
+                            <div
+                                className={`mt-1 space-y-1 transition-all duration-200 ${
+                                    !isExpanded || expandedGroups[group.group]
+                                        ? "block"
+                                        : "hidden"
+                                }`}
+                            >
                                 {group.items.map((item) => {
                                     const Icon = item.icon;
-                                    const isActive = location.pathname === item.path ||
-                                        (item.path !== '/admin' && location.pathname.startsWith(item.path));
+                                    const isActive =
+                                        location.pathname === item.path ||
+                                        (item.path !== "/admin" &&
+                                            location.pathname.startsWith(
+                                                item.path
+                                            ));
 
                                     return (
                                         <Link
@@ -160,14 +178,24 @@ const Sidebar = ({ onExpandChange }) => {
                                             to={item.path}
                                             className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
                                                 isActive
-                                                    ? 'bg-blue-600 text-white'
-                                                    : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                                            } ${!isExpanded ? 'justify-center' : ''}`}
-                                            title={!isExpanded ? item.label : ''}
+                                                    ? "bg-blue-600 text-white"
+                                                    : "text-gray-300 hover:bg-gray-800 hover:text-white"
+                                            } ${
+                                                !isExpanded
+                                                    ? "justify-center"
+                                                    : ""
+                                            }`}
+                                            title={
+                                                !isExpanded ? item.label : ""
+                                            }
                                         >
-                                            <Icon className={`w-6 h-6 transition-all duration-200 ${
-                                                isActive ? 'text-white' : 'text-gray-400 group-hover:text-white'
-                                            }`} />
+                                            <Icon
+                                                className={`w-6 h-6 transition-all duration-200 ${
+                                                    isActive
+                                                        ? "text-white"
+                                                        : "text-gray-400 group-hover:text-white"
+                                                }`}
+                                            />
                                             {isExpanded && (
                                                 <span className="ml-3 whitespace-nowrap">
                                                     {item.label}
@@ -186,9 +214,9 @@ const Sidebar = ({ onExpandChange }) => {
                     <button
                         onClick={handleLogout}
                         className={`w-full flex items-center px-3 py-4 text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white transition-colors ${
-                            !isExpanded ? 'justify-center' : ''
+                            !isExpanded ? "justify-center" : ""
                         }`}
-                        title={!isExpanded ? 'Cerrar Sesión' : ''}
+                        title={!isExpanded ? "Cerrar Sesión" : ""}
                     >
                         <ArrowLeftOnRectangleIcon className="w-6 h-6 text-gray-400" />
                         {isExpanded && (
@@ -199,6 +227,10 @@ const Sidebar = ({ onExpandChange }) => {
             </div>
         </div>
     );
+};
+
+Sidebar.propTypes = {
+    onExpandChange: PropTypes.func,
 };
 
 export default Sidebar;

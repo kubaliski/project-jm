@@ -1,31 +1,34 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import React from "react";
+import PropTypes from "prop-types";
+import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 export default function TableFilters({
     config,
     onFilterChange,
     onSortChange,
     filters = {},
-    sortConfig = {}
+    sortConfig = {},
 }) {
     const handleReset = (filterConfig) => {
-        onFilterChange(filterConfig.key, filterConfig.defaultValue || '');
+        onFilterChange(filterConfig.key, filterConfig.defaultValue || "");
     };
 
     const renderFilter = (filterConfig) => {
-        const currentValue = filters[filterConfig.key] || filterConfig.defaultValue || '';
+        const currentValue =
+            filters[filterConfig.key] || filterConfig.defaultValue || "";
 
         switch (filterConfig.type) {
-            case 'select':
+            case "select":
                 return (
                     <div className="relative">
                         <select
                             value={currentValue}
-                            onChange={(e) => onFilterChange(filterConfig.key, e.target.value)}
+                            onChange={(e) =>
+                                onFilterChange(filterConfig.key, e.target.value)
+                            }
                             className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                         >
-                            {filterConfig.options.map(option => (
+                            {filterConfig.options.map((option) => (
                                 <option key={option.value} value={option.value}>
                                     {option.label}
                                 </option>
@@ -42,7 +45,7 @@ export default function TableFilters({
                     </div>
                 );
 
-            case 'search':
+            case "search":
                 return (
                     <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -53,7 +56,9 @@ export default function TableFilters({
                             className="block w-full pl-10 pr-8 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             placeholder={filterConfig.placeholder}
                             value={currentValue}
-                            onChange={(e) => onFilterChange(filterConfig.key, e.target.value)}
+                            onChange={(e) =>
+                                onFilterChange(filterConfig.key, e.target.value)
+                            }
                         />
                         {currentValue && (
                             <button
@@ -66,15 +71,17 @@ export default function TableFilters({
                     </div>
                 );
 
-            case 'custom':
+            case "custom":
                 return (
                     <div className="relative">
                         <select
                             value={currentValue}
-                            onChange={(e) => onFilterChange(filterConfig.key, e.target.value)}
+                            onChange={(e) =>
+                                onFilterChange(filterConfig.key, e.target.value)
+                            }
                             className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                         >
-                            {filterConfig.options.map(option => (
+                            {filterConfig.options.map((option) => (
                                 <option key={option.value} value={option.value}>
                                     {option.label}
                                 </option>
@@ -113,17 +120,24 @@ export default function TableFilters({
                         Ordenar por
                     </label>
                     <select
-                        value={`${sortConfig.field || sortConfig.key}-${sortConfig.direction}`}
+                        value={`${sortConfig.field || sortConfig.key}-${
+                            sortConfig.direction
+                        }`}
                         onChange={(e) => {
-                            const [field, direction] = e.target.value.split('-');
+                            const [field, direction] =
+                                e.target.value.split("-");
                             onSortChange(field, direction);
                         }}
                         className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                     >
-                        {config.sortOptions.map(option => (
+                        {config.sortOptions.map((option) => (
                             <React.Fragment key={option.key}>
-                                <option value={`${option.key}-asc`}>{option.label} (A-Z)</option>
-                                <option value={`${option.key}-desc`}>{option.label} (Z-A)</option>
+                                <option value={`${option.key}-asc`}>
+                                    {option.label} (A-Z)
+                                </option>
+                                <option value={`${option.key}-desc`}>
+                                    {option.label} (Z-A)
+                                </option>
                             </React.Fragment>
                         ))}
                     </select>
@@ -132,3 +146,39 @@ export default function TableFilters({
         </div>
     );
 }
+
+TableFilters.propTypes = {
+    config: PropTypes.shape({
+        filters: PropTypes.arrayOf(
+            PropTypes.shape({
+                key: PropTypes.string.isRequired,
+                label: PropTypes.string.isRequired,
+                type: PropTypes.string.isRequired,
+                defaultValue: PropTypes.oneOfType([
+                    PropTypes.string,
+                    PropTypes.number,
+                ]),
+                options: PropTypes.arrayOf(
+                    PropTypes.shape({
+                        value: PropTypes.oneOfType([
+                            PropTypes.string,
+                            PropTypes.number,
+                        ]),
+                        label: PropTypes.string,
+                    })
+                ),
+                placeholder: PropTypes.string,
+            })
+        ),
+        sortOptions: PropTypes.arrayOf(
+            PropTypes.shape({
+                key: PropTypes.string.isRequired,
+                label: PropTypes.string.isRequired,
+            })
+        ),
+    }).isRequired,
+    onFilterChange: PropTypes.func.isRequired,
+    onSortChange: PropTypes.func.isRequired,
+    filters: PropTypes.object,
+    sortConfig: PropTypes.object,
+};

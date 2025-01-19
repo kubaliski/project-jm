@@ -80,8 +80,7 @@ export default function PostsList() {
         };
 
         fetchInitialData();
-    }, [dispatch, canViewList, canViewStats]);
-
+    }, [dispatch, canViewList, canViewStats, toast]);
 
     const handleCreateClick = () => {
         if (canCreate) {
@@ -106,7 +105,6 @@ export default function PostsList() {
         }
     };
 
-
     const handleDeleteClick = (post) => {
         if (canDelete) {
             dispatch(setSelectedPost(post));
@@ -122,7 +120,9 @@ export default function PostsList() {
         if (canDelete && selectedPost) {
             try {
                 await dispatch(deletePost(selectedPost.id)).unwrap();
-                toast.success(`El post "${selectedPost.title}" ha sido eliminado`);
+                toast.success(
+                    `El post "${selectedPost.title}" ha sido eliminado`
+                );
 
                 dispatch(setDeleteModalState({ isOpen: false }));
                 dispatch(setSelectedPost(null));
@@ -143,12 +143,14 @@ export default function PostsList() {
                 await dispatch(countPosts()).unwrap();
             }
             toast.success(
-                action === 'create'
+                action === "create"
                     ? "Post creado correctamente"
                     : "Post actualizado correctamente"
             );
         } catch (error) {
-            toast.error("Error al actualizar la lista de posts: " + error.message);
+            toast.error(
+                "Error al actualizar la lista de posts: " + error.message
+            );
         }
     };
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
     PencilIcon,
@@ -16,7 +16,7 @@ import {
 import { UserModal, UserRolesModal } from "@features/user";
 import { formatDateForDisplay } from "@utils/dateUtils";
 import { usersTableConfig } from "@config/tables/usersTable";
-import { useAuth,useToast } from "@hooks";
+import { useAuth, useToast } from "@hooks";
 
 // Importar thunks y actions
 import { fetchUsers, deleteUser } from "@store/admin/thunks/usersThunks";
@@ -47,10 +47,7 @@ import {
     selectFilteredAndSortedUsers,
 } from "@store/admin/selectors/usersSelectors";
 
-import {
-    selectRoles,
-    selectRolesLoading,
-} from "@store/admin/selectors/rolesSelectors";
+import { selectRoles } from "@store/admin/selectors/rolesSelectors";
 
 export default function UsersList() {
     const dispatch = useDispatch();
@@ -81,7 +78,6 @@ export default function UsersList() {
 
     // Selectors de roles
     const roles = useSelector(selectRoles);
-    const rolesLoading = useSelector(selectRolesLoading);
 
     // Cargar datos iniciales
     useEffect(() => {
@@ -97,7 +93,7 @@ export default function UsersList() {
         };
 
         fetchInitialData();
-    }, [dispatch, canViewList]);
+    }, [dispatch, canViewList, toast]);
 
     // Configurar opciones de roles para los filtros
     useEffect(() => {
@@ -187,7 +183,9 @@ export default function UsersList() {
         if (canDelete && selectedUser && selectedUser.id !== currentUser.id) {
             try {
                 await dispatch(deleteUser(selectedUser.id)).unwrap();
-                toast.success(`El usuario ${selectedUser.name} ${selectedUser.last_name} ha sido eliminado`);
+                toast.success(
+                    `El usuario ${selectedUser.name} ${selectedUser.last_name} ha sido eliminado`
+                );
 
                 dispatch(setDeleteModalState({ isOpen: false }));
                 dispatch(setSelectedUser(null));
@@ -201,12 +199,14 @@ export default function UsersList() {
         try {
             await dispatch(fetchUsers()).unwrap();
             toast.success(
-                action === 'create'
+                action === "create"
                     ? "Usuario creado correctamente"
                     : "Usuario actualizado correctamente"
             );
         } catch (error) {
-            toast.error("Error al actualizar la lista de usuarios: " + error.message);
+            toast.error(
+                "Error al actualizar la lista de usuarios: " + error.message
+            );
         }
     };
 

@@ -1,24 +1,19 @@
 // UserModal.jsx
-import React from 'react';
-import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
-import ReusableModal from '@components/common/ReusableModal';
-import UserForm from './UserForm';
+import React from "react";
+import PropTypes from "prop-types";
+import { useDispatch, useSelector } from "react-redux";
+import ReusableModal from "@components/common/ReusableModal";
+import UserForm from "./UserForm";
 import {
     selectSelectedUser,
-    selectUsersLoading
-} from '@store/admin/selectors/usersSelectors';
+    selectUsersLoading,
+} from "@store/admin/selectors/usersSelectors";
 import {
     selectRoles,
     selectRolesLoading,
-} from '@store/admin/selectors/rolesSelectors';
-import {
-    createUser,
-    updateUser
-} from '@store/admin/thunks/usersThunks';
-import {
-    setSelectedUser
-} from '@store/admin/slices/usersSlice';
+} from "@store/admin/selectors/rolesSelectors";
+import { createUser, updateUser } from "@store/admin/thunks/usersThunks";
+import { setSelectedUser } from "@store/admin/slices/usersSlice";
 
 const UserModal = ({ isOpen, mode, onClose, onSuccess, readOnly = false }) => {
     const dispatch = useDispatch();
@@ -33,35 +28,35 @@ const UserModal = ({ isOpen, mode, onClose, onSuccess, readOnly = false }) => {
     };
 
     const handleSubmit = async (formData) => {
-        try {
-            if (mode === 'edit' && selectedUser) {
-                await dispatch(updateUser({
+        if (mode === "edit" && selectedUser) {
+            await dispatch(
+                updateUser({
                     id: selectedUser.id,
                     formData: {
                         ...formData,
-                        ...(formData.password ? { password: formData.password } : {})
-                    }
-                })).unwrap();
-            } else {
-                await dispatch(createUser(formData)).unwrap();
-            }
-            handleClose();
-            if (onSuccess) {
-                onSuccess();
-            }
-        } catch (error) {
-            throw error;
+                        ...(formData.password
+                            ? { password: formData.password }
+                            : {}),
+                    },
+                })
+            ).unwrap();
+        } else {
+            await dispatch(createUser(formData)).unwrap();
+        }
+        handleClose();
+        if (onSuccess) {
+            onSuccess();
         }
     };
 
     const getModalTitle = () => {
         switch (mode) {
-            case 'view':
-                return 'Ver Usuario';
-            case 'edit':
-                return 'Editar Usuario';
+            case "view":
+                return "Ver Usuario";
+            case "edit":
+                return "Editar Usuario";
             default:
-                return 'Nuevo Usuario';
+                return "Nuevo Usuario";
         }
     };
 
@@ -81,7 +76,7 @@ const UserModal = ({ isOpen, mode, onClose, onSuccess, readOnly = false }) => {
                     onSubmit={handleSubmit}
                     onCancel={handleClose}
                     isSubmitting={isSubmitting}
-                    readOnly={readOnly || mode === 'view'}
+                    readOnly={readOnly || mode === "view"}
                     mode={mode}
                 />
             </div>
@@ -91,10 +86,10 @@ const UserModal = ({ isOpen, mode, onClose, onSuccess, readOnly = false }) => {
 
 UserModal.propTypes = {
     isOpen: PropTypes.bool.isRequired,
-    mode: PropTypes.oneOf(['create', 'edit', 'view']),
+    mode: PropTypes.oneOf(["create", "edit", "view"]),
     onClose: PropTypes.func.isRequired,
     onSuccess: PropTypes.func,
-    readOnly: PropTypes.bool
+    readOnly: PropTypes.bool,
 };
 
 export default UserModal;

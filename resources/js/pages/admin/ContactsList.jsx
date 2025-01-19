@@ -91,7 +91,7 @@ export default function ContactsList() {
         };
 
         fetchInitialData();
-    }, [dispatch, canViewList, canViewStats]);
+    }, [dispatch, canViewList, canViewStats, toast]);
 
     // Event Handlers
     const handleFilterChange = (key, value) => {
@@ -124,7 +124,6 @@ export default function ContactsList() {
         }
     };
 
-
     const handleCreateClick = () => {
         if (canCreate) {
             dispatch(setSelectedContact(null));
@@ -148,7 +147,6 @@ export default function ContactsList() {
         }
     };
 
-
     const handleDeleteClick = (contact) => {
         if (canDelete) {
             dispatch(setSelectedContact(contact));
@@ -162,7 +160,9 @@ export default function ContactsList() {
         if (canDelete && selectedContact) {
             try {
                 await dispatch(deleteContact(selectedContact.id)).unwrap();
-                toast.success(`El mensaje de ${selectedContact.full_name} ha sido eliminado`);
+                toast.success(
+                    `El mensaje de ${selectedContact.full_name} ha sido eliminado`
+                );
 
                 dispatch(setDeleteModalState({ isOpen: false }));
                 dispatch(setSelectedContact(null));
@@ -183,7 +183,7 @@ export default function ContactsList() {
                 await dispatch(countContacts()).unwrap();
             }
             toast.success(
-                action === 'create'
+                action === "create"
                     ? "Mensaje creado correctamente"
                     : "Mensaje actualizado correctamente"
             );

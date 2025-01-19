@@ -62,9 +62,7 @@ export default function RoleList() {
     const canEdit = hasPermission("role.edit");
     const canDelete = hasPermission("role.delete");
     const canView = hasPermission("role.view");
-    const canManagePermissions = hasPermission(
-        "role.manage-permissions"
-    );
+    const canManagePermissions = hasPermission("role.manage-permissions");
 
     // Selectors
     const roles = useSelector(selectPaginatedRoles);
@@ -93,7 +91,7 @@ export default function RoleList() {
         };
 
         fetchInitialData();
-    }, [dispatch, canViewList]);
+    }, [dispatch, canViewList, toast]);
 
     // Event Handlers
     const handleFilterChange = (key, value) => {
@@ -172,12 +170,14 @@ export default function RoleList() {
         try {
             await dispatch(fetchRoles()).unwrap();
             toast.success(
-                action === 'create'
+                action === "create"
                     ? "Rol creado correctamente"
                     : "Rol actualizado correctamente"
             );
         } catch (error) {
-            toast.error("Error al actualizar la lista de roles: " + error.message);
+            toast.error(
+                "Error al actualizar la lista de roles: " + error.message
+            );
         }
     };
 
@@ -186,7 +186,9 @@ export default function RoleList() {
             await dispatch(fetchRoles()).unwrap();
             toast.success("Permisos del rol actualizados correctamente");
         } catch (error) {
-            toast.error("Error al actualizar los permisos del rol: " + error.message);
+            toast.error(
+                "Error al actualizar los permisos del rol: " + error.message
+            );
         }
     };
 

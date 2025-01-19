@@ -11,10 +11,7 @@ import {
     createContact,
     updateContact,
 } from "@store/admin/thunks/contactsThunks";
-import {
-    setEditModalState,
-    setSelectedContact,
-} from "@store/admin/slices/contactsSlice";
+import { setSelectedContact } from "@store/admin/slices/contactsSlice";
 
 export default function ContactModal({
     isOpen,
@@ -33,23 +30,19 @@ export default function ContactModal({
     };
 
     const handleSubmit = async (formData) => {
-        try {
-            if (mode === "edit" && selectedContact) {
-                await dispatch(
-                    updateContact({
-                        id: selectedContact.id,
-                        formData,
-                    })
-                ).unwrap();
-            } else {
-                await dispatch(createContact(formData)).unwrap();
-            }
-            handleClose();
-            if (onSuccess) {
-                onSuccess();
-            }
-        } catch (error) {
-            throw error;
+        if (mode === "edit" && selectedContact) {
+            await dispatch(
+                updateContact({
+                    id: selectedContact.id,
+                    formData,
+                })
+            ).unwrap();
+        } else {
+            await dispatch(createContact(formData)).unwrap();
+        }
+        handleClose();
+        if (onSuccess) {
+            onSuccess();
         }
     };
 

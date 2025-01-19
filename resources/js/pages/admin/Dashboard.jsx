@@ -28,13 +28,15 @@ export default function Dashboard() {
     const canViewPostStats = hasPermission("stats.posts");
     const canViewContactStats = hasPermission("stats.contacts");
     useEffect(() => {
-        console.log('Dashboard mounted');
+        console.log("Dashboard mounted");
     }, []);
     useEffect(() => {
         let loadingTimeout;
 
-        if ((canViewPostStats && isPostsStatsLoading) ||
-            (canViewContactStats && isContactStatsLoading)) {
+        if (
+            (canViewPostStats && isPostsStatsLoading) ||
+            (canViewContactStats && isContactStatsLoading)
+        ) {
             setIsStatsLoading(true);
             return;
         }
@@ -50,7 +52,12 @@ export default function Dashboard() {
                 clearTimeout(loadingTimeout);
             }
         };
-    }, [isPostsStatsLoading, isContactStatsLoading, canViewPostStats, canViewContactStats]);
+    }, [
+        isPostsStatsLoading,
+        isContactStatsLoading,
+        canViewPostStats,
+        canViewContactStats,
+    ]);
 
     useEffect(() => {
         const loadStats = async () => {
@@ -62,12 +69,14 @@ export default function Dashboard() {
                     await dispatch(countContacts()).unwrap();
                 }
             } catch (error) {
-                toast.error("Error al cargar las estadísticas: " + error.message);
+                toast.error(
+                    "Error al cargar las estadísticas: " + error.message
+                );
             }
         };
 
         loadStats();
-    }, [dispatch, canViewPostStats, canViewContactStats]);
+    }, [dispatch, canViewPostStats, canViewContactStats, toast]);
 
     const fullName = user ? `${user.name} ${user.last_name}`.trim() : "";
 
