@@ -1,2 +1,3 @@
 export { default as SEOProvider } from './SEOProvider';
-export { ToastProvider } from './ToastProvider';
+export { default as ToastProvider } from './ToastProvider';
+export { ToastContext } from './ToastProvider';

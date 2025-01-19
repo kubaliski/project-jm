@@ -1,21 +1,32 @@
-import { useContext } from 'react';
+import { useContext, useCallback } from 'react';
 import { ToastContext } from '@/providers/ToastProvider';
 
 const useToast = () => {
     const context = useContext(ToastContext);
 
     if (!context) {
+        console.error('Toast context is null - make sure useToast is used within ToastProvider');
         throw new Error('useToast must be used within a ToastProvider');
     }
 
     const { addToast } = context;
 
-    return {
-        success: (message) => addToast(message, 'success'),
-        error: (message) => addToast(message, 'error'),
-        warning: (message) => addToast(message, 'warning'),
-        info: (message) => addToast(message, 'info'),
+    const toast = {
+        success: useCallback((message) => {
+            addToast(message, 'success');
+        }, [addToast]),
+        error: useCallback((message) => {
+            addToast(message, 'error');
+        }, [addToast]),
+        warning: useCallback((message) => {
+            addToast(message, 'warning');
+        }, [addToast]),
+        info: useCallback((message) => {
+            addToast(message, 'info');
+        }, [addToast])
     };
+
+    return toast;
 };
 
 export default useToast;

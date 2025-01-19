@@ -14,7 +14,8 @@ export default function AdminLayout({ children }) {
             <div className={`flex-1 transition-all duration-300 ${
                 sidebarExpanded ? 'ml-64' : 'ml-20'
             }`}>
-                <header className="bg-white shadow h-16 sticky top-0 z-10">
+                {/* Cambiado z-10 a z-[50] para el header */}
+                <header className="bg-white shadow h-16 sticky top-0 z-[50]">
                     <div className="flex justify-between items-center px-8 h-full">
                         <h2 className="text-xl font-semibold text-gray-900">
                             Panel de Administración
@@ -22,7 +23,7 @@ export default function AdminLayout({ children }) {
                         <UserMenu />
                     </div>
                 </header>
-                <main className="p-8">
+                <main className="p-8 relative">
                     {children}
                 </main>
             </div>

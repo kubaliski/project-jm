@@ -6,8 +6,6 @@ import {
   updateRole,
   deleteRole,
   updateRolePermissions,
-  addRolePermissions,
-  removeRolePermissions,
   fetchAllPermissions
 } from '../thunks/rolesThunks';
 

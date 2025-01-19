@@ -21,6 +21,8 @@ export default [
         URL: 'readonly',
         FormData: 'readonly',
         File: 'readonly',
+        process: 'readonly',
+
       },
       parserOptions: {
         ecmaFeatures: {

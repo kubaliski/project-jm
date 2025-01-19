@@ -27,7 +27,9 @@ export default function Dashboard() {
 
     const canViewPostStats = hasPermission("stats.posts");
     const canViewContactStats = hasPermission("stats.contacts");
-
+    useEffect(() => {
+        console.log('Dashboard mounted');
+    }, []);
     useEffect(() => {
         let loadingTimeout;
 
