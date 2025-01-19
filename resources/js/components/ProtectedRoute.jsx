@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@hooks';
+import { AdminLayoutSkeleton } from '@components/ui/Skeletons';
 
 export default function ProtectedRoute({ children, requiredPermissions = [] }) {
     const { isAuthenticated, loading, checkAuth, hasPermission } = useAuth();
@@ -15,12 +16,11 @@ export default function ProtectedRoute({ children, requiredPermissions = [] }) {
             }
             setIsChecking(false);
         };
-
         verifyAuth();
     }, [checkAuth, isAuthenticated]);
 
     if (loading || isChecking) {
-        return <div>Cargando...</div>; // MEJORAR ESTE COMPONTENTE LOGIN POR DIOS
+        return <AdminLayoutSkeleton />;
     }
 
     if (!isAuthenticated) {
@@ -36,3 +36,9 @@ export default function ProtectedRoute({ children, requiredPermissions = [] }) {
 
     return children;
 }
+
+ProtectedRoute.propTypes = {
+    children: PropTypes.node.isRequired,
+    requiredPermissions: PropTypes.arrayOf(PropTypes.string)
+};
+
