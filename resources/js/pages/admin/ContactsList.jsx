@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { PencilIcon, TrashIcon, EyeIcon } from "@heroicons/react/24/solid";
 import {
@@ -14,7 +14,6 @@ import { formatDateForDisplay } from "@utils/dateUtils";
 import { contactsTableConfig } from "@config/tables/contactsTable";
 import { useAuth, useToast } from "@hooks";
 
-// Importar thunks y actions...
 import {
     fetchContacts,
     updateContactStatus,
@@ -31,7 +30,6 @@ import {
     setDeleteModalState,
 } from "@store/admin/slices/contactsSlice";
 
-// Importar selectores...
 import {
     selectPaginatedContacts,
     selectContactsLoading,
@@ -52,16 +50,18 @@ export default function ContactsList() {
     const { hasPermission } = useAuth();
     const toast = useToast();
 
-    // Permisos específicos
-    const canViewList = hasPermission("contact.index");
-    const canCreate = hasPermission("contact.create");
-    const canEdit = hasPermission("contact.edit");
-    const canDelete = hasPermission("contact.delete");
-    const canView = hasPermission("contact.view");
-    const canUpdateStatus = hasPermission("contact.update-status");
-    const canViewStats = hasPermission("stats.contacts");
+    // Memoizamos los permisos
+    const permissions = useMemo(() => ({
+        viewList: hasPermission("contact.index"),
+        create: hasPermission("contact.create"),
+        edit: hasPermission("contact.edit"),
+        delete: hasPermission("contact.delete"),
+        view: hasPermission("contact.view"),
+        updateStatus: hasPermission("contact.update-status"),
+        viewStats: hasPermission("stats.contacts")
+    }), [hasPermission]);
 
-    // Selectors
+    // Selectores
     const contacts = useSelector(selectPaginatedContacts);
     const isLoading = useSelector(selectContactsLoading);
     const error = useSelector(selectContactsError);
@@ -75,25 +75,27 @@ export default function ContactsList() {
     const totalContacts = useSelector(selectTotalContacts);
     const isStatsLoading = useSelector(selectContactStatsLoading);
 
-    // Initial data fetch
     useEffect(() => {
         const fetchInitialData = async () => {
             try {
-                if (canViewList) {
-                    await dispatch(fetchContacts()).unwrap();
+                const loadPromises = [];
+
+                if (permissions.viewList) {
+                    loadPromises.push(dispatch(fetchContacts()).unwrap());
                 }
-                if (canViewStats) {
-                    await dispatch(countContacts()).unwrap();
+                if (permissions.viewStats) {
+                    loadPromises.push(dispatch(countContacts()).unwrap());
                 }
+
+                await Promise.all(loadPromises);
             } catch (error) {
                 toast.error("Error al cargar los datos: " + error.message);
             }
         };
 
         fetchInitialData();
-    }, [dispatch, canViewList, canViewStats, toast]);
+    }, []);
 
-    // Event Handlers
     const handleFilterChange = (key, value) => {
         dispatch(
             setFilters({
@@ -112,7 +114,7 @@ export default function ContactsList() {
     };
 
     const handleStatusChange = async (contactId, newStatus) => {
-        if (canUpdateStatus) {
+        if (permissions.updateStatus) {
             try {
                 await dispatch(
                     updateContactStatus({ id: contactId, status: newStatus })
@@ -125,7 +127,7 @@ export default function ContactsList() {
     };
 
     const handleCreateClick = () => {
-        if (canCreate) {
+        if (permissions.create) {
             dispatch(setSelectedContact(null));
             dispatch(setEditModalState({ isOpen: true, mode: "create" }));
         } else {
@@ -134,12 +136,12 @@ export default function ContactsList() {
     };
 
     const handleEditClick = (contact) => {
-        if (canEdit || (canView && !canEdit)) {
+        if (permissions.edit || (permissions.view && !permissions.edit)) {
             dispatch(setSelectedContact(contact));
             dispatch(
                 setEditModalState({
                     isOpen: true,
-                    mode: canEdit ? "edit" : "view",
+                    mode: permissions.edit ? "edit" : "view",
                 })
             );
         } else {
@@ -148,7 +150,7 @@ export default function ContactsList() {
     };
 
     const handleDeleteClick = (contact) => {
-        if (canDelete) {
+        if (permissions.delete) {
             dispatch(setSelectedContact(contact));
             dispatch(setDeleteModalState({ isOpen: true }));
         } else {
@@ -157,31 +159,35 @@ export default function ContactsList() {
     };
 
     const handleConfirmDelete = async () => {
-        if (canDelete && selectedContact) {
-            try {
-                await dispatch(deleteContact(selectedContact.id)).unwrap();
-                toast.success(
-                    `El mensaje de ${selectedContact.full_name} ha sido eliminado`
-                );
+        if (!selectedContact || !permissions.delete) return;
 
-                dispatch(setDeleteModalState({ isOpen: false }));
-                dispatch(setSelectedContact(null));
+        try {
+            await dispatch(deleteContact(selectedContact.id)).unwrap();
+            toast.success(
+                `El mensaje de ${selectedContact.full_name} ha sido eliminado`
+            );
 
-                if (canViewStats) {
-                    await dispatch(countContacts()).unwrap();
-                }
-            } catch (error) {
-                toast.error("Error al eliminar el contacto: " + error.message);
+            dispatch(setDeleteModalState({ isOpen: false }));
+            dispatch(setSelectedContact(null));
+
+            const loadPromises = [dispatch(fetchContacts()).unwrap()];
+            if (permissions.viewStats) {
+                loadPromises.push(dispatch(countContacts()).unwrap());
             }
+            await Promise.all(loadPromises);
+        } catch (error) {
+            toast.error("Error al eliminar el contacto: " + error.message);
         }
     };
 
     const handleModalSuccess = async (action) => {
         try {
-            await dispatch(fetchContacts()).unwrap();
-            if (canViewStats) {
-                await dispatch(countContacts()).unwrap();
+            const loadPromises = [dispatch(fetchContacts()).unwrap()];
+            if (permissions.viewStats) {
+                loadPromises.push(dispatch(countContacts()).unwrap());
             }
+            await Promise.all(loadPromises);
+
             toast.success(
                 action === "create"
                     ? "Mensaje creado correctamente"
@@ -192,7 +198,7 @@ export default function ContactsList() {
         }
     };
 
-    const columns = [
+    const columns = useMemo(() => [
         {
             key: "contact_info",
             header: "Información de contacto",
@@ -232,7 +238,7 @@ export default function ContactsList() {
                     item={contact}
                     onStatusChange={handleStatusChange}
                     isUpdating={isLoading}
-                    viewOnly={!canUpdateStatus}
+                    viewOnly={!permissions.updateStatus}
                 />
             ),
         },
@@ -252,20 +258,20 @@ export default function ContactsList() {
             cellClassName: "text-right",
             render: (contact) => (
                 <div className="flex justify-end space-x-3">
-                    {(canView || canEdit) && (
+                    {(permissions.view || permissions.edit) && (
                         <button
                             onClick={() => handleEditClick(contact)}
                             className="text-indigo-600 hover:text-indigo-900 mr-4"
-                            title={canEdit ? "Editar" : "Ver"}
+                            title={permissions.edit ? "Editar" : "Ver"}
                         >
-                            {canEdit ? (
+                            {permissions.edit ? (
                                 <PencilIcon className="h-5 w-5" />
                             ) : (
                                 <EyeIcon className="h-5 w-5" />
                             )}
                         </button>
                     )}
-                    {canDelete && (
+                    {permissions.delete && (
                         <button
                             onClick={() => handleDeleteClick(contact)}
                             className="text-red-600 hover:text-red-900"
@@ -277,10 +283,9 @@ export default function ContactsList() {
                 </div>
             ),
         },
-    ];
+    ], [permissions, isLoading, handleStatusChange, handleEditClick, handleDeleteClick]);
 
-    // Si no tiene permiso para ver la lista, mostrar mensaje o redireccionar
-    if (!canViewList) {
+    if (!permissions.viewList) {
         return (
             <Paper title="Acceso denegado" titleLevel="h1">
                 <p className="text-gray-500">
@@ -299,15 +304,16 @@ export default function ContactsList() {
                 contentClassName="sm:flex sm:items-center sm:justify-between"
             >
                 <div>
-                    {canViewStats && !isStatsLoading && (
+                    {permissions.viewStats && !isStatsLoading && (
                         <p className="mt-1 text-sm text-gray-500">
                             Total de mensajes: {totalContacts}
                         </p>
                     )}
                 </div>
             </Paper>
+
             <Paper contentClassName="space-y-4">
-                {canCreate && (
+                {permissions.create && (
                     <Button onClick={handleCreateClick}>Nuevo mensaje</Button>
                 )}
                 <TableFilters
@@ -347,6 +353,7 @@ export default function ContactsList() {
                     emptyMessage="No hay mensajes de contacto"
                 />
             </Paper>
+
             <ContactModal
                 isOpen={editModal.isOpen}
                 mode={editModal.mode}
@@ -355,7 +362,7 @@ export default function ContactsList() {
                     dispatch(setSelectedContact(null));
                 }}
                 onSuccess={() => handleModalSuccess(editModal.mode)}
-                readOnly={selectedContact && !canEdit}
+                readOnly={selectedContact && !permissions.edit}
             />
 
             <ConfirmationDialog

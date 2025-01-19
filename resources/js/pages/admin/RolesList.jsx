@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
     PencilIcon,
@@ -54,17 +54,18 @@ export default function RoleList() {
     const dispatch = useDispatch();
     const { hasPermission } = useAuth();
     const toast = useToast();
-    const [tableConfig] = useState(rolesTableConfig);
 
-    //Permisos de la vista
-    const canViewList = hasPermission("role.index");
-    const canCreate = hasPermission("role.create");
-    const canEdit = hasPermission("role.edit");
-    const canDelete = hasPermission("role.delete");
-    const canView = hasPermission("role.view");
-    const canManagePermissions = hasPermission("role.manage-permissions");
+    // Permisos memoizados
+    const permissions = useMemo(() => ({
+        viewList: hasPermission("role.index"),
+        create: hasPermission("role.create"),
+        edit: hasPermission("role.edit"),
+        delete: hasPermission("role.delete"),
+        view: hasPermission("role.view"),
+        managePermissions: hasPermission("role.manage-permissions")
+    }), [hasPermission]);
 
-    // Selectors
+    // Selectores
     const roles = useSelector(selectPaginatedRoles);
     const isLoading = useSelector(selectRolesLoading);
     const error = useSelector(selectRolesError);
@@ -77,13 +78,16 @@ export default function RoleList() {
     const filteredRoles = useSelector(selectFilteredAndSortedRoles);
     const selectedRole = useSelector(selectSelectedRole);
 
-    // carga inicial de datos
+    // Carga inicial de datos
     useEffect(() => {
         const fetchInitialData = async () => {
             try {
-                if (canViewList) {
-                    await dispatch(fetchRoles()).unwrap();
-                    await dispatch(fetchAllPermissions()).unwrap();
+                if (permissions.viewList) {
+                    const loadPromises = [
+                        dispatch(fetchRoles()).unwrap(),
+                        dispatch(fetchAllPermissions()).unwrap()
+                    ];
+                    await Promise.all(loadPromises);
                 }
             } catch (error) {
                 toast.error("Error al cargar los datos: " + error.message);
@@ -91,16 +95,14 @@ export default function RoleList() {
         };
 
         fetchInitialData();
-    }, [dispatch, canViewList, toast]);
+    }, []);
 
-    // Event Handlers
+    // Event Handlers básicos
     const handleFilterChange = (key, value) => {
-        dispatch(
-            setFilters({
-                ...filters,
-                [key]: value,
-            })
-        );
+        dispatch(setFilters({
+            ...filters,
+            [key]: value,
+        }));
     };
 
     const handleSortChange = (field, direction) => {
@@ -110,9 +112,8 @@ export default function RoleList() {
     const handlePageChange = (page) => {
         dispatch(setCurrentPage(page));
     };
-
     const handleCreateClick = () => {
-        if (canCreate) {
+        if (permissions.create) {
             dispatch(setSelectedRole(null));
             dispatch(setEditModalState({ isOpen: true, mode: "create" }));
         } else {
@@ -121,12 +122,12 @@ export default function RoleList() {
     };
 
     const handleEditClick = (role) => {
-        if (canEdit || (canView && !canEdit)) {
+        if (permissions.edit || (permissions.view && !permissions.edit)) {
             dispatch(setSelectedRole(role));
             dispatch(
                 setEditModalState({
                     isOpen: true,
-                    mode: canEdit ? "edit" : "view",
+                    mode: permissions.edit ? "edit" : "view",
                 })
             );
         } else {
@@ -135,7 +136,7 @@ export default function RoleList() {
     };
 
     const handlePermissionsClick = (role) => {
-        if (canManagePermissions) {
+        if (permissions.managePermissions) {
             dispatch(setSelectedRole(role));
             dispatch(setPermissionsModalState({ isOpen: true }));
         } else {
@@ -144,25 +145,25 @@ export default function RoleList() {
     };
 
     const handleDeleteClick = (role) => {
-        if (canDelete) {
+        if (permissions.delete) {
             dispatch(setSelectedRole(role));
             dispatch(setDeleteModalState({ isOpen: true }));
         } else {
             toast.warning("No tienes permisos para eliminar roles");
         }
     };
-
     const handleConfirmDelete = async () => {
-        if (canDelete && selectedRole) {
-            try {
-                await dispatch(deleteRole(selectedRole.id)).unwrap();
-                toast.success(`El rol ${selectedRole.name} ha sido eliminado`);
+        if (!selectedRole || !permissions.delete) return;
 
-                dispatch(setDeleteModalState({ isOpen: false }));
-                dispatch(setSelectedRole(null));
-            } catch (error) {
-                toast.error("Error al eliminar el rol: " + error.message);
-            }
+        try {
+            await dispatch(deleteRole(selectedRole.id)).unwrap();
+            toast.success(`El rol ${selectedRole.name} ha sido eliminado`);
+
+            dispatch(setDeleteModalState({ isOpen: false }));
+            dispatch(setSelectedRole(null));
+            await dispatch(fetchRoles()).unwrap();
+        } catch (error) {
+            toast.error("Error al eliminar el rol: " + error.message);
         }
     };
 
@@ -175,9 +176,7 @@ export default function RoleList() {
                     : "Rol actualizado correctamente"
             );
         } catch (error) {
-            toast.error(
-                "Error al actualizar la lista de roles: " + error.message
-            );
+            toast.error("Error al actualizar la lista de roles: " + error.message);
         }
     };
 
@@ -186,13 +185,12 @@ export default function RoleList() {
             await dispatch(fetchRoles()).unwrap();
             toast.success("Permisos del rol actualizados correctamente");
         } catch (error) {
-            toast.error(
-                "Error al actualizar los permisos del rol: " + error.message
-            );
+            toast.error("Error al actualizar los permisos del rol: " + error.message);
         }
     };
 
-    const columns = [
+    // Definición de columnas memoizada
+    const columns = useMemo(() => [
         {
             key: "role_info",
             header: "Información del rol",
@@ -223,20 +221,20 @@ export default function RoleList() {
             cellClassName: "text-right",
             render: (role) => (
                 <div className="flex justify-end space-x-3">
-                    {(canView || canEdit) && (
+                    {(permissions.view || permissions.edit) && (
                         <button
                             onClick={() => handleEditClick(role)}
                             className="text-indigo-600 hover:text-indigo-900"
-                            title={canEdit ? "Editar" : "Ver"}
+                            title={permissions.edit ? "Editar" : "Ver"}
                         >
-                            {canEdit ? (
+                            {permissions.edit ? (
                                 <PencilIcon className="h-5 w-5" />
                             ) : (
                                 <EyeIcon className="h-5 w-5" />
                             )}
                         </button>
                     )}
-                    {canManagePermissions && (
+                    {permissions.managePermissions && (
                         <button
                             onClick={() => handlePermissionsClick(role)}
                             className="text-blue-600 hover:text-blue-900"
@@ -245,7 +243,7 @@ export default function RoleList() {
                             <KeyIcon className="h-5 w-5" />
                         </button>
                     )}
-                    {canDelete && (
+                    {permissions.delete && (
                         <button
                             onClick={() => handleDeleteClick(role)}
                             className="text-red-600 hover:text-red-900"
@@ -257,10 +255,9 @@ export default function RoleList() {
                 </div>
             ),
         },
-    ];
-
-    // If no permission to view list
-    if (!canViewList) {
+    ], [permissions, handleEditClick, handlePermissionsClick, handleDeleteClick]);
+    // Verificación de permisos para ver la lista
+    if (!permissions.viewList) {
         return (
             <Paper title="Acceso denegado" titleLevel="h1">
                 <p className="text-gray-500">
@@ -276,14 +273,14 @@ export default function RoleList() {
                 title="Roles"
                 titleLevel="h1"
                 subtitle="Gestión de roles y sus permisos"
-                contentclassName="sm:flex sm:items-center sm:justify-between"
-            ></Paper>
+                contentClassName="sm:flex sm:items-center sm:justify-between"
+            />
             <Paper>
-                {canCreate && (
+                {permissions.create && (
                     <Button onClick={handleCreateClick}>Crear rol</Button>
                 )}
                 <TableFilters
-                    config={tableConfig}
+                    config={rolesTableConfig}
                     filters={filters}
                     sortConfig={sortConfig}
                     onFilterChange={handleFilterChange}
@@ -326,7 +323,7 @@ export default function RoleList() {
                     dispatch(setSelectedRole(null));
                 }}
                 onSuccess={() => handleModalSuccess(editModal.mode)}
-                readOnly={selectedRole && !canEdit}
+                readOnly={selectedRole && !permissions.edit}
             />
 
             <RolePermissionsModal
@@ -336,7 +333,7 @@ export default function RoleList() {
                     dispatch(setSelectedRole(null));
                 }}
                 onSuccess={handlePermissionsSuccess}
-                readOnly={!canManagePermissions}
+                readOnly={!permissions.managePermissions}
             />
 
             <ConfirmationDialog

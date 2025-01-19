@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
     PencilIcon,
@@ -22,6 +22,7 @@ import { useAuth, useToast } from "@hooks";
 import { fetchUsers, deleteUser } from "@store/admin/thunks/usersThunks";
 import { fetchRoles } from "@store/admin/thunks/rolesThunks";
 
+// Importar acciones del slice
 import {
     setFilters,
     setSortConfig,
@@ -32,7 +33,7 @@ import {
     setRolesModalState,
 } from "@store/admin/slices/usersSlice";
 
-// Importar selectores de usuarios y roles
+// Importar selectores de usuarios
 import {
     selectPaginatedUsers,
     selectUsersLoading,
@@ -47,23 +48,24 @@ import {
     selectFilteredAndSortedUsers,
 } from "@store/admin/selectors/usersSelectors";
 
+// Importar selectores de roles
 import { selectRoles } from "@store/admin/selectors/rolesSelectors";
-
 export default function UsersList() {
     const dispatch = useDispatch();
     const { hasPermission, user: currentUser } = useAuth();
     const toast = useToast();
-    const [tableConfig, setTableConfig] = useState(usersTableConfig);
 
-    // Permisos específicos
-    const canViewList = hasPermission("user.index");
-    const canCreate = hasPermission("user.create");
-    const canEdit = hasPermission("user.edit");
-    const canDelete = hasPermission("user.delete");
-    const canView = hasPermission("user.view");
-    const canAssignRoles = hasPermission("user.assign-roles");
+    // Permisos memoizados
+    const permissions = useMemo(() => ({
+        viewList: hasPermission("user.index"),
+        create: hasPermission("user.create"),
+        edit: hasPermission("user.edit"),
+        delete: hasPermission("user.delete"),
+        view: hasPermission("user.view"),
+        assignRoles: hasPermission("user.assign-roles")
+    }), [hasPermission]);
 
-    // Selectors de usuarios
+    // Selectores
     const users = useSelector(selectPaginatedUsers);
     const isLoading = useSelector(selectUsersLoading);
     const error = useSelector(selectUsersError);
@@ -75,101 +77,99 @@ export default function UsersList() {
     const rolesModal = useSelector(selectRolesModalState);
     const filteredUsers = useSelector(selectFilteredAndSortedUsers);
     const selectedUser = useSelector(selectSelectedUser);
-
-    // Selectors de roles
     const roles = useSelector(selectRoles);
-
-    // Cargar datos iniciales
+    // Carga inicial de datos
     useEffect(() => {
         const fetchInitialData = async () => {
             try {
-                if (canViewList) {
-                    await dispatch(fetchUsers()).unwrap();
-                    await dispatch(fetchRoles()).unwrap();
-                }
+                if (!permissions.viewList) return;
+
+                const loadPromises = [
+                    dispatch(fetchUsers()).unwrap(),
+                    dispatch(fetchRoles()).unwrap()
+                ];
+                await Promise.all(loadPromises);
             } catch (error) {
                 toast.error("Error al cargar los datos: " + error.message);
             }
         };
 
         fetchInitialData();
-    }, [dispatch, canViewList, toast]);
+    }, []); // Solo se ejecuta al montar el componente
 
-    // Configurar opciones de roles para los filtros
-    useEffect(() => {
-        if (roles.length > 0) {
-            const roleOptions = [
-                { value: "", label: "Todos los roles" },
-                ...roles.map((role) => ({
-                    value: role.id.toString(),
-                    label:
-                        role.name.charAt(0).toUpperCase() + role.name.slice(1),
-                })),
-            ];
+    // Configuración de filtros de roles memoizada
+    const roleOptions = useMemo(() => {
+        if (!roles.length) return [];
 
-            setTableConfig((prevConfig) => ({
-                ...prevConfig,
-                filters: prevConfig.filters.map((filter) =>
-                    filter.key === "role"
-                        ? { ...filter, options: roleOptions }
-                        : filter
-                ),
-            }));
-        }
+        return [
+            { value: "", label: "Todos los roles" },
+            ...roles.map((role) => ({
+                value: role.id.toString(),
+                label: role.name.charAt(0).toUpperCase() + role.name.slice(1),
+            })),
+        ];
     }, [roles]);
 
-    // Event Handlers
-    const handleFilterChange = (key, value) => {
-        dispatch(
-            setFilters({
-                ...filters,
-                [key]: value,
-            })
-        );
-    };
+    // Config de tabla memoizada
+    const tableConfig = useMemo(() => ({
+        ...usersTableConfig,
+        filters: usersTableConfig.filters.map(filter =>
+            filter.key === "role"
+                ? { ...filter, options: roleOptions }
+                : filter
+        )
+    }), [roleOptions]);
 
-    const handleSortChange = (field, direction) => {
+    // Handlers memoizados
+    const handleFilterChange = useCallback((key, value) => {
+        dispatch(setFilters({
+            ...filters,
+            [key]: value,
+        }));
+    }, [dispatch, filters]);
+
+    const handleSortChange = useCallback((field, direction) => {
         dispatch(setSortConfig({ field, direction }));
-    };
+    }, [dispatch]);
 
-    const handlePageChange = (page) => {
+    const handlePageChange = useCallback((page) => {
         dispatch(setCurrentPage(page));
-    };
+    }, [dispatch]);
 
-    const handleCreateClick = () => {
-        if (canCreate) {
+    const handleCreateClick = useCallback(() => {
+        if (permissions.create) {
             dispatch(setSelectedUser(null));
             dispatch(setEditModalState({ isOpen: true, mode: "create" }));
         } else {
             toast.warning("No tienes permisos para crear un nuevo usuario.");
         }
-    };
+    }, [permissions.create, dispatch, toast]);
 
-    const handleEditClick = (user) => {
-        if (canEdit || (canView && !canEdit)) {
+    const handleEditClick = useCallback((user) => {
+        if (permissions.edit || (permissions.view && !permissions.edit)) {
             dispatch(setSelectedUser(user));
             dispatch(
                 setEditModalState({
                     isOpen: true,
-                    mode: canEdit ? "edit" : "view",
+                    mode: permissions.edit ? "edit" : "view",
                 })
             );
         } else {
             toast.warning("No tienes permisos para ver/editar usuarios");
         }
-    };
+    }, [permissions.edit, permissions.view, dispatch, toast]);
 
-    const handleRolesClick = (user) => {
-        if (canAssignRoles) {
+    const handleRolesClick = useCallback((user) => {
+        if (permissions.assignRoles) {
             dispatch(setSelectedUser(user));
             dispatch(setRolesModalState({ isOpen: true }));
         } else {
             toast.warning("No tienes permisos para asignar roles");
         }
-    };
+    }, [permissions.assignRoles, dispatch, toast]);
 
-    const handleDeleteClick = (user) => {
-        if (canDelete && user.id !== currentUser.id) {
+    const handleDeleteClick = useCallback((user) => {
+        if (permissions.delete && user.id !== currentUser.id) {
             dispatch(setSelectedUser(user));
             dispatch(setDeleteModalState({ isOpen: true }));
         } else if (user.id === currentUser.id) {
@@ -177,25 +177,26 @@ export default function UsersList() {
         } else {
             toast.warning("No tienes permisos para eliminar usuarios");
         }
-    };
+    }, [permissions.delete, currentUser.id, dispatch, toast]);
 
-    const handleConfirmDelete = async () => {
-        if (canDelete && selectedUser && selectedUser.id !== currentUser.id) {
-            try {
-                await dispatch(deleteUser(selectedUser.id)).unwrap();
-                toast.success(
-                    `El usuario ${selectedUser.name} ${selectedUser.last_name} ha sido eliminado`
-                );
+    const handleConfirmDelete = useCallback(async () => {
+        if (!selectedUser || !permissions.delete || selectedUser.id === currentUser.id) return;
 
-                dispatch(setDeleteModalState({ isOpen: false }));
-                dispatch(setSelectedUser(null));
-            } catch (error) {
-                toast.error("Error al eliminar el usuario: " + error.message);
-            }
+        try {
+            await dispatch(deleteUser(selectedUser.id)).unwrap();
+            toast.success(
+                `El usuario ${selectedUser.name} ${selectedUser.last_name} ha sido eliminado`
+            );
+
+            dispatch(setDeleteModalState({ isOpen: false }));
+            dispatch(setSelectedUser(null));
+            await dispatch(fetchUsers()).unwrap();
+        } catch (error) {
+            toast.error("Error al eliminar el usuario: " + error.message);
         }
-    };
+    }, [selectedUser, permissions.delete, currentUser.id, dispatch, toast]);
 
-    const handleModalSuccess = async (action) => {
+    const handleModalSuccess = useCallback(async (action) => {
         try {
             await dispatch(fetchUsers()).unwrap();
             toast.success(
@@ -208,18 +209,19 @@ export default function UsersList() {
                 "Error al actualizar la lista de usuarios: " + error.message
             );
         }
-    };
+    }, [dispatch, toast]);
 
-    const handleRolesSuccess = async () => {
+    const handleRolesSuccess = useCallback(async () => {
         try {
             await dispatch(fetchUsers()).unwrap();
             toast.success("Roles actualizados correctamente");
         } catch (error) {
             toast.error("Error al actualizar los roles: " + error.message);
         }
-    };
+    }, [dispatch, toast]);
 
-    const columns = [
+    // Columnas memoizadas
+    const columns = useMemo(() => [
         {
             key: "user_info",
             header: "Información del usuario",
@@ -265,20 +267,20 @@ export default function UsersList() {
             cellClassName: "text-right",
             render: (user) => (
                 <div className="flex justify-end space-x-3">
-                    {(canView || canEdit) && (
+                    {(permissions.view || permissions.edit) && (
                         <button
                             onClick={() => handleEditClick(user)}
                             className="text-indigo-600 hover:text-indigo-900"
-                            title={canEdit ? "Editar" : "Ver"}
+                            title={permissions.edit ? "Editar" : "Ver"}
                         >
-                            {canEdit ? (
+                            {permissions.edit ? (
                                 <PencilIcon className="h-5 w-5" />
                             ) : (
                                 <EyeIcon className="h-5 w-5" />
                             )}
                         </button>
                     )}
-                    {canAssignRoles && user.id !== currentUser.id && (
+                    {permissions.assignRoles && user.id !== currentUser.id && (
                         <button
                             onClick={() => handleRolesClick(user)}
                             className="text-blue-600 hover:text-blue-900"
@@ -287,7 +289,7 @@ export default function UsersList() {
                             <KeyIcon className="h-5 w-5" />
                         </button>
                     )}
-                    {canDelete && user.id !== currentUser.id && (
+                    {permissions.delete && user.id !== currentUser.id && (
                         <button
                             onClick={() => handleDeleteClick(user)}
                             className="text-red-600 hover:text-red-900"
@@ -299,10 +301,15 @@ export default function UsersList() {
                 </div>
             ),
         },
-    ];
-
-    // Si no tiene permiso para ver la lista
-    if (!canViewList) {
+    ], [
+        permissions,
+        currentUser.id,
+        handleEditClick,
+        handleRolesClick,
+        handleDeleteClick
+    ]);
+    // Verificación de acceso
+    if (!permissions.viewList) {
         return (
             <Paper title="Acceso denegado" titleLevel="h1">
                 <p className="text-gray-500">
@@ -319,9 +326,9 @@ export default function UsersList() {
                 titleLevel="h1"
                 subtitle="Gestión de usuarios"
                 contentClassName="sm:flex sm:items-center sm:justify-between"
-            ></Paper>
+            />
             <Paper>
-                {canCreate && (
+                {permissions.create && (
                     <Button onClick={handleCreateClick}>Nuevo usuario</Button>
                 )}
                 <TableFilters
@@ -368,7 +375,7 @@ export default function UsersList() {
                     dispatch(setSelectedUser(null));
                 }}
                 onSuccess={() => handleModalSuccess(editModal.mode)}
-                readOnly={selectedUser && !canEdit}
+                readOnly={selectedUser && !permissions.edit}
             />
 
             <UserRolesModal

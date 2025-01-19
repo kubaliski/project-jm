@@ -71,7 +71,7 @@ export default function PostModal({
 
 PostModal.propTypes = {
     isOpen: PropTypes.bool.isRequired,
-    mode: PropTypes.oneOf(["view", "edit", "create"]).isRequired,
+    mode: PropTypes.oneOf(["view", "edit", "create"]),
     onClose: PropTypes.func.isRequired,
     onSuccess: PropTypes.func,
     readOnly: PropTypes.bool,

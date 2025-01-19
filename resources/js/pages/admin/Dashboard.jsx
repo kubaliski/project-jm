@@ -17,66 +17,61 @@ export default function Dashboard() {
     const dispatch = useDispatch();
     const toast = useToast();
     const { user, hasPermission } = useAuth();
-
     const totalPosts = useSelector(selectTotalPosts);
     const totalContacts = useSelector(selectTotalContacts);
     const isPostsStatsLoading = useSelector(selectPostStatsLoading);
     const isContactStatsLoading = useSelector(selectContactStatsLoading);
-
     const [isStatsLoading, setIsStatsLoading] = useState(false);
 
-    const canViewPostStats = hasPermission("stats.posts");
-    const canViewContactStats = hasPermission("stats.contacts");
-    useEffect(() => {
-        console.log("Dashboard mounted");
-    }, []);
+
+    const canViewStats = {
+        posts: hasPermission("stats.posts"),
+        contacts: hasPermission("stats.contacts")
+    };
+
     useEffect(() => {
         let loadingTimeout;
-
         if (
-            (canViewPostStats && isPostsStatsLoading) ||
-            (canViewContactStats && isContactStatsLoading)
+            (canViewStats.posts && isPostsStatsLoading) ||
+            (canViewStats.contacts && isContactStatsLoading)
         ) {
             setIsStatsLoading(true);
             return;
         }
-
         if (!isPostsStatsLoading && !isContactStatsLoading) {
             loadingTimeout = setTimeout(() => {
                 setIsStatsLoading(false);
             }, 500);
         }
-
         return () => {
             if (loadingTimeout) {
                 clearTimeout(loadingTimeout);
             }
         };
-    }, [
-        isPostsStatsLoading,
-        isContactStatsLoading,
-        canViewPostStats,
-        canViewContactStats,
-    ]);
+    }, [isPostsStatsLoading, isContactStatsLoading]);
 
+    // Modificamos este efecto para que solo se ejecute una vez
     useEffect(() => {
         const loadStats = async () => {
             try {
-                if (canViewPostStats) {
-                    await dispatch(countPosts()).unwrap();
+                const loadPromises = [];
+
+                if (canViewStats.posts) {
+                    loadPromises.push(dispatch(countPosts()).unwrap());
                 }
-                if (canViewContactStats) {
-                    await dispatch(countContacts()).unwrap();
+                if (canViewStats.contacts) {
+                    loadPromises.push(dispatch(countContacts()).unwrap());
                 }
+
+                await Promise.all(loadPromises);
             } catch (error) {
                 toast.error(
                     "Error al cargar las estadísticas: " + error.message
                 );
             }
         };
-
         loadStats();
-    }, [dispatch, canViewPostStats, canViewContactStats, toast]);
+    }, []); // Solo se ejecuta al montar el componente
 
     const fullName = user ? `${user.name} ${user.last_name}`.trim() : "";
 
@@ -88,7 +83,7 @@ export default function Dashboard() {
                 subtitle="Este es tu panel de administración"
             />
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {canViewPostStats && (
+                {canViewStats.posts && (
                     <StatCard
                         title="Posts"
                         value={totalPosts}
@@ -97,7 +92,7 @@ export default function Dashboard() {
                         isLoading={isStatsLoading}
                     />
                 )}
-                {canViewContactStats && (
+                {canViewStats.contacts && (
                     <StatCard
                         title="Comunicaciones"
                         value={totalContacts}

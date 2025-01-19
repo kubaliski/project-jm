@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
     selectUser,
@@ -9,30 +9,39 @@ import { updateProfile } from "@store/auth/thunks/authThunks";
 import { FormInput, SubmitButton, Paper, Button } from "@components/common";
 import { useToast, useAuth } from "@/hooks";
 
+const initialFormState = {
+    name: "",
+    last_name: "",
+    email: "",
+    current_password: "",
+    password: "",
+    password_confirmation: "",
+};
+
 const Profile = () => {
     const dispatch = useDispatch();
     const toast = useToast();
     const { hasPermission } = useAuth();
+
+    // Selectores
     const user = useSelector(selectUser);
     const isLoading = useSelector(selectProfileLoading);
     const error = useSelector(selectProfileError);
 
-    const canEditProfile = hasPermission("user.update-profile");
-
+    // Estados locales
     const [isEditing, setIsEditing] = useState(false);
-    const [formData, setFormData] = useState({
-        name: "",
-        last_name: "",
-        email: "",
-        current_password: "",
-        password: "",
-        password_confirmation: "",
-    });
+    const [formData, setFormData] = useState(initialFormState);
     const [formErrors, setFormErrors] = useState({});
 
+    // Permisos memoizados
+    const permissions = useMemo(() => ({
+        editProfile: hasPermission("user.update-profile")
+    }), [hasPermission]);
+
+    // Cargar datos del usuario
     useEffect(() => {
         if (user) {
-            setFormData((prev) => ({
+            setFormData(prev => ({
                 ...prev,
                 name: user.name || "",
                 email: user.email || "",
@@ -41,6 +50,7 @@ const Profile = () => {
         }
     }, [user]);
 
+    // Manejar errores
     useEffect(() => {
         if (error) {
             if (typeof error === "object") {
@@ -55,32 +65,48 @@ const Profile = () => {
         }
     }, [error, toast]);
 
-    const handleInputChange = (e) => {
+    // Handlers memoizados
+    const handleInputChange = useCallback((e) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({
+        setFormData(prev => ({
             ...prev,
             [name]: value,
         }));
         if (formErrors[name]) {
-            setFormErrors((prev) => ({
+            setFormErrors(prev => ({
                 ...prev,
                 [name]: null,
             }));
         }
-    };
+    }, [formErrors]);
 
-    const resetPasswordFields = () => {
-        setFormData((prev) => ({
+    const resetPasswordFields = useCallback(() => {
+        setFormData(prev => ({
             ...prev,
             current_password: "",
             password: "",
             password_confirmation: "",
         }));
-    };
+    }, []);
+
+    const resetForm = useCallback(() => {
+        if (user) {
+            setFormData(prev => ({
+                ...prev,
+                name: user.name || "",
+                email: user.email || "",
+                last_name: user.last_name || "",
+                current_password: "",
+                password: "",
+                password_confirmation: "",
+            }));
+        }
+        setFormErrors({});
+    }, [user]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!canEditProfile) return;
+        if (!permissions.editProfile) return;
 
         setFormErrors({});
         const updateData = {
@@ -105,25 +131,55 @@ const Profile = () => {
         }
     };
 
-    const handleCancel = () => {
+    const handleCancel = useCallback(() => {
         setIsEditing(false);
-        setFormErrors({});
-        resetPasswordFields();
-        if (user) {
-            setFormData((prev) => ({
-                ...prev,
-                name: user.name || "",
-                email: user.email || "",
-                last_name: user.last_name || "",
-            }));
-        }
-    };
+        resetForm();
+    }, [resetForm]);
+
+    // Renderizado condicional del formulario de contraseña
+    const renderPasswordForm = () => (
+        <Paper
+            title="Cambiar Contraseña"
+            className="mt-6 bg-gray-50"
+            titleLevel="h4"
+        >
+            <div className="space-y-4">
+                <FormInput
+                    id="current_password"
+                    name="current_password"
+                    label="Contraseña Actual"
+                    type="password"
+                    value={formData.current_password}
+                    onChange={handleInputChange}
+                    error={formErrors.current_password}
+                />
+                <FormInput
+                    id="password"
+                    name="password"
+                    label="Nueva Contraseña"
+                    type="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    error={formErrors.password}
+                />
+                <FormInput
+                    id="password_confirmation"
+                    name="password_confirmation"
+                    label="Confirmar Nueva Contraseña"
+                    type="password"
+                    value={formData.password_confirmation}
+                    onChange={handleInputChange}
+                    error={formErrors.password_confirmation}
+                />
+            </div>
+        </Paper>
+    );
 
     return (
         <div className="max-w-3xl mx-auto py-6">
             <Paper title="Perfil de Usuario" className="shadow-sm">
                 <div className="flex justify-between items-center mb-6">
-                    {canEditProfile && !isEditing && (
+                    {permissions.editProfile && !isEditing && (
                         <Button
                             onClick={() => setIsEditing(true)}
                             className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -170,42 +226,7 @@ const Profile = () => {
 
                     {isEditing && (
                         <>
-                            <Paper
-                                title="Cambiar Contraseña"
-                                className="mt-6 bg-gray-50"
-                                titleLevel="h4"
-                            >
-                                <div className="space-y-4">
-                                    <FormInput
-                                        id="current_password"
-                                        name="current_password"
-                                        label="Contraseña Actual"
-                                        type="password"
-                                        value={formData.current_password}
-                                        onChange={handleInputChange}
-                                        error={formErrors.current_password}
-                                    />
-                                    <FormInput
-                                        id="password"
-                                        name="password"
-                                        label="Nueva Contraseña"
-                                        type="password"
-                                        value={formData.password}
-                                        onChange={handleInputChange}
-                                        error={formErrors.password}
-                                    />
-                                    <FormInput
-                                        id="password_confirmation"
-                                        name="password_confirmation"
-                                        label="Confirmar Nueva Contraseña"
-                                        type="password"
-                                        value={formData.password_confirmation}
-                                        onChange={handleInputChange}
-                                        error={formErrors.password_confirmation}
-                                    />
-                                </div>
-                            </Paper>
-
+                            {renderPasswordForm()}
                             <div className="flex justify-end space-x-3 pt-4">
                                 <Button
                                     onClick={handleCancel}

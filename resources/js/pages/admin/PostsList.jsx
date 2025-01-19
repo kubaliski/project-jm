@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { PencilIcon, TrashIcon, EyeIcon } from "@heroicons/react/24/solid";
 import {
@@ -57,116 +57,118 @@ export default function PostsList() {
     const totalPosts = useSelector(selectTotalPosts);
     const isStatsLoading = useSelector(selectPostStatsLoading);
 
-    // Permisos
-    const canViewList = hasPermission("post.index");
-    const canView = hasPermission("post.view");
-    const canEdit = hasPermission("post.edit");
-    const canDelete = hasPermission("post.delete");
-    const canCreate = hasPermission("post.create");
-    const canViewStats = hasPermission("stats.contacts");
+    // Permisos memoizados
+    const permissions = useMemo(() => ({
+        viewList: hasPermission("post.index"),
+        view: hasPermission("post.view"),
+        edit: hasPermission("post.edit"),
+        delete: hasPermission("post.delete"),
+        create: hasPermission("post.create"),
+        viewStats: hasPermission("stats.contacts")
+    }), [hasPermission]);
 
+    // Carga inicial de datos
     useEffect(() => {
         const fetchInitialData = async () => {
             try {
-                if (canViewList) {
-                    await dispatch(fetchPosts()).unwrap();
+                if (!permissions.viewList) return;
+
+                const loadPromises = [dispatch(fetchPosts()).unwrap()];
+                if (permissions.viewStats) {
+                    loadPromises.push(dispatch(countPosts()).unwrap());
                 }
-                if (canViewStats) {
-                    await dispatch(countPosts()).unwrap();
-                }
+                await Promise.all(loadPromises);
             } catch (error) {
                 toast.error("Error al cargar los posts: " + error.message);
             }
         };
 
         fetchInitialData();
-    }, [dispatch, canViewList, canViewStats, toast]);
+    }, []);
 
-    const handleCreateClick = () => {
-        if (canCreate) {
+    // Handlers
+    const handleCreateClick = useCallback(() => {
+        if (permissions.create) {
             dispatch(setSelectedPost(null));
             dispatch(setEditModalState({ isOpen: true, mode: "create" }));
         } else {
             toast.warning("No tienes permisos para crear posts");
         }
-    };
+    }, [permissions.create, dispatch, toast]);
 
-    const handleEditClick = (post) => {
-        if (canEdit || (canView && !canEdit)) {
+    const handleEditClick = useCallback((post) => {
+        if (permissions.edit || (permissions.view && !permissions.edit)) {
             dispatch(setSelectedPost(post));
             dispatch(
                 setEditModalState({
                     isOpen: true,
-                    mode: canEdit ? "edit" : "view",
+                    mode: permissions.edit ? "edit" : "view",
                 })
             );
         } else {
             toast.warning("No tienes permisos para ver/editar posts");
         }
-    };
+    }, [permissions.edit, permissions.view, dispatch, toast]);
 
-    const handleDeleteClick = (post) => {
-        if (canDelete) {
+    const handleDeleteClick = useCallback((post) => {
+        if (permissions.delete) {
             dispatch(setSelectedPost(post));
             dispatch(setDeleteModalState({ isOpen: true }));
         } else {
             toast.warning("No tienes permisos para eliminar posts");
         }
-    };
+    }, [permissions.delete, dispatch, toast]);
 
-    const handleConfirmDelete = async () => {
-        if (!selectedPost) return;
+    const handleConfirmDelete = useCallback(async () => {
+        if (!selectedPost || !permissions.delete) return;
 
-        if (canDelete && selectedPost) {
-            try {
-                await dispatch(deletePost(selectedPost.id)).unwrap();
-                toast.success(
-                    `El post "${selectedPost.title}" ha sido eliminado`
-                );
-
-                dispatch(setDeleteModalState({ isOpen: false }));
-                dispatch(setSelectedPost(null));
-
-                if (canViewStats) {
-                    await dispatch(countPosts()).unwrap();
-                }
-            } catch (error) {
-                toast.error("Error al eliminar el post: " + error.message);
-            }
-        }
-    };
-
-    const handleModalSuccess = async (action) => {
         try {
-            await dispatch(fetchPosts()).unwrap();
-            if (canViewStats) {
-                await dispatch(countPosts()).unwrap();
+            await dispatch(deletePost(selectedPost.id)).unwrap();
+            toast.success(`El post "${selectedPost.title}" ha sido eliminado`);
+
+            dispatch(setDeleteModalState({ isOpen: false }));
+            dispatch(setSelectedPost(null));
+
+            const loadPromises = [dispatch(fetchPosts()).unwrap()];
+            if (permissions.viewStats) {
+                loadPromises.push(dispatch(countPosts()).unwrap());
             }
+            await Promise.all(loadPromises);
+        } catch (error) {
+            toast.error("Error al eliminar el post: " + error.message);
+        }
+    }, [selectedPost, permissions.delete, permissions.viewStats, dispatch, toast]);
+
+    const handleModalSuccess = useCallback(async (action) => {
+        try {
+            const loadPromises = [dispatch(fetchPosts()).unwrap()];
+            if (permissions.viewStats) {
+                loadPromises.push(dispatch(countPosts()).unwrap());
+            }
+            await Promise.all(loadPromises);
+
             toast.success(
                 action === "create"
                     ? "Post creado correctamente"
                     : "Post actualizado correctamente"
             );
         } catch (error) {
-            toast.error(
-                "Error al actualizar la lista de posts: " + error.message
-            );
+            toast.error("Error al actualizar la lista de posts: " + error.message);
         }
-    };
+    }, [permissions.viewStats, dispatch, toast]);
 
     const handleFilterChange = (key, value) => {
-        dispatch(
-            setFilters({
-                ...filters,
-                [key]: value,
-            })
-        );
+        dispatch(setFilters({
+            ...filters,
+            [key]: value,
+        }));
     };
 
     const handleSortChange = (field, direction) => {
         dispatch(setSortConfig({ field, direction }));
     };
 
+    // Componentes de UI
     const getStatusBadge = (post) => {
         if (post.is_published) {
             return (
@@ -189,7 +191,7 @@ export default function PostsList() {
         }
     };
 
-    const columns = [
+    const columns = useMemo(() =>  [
         {
             key: "title",
             header: "Título",
@@ -209,7 +211,7 @@ export default function PostsList() {
         {
             key: "status",
             header: "Estado",
-            render: (post) => getStatusBadge(post),
+            render: getStatusBadge,
         },
         {
             key: "created_at",
@@ -227,20 +229,20 @@ export default function PostsList() {
             cellClassName: "text-right",
             render: (post) => (
                 <>
-                    {(canView || canEdit) && (
+                    {(permissions.view || permissions.edit) && (
                         <button
                             onClick={() => handleEditClick(post)}
                             className="text-indigo-600 hover:text-indigo-900 mr-4"
-                            title={canEdit ? "Editar" : "Ver"}
+                            title={permissions.edit ? "Editar" : "Ver"}
                         >
-                            {canEdit ? (
+                            {permissions.edit ? (
                                 <PencilIcon className="h-5 w-5" />
                             ) : (
                                 <EyeIcon className="h-5 w-5" />
                             )}
                         </button>
                     )}
-                    {canDelete && (
+                    {permissions.delete && (
                         <button
                             onClick={() => handleDeleteClick(post)}
                             className="text-red-600 hover:text-red-900"
@@ -252,9 +254,9 @@ export default function PostsList() {
                 </>
             ),
         },
-    ];
-    // Si no tiene permiso para ver la lista, mostrar mensaje o redireccionar
-    if (!canViewList) {
+    ], [permissions, handleEditClick, handleDeleteClick]);
+
+    if (!permissions.viewList) {
         return (
             <Paper title="Acceso denegado" titleLevel="h1">
                 <p className="text-gray-500">
@@ -263,6 +265,7 @@ export default function PostsList() {
             </Paper>
         );
     }
+
     return (
         <div className="space-y-6">
             <Paper
@@ -272,7 +275,7 @@ export default function PostsList() {
                 contentClassName="sm:flex sm:items-center sm:justify-between"
             >
                 <div>
-                    {canViewStats && !isStatsLoading && (
+                    {permissions.viewStats && !isStatsLoading && (
                         <p className="mt-1 text-sm text-gray-500">
                             Total de posts: {totalPosts}
                         </p>
@@ -281,7 +284,7 @@ export default function PostsList() {
             </Paper>
 
             <Paper contentClassName="space-y-4">
-                {canCreate && (
+                {permissions.create && (
                     <Button onClick={handleCreateClick}>Crear post</Button>
                 )}
                 <TableFilters
@@ -303,17 +306,14 @@ export default function PostsList() {
                     emptyMessage="No hay posts creados"
                 />
             </Paper>
-            {/* Modal de creación/edición */}
+
             <PostModal
                 isOpen={editModalState.isOpen}
                 mode={editModalState.mode}
-                onClose={() =>
-                    dispatch(setEditModalState({ isOpen: false, mode: null }))
-                }
+                onClose={() => dispatch(setEditModalState({ isOpen: false, mode: null }))}
                 onSuccess={() => handleModalSuccess(editModalState.mode)}
             />
 
-            {/* Modal de confirmación de eliminación */}
             <ConfirmationDialog
                 isOpen={deleteModalState.isOpen}
                 onClose={() => {
