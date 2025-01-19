@@ -37,11 +37,12 @@ import {
     setEditModalState,
     setDeleteModalState,
 } from "@store/admin/slices/postsSlice";
-import { useAuth } from "@hooks";
+import { useAuth, useToast } from "@hooks";
 
 export default function PostsList() {
     const dispatch = useDispatch();
-    const { permissions } = useAuth();
+    const { hasPermission } = useAuth();
+    const toast = useToast();
 
     // Selectores
     const paginatedPosts = useSelector(selectPaginatedPosts);
@@ -57,26 +58,37 @@ export default function PostsList() {
     const isStatsLoading = useSelector(selectPostStatsLoading);
 
     // Permisos
-    const canViewList = permissions.includes("post.index");
-    const canView = permissions.includes("post.view");
-    const canEdit = permissions.includes("post.edit");
-    const canDelete = permissions.includes("post.delete");
-    const canCreate = permissions.includes("post.create");
-    const canViewStats = permissions.includes("stats.contacts");
+    const canViewList = hasPermission("post.index");
+    const canView = hasPermission("post.view");
+    const canEdit = hasPermission("post.edit");
+    const canDelete = hasPermission("post.delete");
+    const canCreate = hasPermission("post.create");
+    const canViewStats = hasPermission("stats.contacts");
 
     useEffect(() => {
-        if (canViewList) {
-            dispatch(fetchPosts());
-        }
-        if (canViewStats) {
-            dispatch(countPosts());
-        }
+        const fetchInitialData = async () => {
+            try {
+                if (canViewList) {
+                    await dispatch(fetchPosts()).unwrap();
+                }
+                if (canViewStats) {
+                    await dispatch(countPosts()).unwrap();
+                }
+            } catch (error) {
+                toast.error("Error al cargar los posts: " + error.message);
+            }
+        };
+
+        fetchInitialData();
     }, [dispatch, canViewList, canViewStats]);
+
 
     const handleCreateClick = () => {
         if (canCreate) {
             dispatch(setSelectedPost(null));
             dispatch(setEditModalState({ isOpen: true, mode: "create" }));
+        } else {
+            toast.warning("No tienes permisos para crear posts");
         }
     };
 
@@ -89,30 +101,54 @@ export default function PostsList() {
                     mode: canEdit ? "edit" : "view",
                 })
             );
+        } else {
+            toast.warning("No tienes permisos para ver/editar posts");
         }
     };
+
 
     const handleDeleteClick = (post) => {
         if (canDelete) {
             dispatch(setSelectedPost(post));
             dispatch(setDeleteModalState({ isOpen: true }));
+        } else {
+            toast.warning("No tienes permisos para eliminar posts");
         }
     };
 
     const handleConfirmDelete = async () => {
         if (!selectedPost) return;
+
         if (canDelete && selectedPost) {
             try {
                 await dispatch(deletePost(selectedPost.id)).unwrap();
+                toast.success(`El post "${selectedPost.title}" ha sido eliminado`);
+
                 dispatch(setDeleteModalState({ isOpen: false }));
                 dispatch(setSelectedPost(null));
 
                 if (canViewStats) {
-                    dispatch(countPosts());
+                    await dispatch(countPosts()).unwrap();
                 }
             } catch (error) {
-                console.error("Error al eliminar el post:", error);
+                toast.error("Error al eliminar el post: " + error.message);
             }
+        }
+    };
+
+    const handleModalSuccess = async (action) => {
+        try {
+            await dispatch(fetchPosts()).unwrap();
+            if (canViewStats) {
+                await dispatch(countPosts()).unwrap();
+            }
+            toast.success(
+                action === 'create'
+                    ? "Post creado correctamente"
+                    : "Post actualizado correctamente"
+            );
+        } catch (error) {
+            toast.error("Error al actualizar la lista de posts: " + error.message);
         }
     };
 
@@ -272,6 +308,7 @@ export default function PostsList() {
                 onClose={() =>
                     dispatch(setEditModalState({ isOpen: false, mode: null }))
                 }
+                onSuccess={() => handleModalSuccess(editModalState.mode)}
             />
 
             {/* Modal de confirmación de eliminación */}

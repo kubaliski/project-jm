@@ -1,6 +1,6 @@
 // src/store/auth/slice/authSlice.js
 import { createSlice } from '@reduxjs/toolkit';
-import { loginUser, getCurrentUser, logoutUser } from '../thunks/authThunks';
+import { loginUser, getCurrentUser, logoutUser, updateProfile } from '../thunks/authThunks';
 
 const initialState = {
   user: null,
@@ -9,7 +9,11 @@ const initialState = {
   roles: [],
   permissions: [],
   loading: false,
-  error: null
+  error: null,
+  profile: {
+    loading: false,
+    error: null
+  }
 };
 
 const authSlice = createSlice({
@@ -18,6 +22,9 @@ const authSlice = createSlice({
   reducers: {
     clearError: (state) => {
       state.error = null;
+    },
+    clearProfileError: (state) => {
+      state.profile.error = null;
     }
   },
   extraReducers: (builder) => {
@@ -68,9 +75,27 @@ const authSlice = createSlice({
         state.roles = [];
         state.permissions = [];
         localStorage.removeItem('token');
+      })
+      // Update Profile
+      .addCase(updateProfile.pending, (state) => {
+        state.profile.loading = true;
+        state.profile.error = null;
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.profile.loading = false;
+        state.profile.error = null;
+        // Actualizamos solo la información del usuario manteniendo roles y permisos
+        state.user = {
+          ...action.payload.user,
+          roles: state.roles // Mantenemos los roles actuales
+        };
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
+        state.profile.loading = false;
+        state.profile.error = action.payload;
       });
   }
 });
 
-export const { clearError } = authSlice.actions;
+export const { clearError, clearProfileError } = authSlice.actions;
 export default authSlice.reducer;

@@ -12,7 +12,7 @@ import {
 import { ContactModal } from "@features/contact";
 import { formatDateForDisplay } from "@utils/dateUtils";
 import { contactsTableConfig } from "@config/tables/contactsTable";
-import { useAuth } from "@hooks";
+import { useAuth, useToast } from "@hooks";
 
 // Importar thunks y actions...
 import {
@@ -49,16 +49,17 @@ import {
 
 export default function ContactsList() {
     const dispatch = useDispatch();
-    const { permissions } = useAuth();
+    const { hasPermission } = useAuth();
+    const toast = useToast();
 
     // Permisos específicos
-    const canViewList = permissions.includes("contact.index");
-    const canCreate = permissions.includes("contact.create");
-    const canEdit = permissions.includes("contact.edit");
-    const canDelete = permissions.includes("contact.delete");
-    const canView = permissions.includes("contact.view");
-    const canUpdateStatus = permissions.includes("contact.update-status");
-    const canViewStats = permissions.includes("stats.contacts");
+    const canViewList = hasPermission("contact.index");
+    const canCreate = hasPermission("contact.create");
+    const canEdit = hasPermission("contact.edit");
+    const canDelete = hasPermission("contact.delete");
+    const canView = hasPermission("contact.view");
+    const canUpdateStatus = hasPermission("contact.update-status");
+    const canViewStats = hasPermission("stats.contacts");
 
     // Selectors
     const contacts = useSelector(selectPaginatedContacts);
@@ -76,12 +77,20 @@ export default function ContactsList() {
 
     // Initial data fetch
     useEffect(() => {
-        if (canViewList) {
-            dispatch(fetchContacts());
-        }
-        if (canViewStats) {
-            dispatch(countContacts());
-        }
+        const fetchInitialData = async () => {
+            try {
+                if (canViewList) {
+                    await dispatch(fetchContacts()).unwrap();
+                }
+                if (canViewStats) {
+                    await dispatch(countContacts()).unwrap();
+                }
+            } catch (error) {
+                toast.error("Error al cargar los datos: " + error.message);
+            }
+        };
+
+        fetchInitialData();
     }, [dispatch, canViewList, canViewStats]);
 
     // Event Handlers
@@ -108,16 +117,20 @@ export default function ContactsList() {
                 await dispatch(
                     updateContactStatus({ id: contactId, status: newStatus })
                 ).unwrap();
+                toast.success("Estado actualizado correctamente");
             } catch (error) {
-                console.error("Error al actualizar el estado:", error);
+                toast.error("Error al actualizar el estado: " + error.message);
             }
         }
     };
+
 
     const handleCreateClick = () => {
         if (canCreate) {
             dispatch(setSelectedContact(null));
             dispatch(setEditModalState({ isOpen: true, mode: "create" }));
+        } else {
+            toast.warning("No tienes permisos para crear contactos");
         }
     };
 
@@ -130,13 +143,18 @@ export default function ContactsList() {
                     mode: canEdit ? "edit" : "view",
                 })
             );
+        } else {
+            toast.warning("No tienes permisos para ver/editar contactos");
         }
     };
+
 
     const handleDeleteClick = (contact) => {
         if (canDelete) {
             dispatch(setSelectedContact(contact));
             dispatch(setDeleteModalState({ isOpen: true }));
+        } else {
+            toast.warning("No tienes permisos para eliminar contactos");
         }
     };
 
@@ -144,15 +162,33 @@ export default function ContactsList() {
         if (canDelete && selectedContact) {
             try {
                 await dispatch(deleteContact(selectedContact.id)).unwrap();
+                toast.success(`El mensaje de ${selectedContact.full_name} ha sido eliminado`);
+
                 dispatch(setDeleteModalState({ isOpen: false }));
                 dispatch(setSelectedContact(null));
 
                 if (canViewStats) {
-                    dispatch(countContacts());
+                    await dispatch(countContacts()).unwrap();
                 }
             } catch (error) {
-                console.error("Error al eliminar el contacto:", error);
+                toast.error("Error al eliminar el contacto: " + error.message);
             }
+        }
+    };
+
+    const handleModalSuccess = async (action) => {
+        try {
+            await dispatch(fetchContacts()).unwrap();
+            if (canViewStats) {
+                await dispatch(countContacts()).unwrap();
+            }
+            toast.success(
+                action === 'create'
+                    ? "Mensaje creado correctamente"
+                    : "Mensaje actualizado correctamente"
+            );
+        } catch (error) {
+            toast.error("Error al actualizar la lista: " + error.message);
         }
     };
 
@@ -318,12 +354,7 @@ export default function ContactsList() {
                     dispatch(setEditModalState({ isOpen: false, mode: null }));
                     dispatch(setSelectedContact(null));
                 }}
-                onSuccess={() => {
-                    dispatch(fetchContacts());
-                    if (canViewStats) {
-                        dispatch(countContacts());
-                    }
-                }}
+                onSuccess={() => handleModalSuccess(editModal.mode)}
                 readOnly={selectedContact && !canEdit}
             />
 

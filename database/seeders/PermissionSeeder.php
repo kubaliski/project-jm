@@ -126,6 +126,12 @@ class PermissionSeeder extends Seeder
                 'group' => 'user',
                 'description' => 'Can assign roles to users'
             ],
+            [
+                'name' => 'user.update-profile',
+                'display_name' => 'Update Profile',
+                'group' => 'user',
+                'description' => 'Can update own profile'
+            ],
         ];
         $rolePermissions = [
             [

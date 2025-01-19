@@ -62,3 +62,19 @@ export const assignUserRoles = createAsyncThunk(
     }
   }
 );
+
+export const updateProfile = createAsyncThunk(
+  'admin/users/updateProfile',
+  async (formData, { rejectWithValue }) => {
+      try {
+          const response = await usersService.updateProfile(formData);
+          return response.data;
+      } catch (error) {
+          return rejectWithValue(
+              error.response?.data?.errors ||
+              error.response?.data ||
+              'Error al actualizar el perfil'
+          );
+      }
+  }
+);

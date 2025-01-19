@@ -16,7 +16,7 @@ import {
 import { RoleModal, RolePermissionsModal } from "@features/role";
 import { formatDateForDisplay } from "@utils/dateUtils";
 import { rolesTableConfig } from "@config/tables/rolesTable";
-import { useAuth } from "@hooks";
+import { useAuth, useToast } from "@hooks";
 
 // Import thunks and actions
 import {
@@ -52,16 +52,17 @@ import {
 
 export default function RoleList() {
     const dispatch = useDispatch();
-    const { permissions } = useAuth();
+    const { hasPermission } = useAuth();
+    const toast = useToast();
     const [tableConfig] = useState(rolesTableConfig);
 
-    // Specific permissions
-    const canViewList = permissions.includes("role.index");
-    const canCreate = permissions.includes("role.create");
-    const canEdit = permissions.includes("role.edit");
-    const canDelete = permissions.includes("role.delete");
-    const canView = permissions.includes("role.view");
-    const canManagePermissions = permissions.includes(
+    //Permisos de la vista
+    const canViewList = hasPermission("role.index");
+    const canCreate = hasPermission("role.create");
+    const canEdit = hasPermission("role.edit");
+    const canDelete = hasPermission("role.delete");
+    const canView = hasPermission("role.view");
+    const canManagePermissions = hasPermission(
         "role.manage-permissions"
     );
 
@@ -78,12 +79,20 @@ export default function RoleList() {
     const filteredRoles = useSelector(selectFilteredAndSortedRoles);
     const selectedRole = useSelector(selectSelectedRole);
 
-    // Load initial data
+    // carga inicial de datos
     useEffect(() => {
-        if (canViewList) {
-            dispatch(fetchRoles());
-            dispatch(fetchAllPermissions());
-        }
+        const fetchInitialData = async () => {
+            try {
+                if (canViewList) {
+                    await dispatch(fetchRoles()).unwrap();
+                    await dispatch(fetchAllPermissions()).unwrap();
+                }
+            } catch (error) {
+                toast.error("Error al cargar los datos: " + error.message);
+            }
+        };
+
+        fetchInitialData();
     }, [dispatch, canViewList]);
 
     // Event Handlers
@@ -108,6 +117,8 @@ export default function RoleList() {
         if (canCreate) {
             dispatch(setSelectedRole(null));
             dispatch(setEditModalState({ isOpen: true, mode: "create" }));
+        } else {
+            toast.warning("No tienes permisos para crear roles");
         }
     };
 
@@ -120,6 +131,8 @@ export default function RoleList() {
                     mode: canEdit ? "edit" : "view",
                 })
             );
+        } else {
+            toast.warning("No tienes permisos para editar roles");
         }
     };
 
@@ -127,6 +140,8 @@ export default function RoleList() {
         if (canManagePermissions) {
             dispatch(setSelectedRole(role));
             dispatch(setPermissionsModalState({ isOpen: true }));
+        } else {
+            toast.warning("No tienes permisos para gestionar permisos");
         }
     };
 
@@ -134,6 +149,8 @@ export default function RoleList() {
         if (canDelete) {
             dispatch(setSelectedRole(role));
             dispatch(setDeleteModalState({ isOpen: true }));
+        } else {
+            toast.warning("No tienes permisos para eliminar roles");
         }
     };
 
@@ -141,11 +158,35 @@ export default function RoleList() {
         if (canDelete && selectedRole) {
             try {
                 await dispatch(deleteRole(selectedRole.id)).unwrap();
+                toast.success(`El rol ${selectedRole.name} ha sido eliminado`);
+
                 dispatch(setDeleteModalState({ isOpen: false }));
                 dispatch(setSelectedRole(null));
             } catch (error) {
-                console.error("Error al eliminar el rol:", error);
+                toast.error("Error al eliminar el rol: " + error.message);
             }
+        }
+    };
+
+    const handleModalSuccess = async (action) => {
+        try {
+            await dispatch(fetchRoles()).unwrap();
+            toast.success(
+                action === 'create'
+                    ? "Rol creado correctamente"
+                    : "Rol actualizado correctamente"
+            );
+        } catch (error) {
+            toast.error("Error al actualizar la lista de roles: " + error.message);
+        }
+    };
+
+    const handlePermissionsSuccess = async () => {
+        try {
+            await dispatch(fetchRoles()).unwrap();
+            toast.success("Permisos del rol actualizados correctamente");
+        } catch (error) {
+            toast.error("Error al actualizar los permisos del rol: " + error.message);
         }
     };
 
@@ -282,9 +323,7 @@ export default function RoleList() {
                     dispatch(setEditModalState({ isOpen: false, mode: null }));
                     dispatch(setSelectedRole(null));
                 }}
-                onSuccess={() => {
-                    dispatch(fetchRoles());
-                }}
+                onSuccess={() => handleModalSuccess(editModal.mode)}
                 readOnly={selectedRole && !canEdit}
             />
 
@@ -294,9 +333,7 @@ export default function RoleList() {
                     dispatch(setPermissionsModalState({ isOpen: false }));
                     dispatch(setSelectedRole(null));
                 }}
-                onSuccess={() => {
-                    dispatch(fetchRoles());
-                }}
+                onSuccess={handlePermissionsSuccess}
                 readOnly={!canManagePermissions}
             />
 

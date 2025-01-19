@@ -1,30 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@hooks';
 import Sidebar from './Sidebar';
+import UserMenu from './UserMenu';
 
 export default function AdminLayout({ children }) {
-    const navigate = useNavigate();
-    const { logout } = useAuth();
-    const [sidebarExpanded, setSidebarExpanded] = React.useState(true);
-
-    const handleLogout = async () => {
-        try {
-            await logout();
-            // La navegación se mantiene después del logout
-            navigate('/login');
-        } catch (error) {
-            console.error('Error al cerrar sesión:', error);
-        }
-    };
+    const [sidebarExpanded, setSidebarExpanded] = useState(true);
 
     return (
         <div className="min-h-screen bg-gray-100 flex">
             <Sidebar
                 onExpandChange={(expanded) => setSidebarExpanded(expanded)}
             />
-            {/* Contenido principal con transición suave */}
             <div className={`flex-1 transition-all duration-300 ${
                 sidebarExpanded ? 'ml-64' : 'ml-20'
             }`}>
@@ -33,12 +19,7 @@ export default function AdminLayout({ children }) {
                         <h2 className="text-xl font-semibold text-gray-900">
                             Panel de Administración
                         </h2>
-                        <button
-                            onClick={handleLogout}
-                            className="px-4 py-2 text-gray-500 hover:text-gray-700 rounded-md hover:bg-gray-100 transition-colors"
-                        >
-                            Cerrar Sesión
-                        </button>
+                        <UserMenu />
                     </div>
                 </header>
                 <main className="p-8">

@@ -73,6 +73,11 @@ const usersSlice = createSlice({
         ...action.payload
       };
     },
+    updateUserInList: (state, action) => {
+      state.items = state.items.map(item =>
+        item.id === action.payload.id ? action.payload : item
+      );
+    },
     resetState: () => initialState
   },
   extraReducers: (builder) => {
@@ -174,6 +179,7 @@ export const {
   setEditModalState,
   setDeleteModalState,
   setRolesModalState,
+  updateUserInList,
   resetState
 } = usersSlice.actions;
 

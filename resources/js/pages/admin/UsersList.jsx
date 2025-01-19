@@ -16,7 +16,7 @@ import {
 import { UserModal, UserRolesModal } from "@features/user";
 import { formatDateForDisplay } from "@utils/dateUtils";
 import { usersTableConfig } from "@config/tables/usersTable";
-import { useAuth } from "@hooks";
+import { useAuth,useToast } from "@hooks";
 
 // Importar thunks y actions
 import { fetchUsers, deleteUser } from "@store/admin/thunks/usersThunks";
@@ -54,16 +54,17 @@ import {
 
 export default function UsersList() {
     const dispatch = useDispatch();
-    const { permissions, user: currentUser } = useAuth();
+    const { hasPermission, user: currentUser } = useAuth();
+    const toast = useToast();
     const [tableConfig, setTableConfig] = useState(usersTableConfig);
 
     // Permisos específicos
-    const canViewList = permissions.includes("user.index");
-    const canCreate = permissions.includes("user.create");
-    const canEdit = permissions.includes("user.edit");
-    const canDelete = permissions.includes("user.delete");
-    const canView = permissions.includes("user.view");
-    const canAssignRoles = permissions.includes("user.assign-roles");
+    const canViewList = hasPermission("user.index");
+    const canCreate = hasPermission("user.create");
+    const canEdit = hasPermission("user.edit");
+    const canDelete = hasPermission("user.delete");
+    const canView = hasPermission("user.view");
+    const canAssignRoles = hasPermission("user.assign-roles");
 
     // Selectors de usuarios
     const users = useSelector(selectPaginatedUsers);
@@ -84,10 +85,18 @@ export default function UsersList() {
 
     // Cargar datos iniciales
     useEffect(() => {
-        if (canViewList) {
-            dispatch(fetchUsers());
-            dispatch(fetchRoles()); // Cargar roles para los filtros y modales
-        }
+        const fetchInitialData = async () => {
+            try {
+                if (canViewList) {
+                    await dispatch(fetchUsers()).unwrap();
+                    await dispatch(fetchRoles()).unwrap();
+                }
+            } catch (error) {
+                toast.error("Error al cargar los datos: " + error.message);
+            }
+        };
+
+        fetchInitialData();
     }, [dispatch, canViewList]);
 
     // Configurar opciones de roles para los filtros
@@ -135,6 +144,8 @@ export default function UsersList() {
         if (canCreate) {
             dispatch(setSelectedUser(null));
             dispatch(setEditModalState({ isOpen: true, mode: "create" }));
+        } else {
+            toast.warning("No tienes permisos para crear un nuevo usuario.");
         }
     };
 
@@ -147,6 +158,8 @@ export default function UsersList() {
                     mode: canEdit ? "edit" : "view",
                 })
             );
+        } else {
+            toast.warning("No tienes permisos para ver/editar usuarios");
         }
     };
 
@@ -154,6 +167,8 @@ export default function UsersList() {
         if (canAssignRoles) {
             dispatch(setSelectedUser(user));
             dispatch(setRolesModalState({ isOpen: true }));
+        } else {
+            toast.warning("No tienes permisos para asignar roles");
         }
     };
 
@@ -161,6 +176,10 @@ export default function UsersList() {
         if (canDelete && user.id !== currentUser.id) {
             dispatch(setSelectedUser(user));
             dispatch(setDeleteModalState({ isOpen: true }));
+        } else if (user.id === currentUser.id) {
+            toast.warning("No puedes eliminar tu propio usuario");
+        } else {
+            toast.warning("No tienes permisos para eliminar usuarios");
         }
     };
 
@@ -168,11 +187,35 @@ export default function UsersList() {
         if (canDelete && selectedUser && selectedUser.id !== currentUser.id) {
             try {
                 await dispatch(deleteUser(selectedUser.id)).unwrap();
+                toast.success(`El usuario ${selectedUser.name} ${selectedUser.last_name} ha sido eliminado`);
+
                 dispatch(setDeleteModalState({ isOpen: false }));
                 dispatch(setSelectedUser(null));
             } catch (error) {
-                console.error("Error al eliminar el usuario:", error);
+                toast.error("Error al eliminar el usuario: " + error.message);
             }
+        }
+    };
+
+    const handleModalSuccess = async (action) => {
+        try {
+            await dispatch(fetchUsers()).unwrap();
+            toast.success(
+                action === 'create'
+                    ? "Usuario creado correctamente"
+                    : "Usuario actualizado correctamente"
+            );
+        } catch (error) {
+            toast.error("Error al actualizar la lista de usuarios: " + error.message);
+        }
+    };
+
+    const handleRolesSuccess = async () => {
+        try {
+            await dispatch(fetchUsers()).unwrap();
+            toast.success("Roles actualizados correctamente");
+        } catch (error) {
+            toast.error("Error al actualizar los roles: " + error.message);
         }
     };
 
@@ -324,9 +367,7 @@ export default function UsersList() {
                     dispatch(setEditModalState({ isOpen: false, mode: null }));
                     dispatch(setSelectedUser(null));
                 }}
-                onSuccess={() => {
-                    dispatch(fetchUsers());
-                }}
+                onSuccess={() => handleModalSuccess(editModal.mode)}
                 readOnly={selectedUser && !canEdit}
             />
 
@@ -336,9 +377,7 @@ export default function UsersList() {
                     dispatch(setRolesModalState({ isOpen: false }));
                     dispatch(setSelectedUser(null));
                 }}
-                onSuccess={() => {
-                    dispatch(fetchUsers());
-                }}
+                onSuccess={handleRolesSuccess}
             />
 
             <ConfirmationDialog

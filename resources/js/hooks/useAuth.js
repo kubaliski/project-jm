@@ -20,8 +20,8 @@ const useAuth = () => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const loading = useSelector(selectAuthLoading);
   const error = useSelector(selectAuthError);
-  const permissions = useSelector(selectUserPermissions);
-  const roles = useSelector(selectUserRoles);
+  const permissions = useSelector(selectUserPermissions) || [];
+  const roles = useSelector(selectUserRoles) || [];
 
   const login = async (credentials) => {
     try {
@@ -37,15 +37,15 @@ const useAuth = () => {
 
   const logout = async () => {
     try {
-        await dispatch(logoutUser());
-        // Asegurarnos de que todo se limpie
-        localStorage.removeItem('token');
-        return true;
+      await dispatch(logoutUser());
+      // Asegurarnos de que todo se limpie
+      localStorage.removeItem('token');
+      return true;
     } catch (error) {
-        console.error('Error durante el logout:', error);
-        return false;
+      console.error('Error durante el logout:', error);
+      return false;
     }
-};
+  };
 
   const checkAuth = async () => {
     try {
@@ -56,11 +56,11 @@ const useAuth = () => {
   };
 
   const hasPermission = (permission) => {
-    return permissions.includes(permission);
+    return Array.isArray(permissions) && permissions.includes(permission);
   };
 
   const hasRole = (roleName) => {
-    return roles.some(role => role.name === roleName);
+    return Array.isArray(roles) && roles.some(role => role.name === roleName);
   };
 
   return {

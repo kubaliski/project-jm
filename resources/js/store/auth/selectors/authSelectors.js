@@ -11,6 +11,10 @@ export const selectToken = (state) => state.auth.token;
 export const selectUserRoles = (state) => state.auth.roles;
 export const selectUserPermissions = (state) => state.auth.permissions;
 
+// Selectores para el perfil
+export const selectProfileLoading = (state) => state.auth.profile.loading;
+export const selectProfileError = (state) => state.auth.profile.error;
+
 // Selectores compuestos
 export const selectHasPermission = (permission) => (state) =>
   state.auth.permissions.includes(permission);

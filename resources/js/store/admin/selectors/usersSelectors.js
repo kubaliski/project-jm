@@ -12,6 +12,9 @@ export const selectSelectedUser = (state) => state.admin.users.selectedUser;
 export const selectEditModalState = (state) => state.admin.users.editModal;
 export const selectDeleteModalState = (state) => state.admin.users.deleteModal;
 export const selectRolesModalState = (state) => state.admin.users.rolesModal;
+// Selectores para el perfil
+export const selectProfileLoading = (state) => state.admin.users.profile.loading;
+export const selectProfileError = (state) => state.admin.users.profile.error;
 
 // Selector para filtrar y ordenar usuarios
 export const selectFilteredAndSortedUsers = createSelector(

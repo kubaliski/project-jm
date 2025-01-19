@@ -1,21 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '@hooks';
 import {
-  Bars3Icon,
-  XMarkIcon,
-  HomeIcon,
-  DocumentTextIcon,
-  ChatBubbleBottomCenterIcon,
-  UserGroupIcon,
-  DocumentCheckIcon,
-  ChevronDownIcon
+    Bars3Icon,
+    XMarkIcon,
+    HomeIcon,
+    DocumentTextIcon,
+    ChatBubbleBottomCenterIcon,
+    UserGroupIcon,
+    DocumentCheckIcon,
+    ChevronDownIcon,
+    ArrowLeftOnRectangleIcon
 } from '@heroicons/react/24/outline';
 
 const Sidebar = ({ onExpandChange }) => {
     const location = useLocation();
+    const navigate = useNavigate();
+    const { logout } = useAuth();
     const [isPinned, setIsPinned] = useState(true);
     const [isHovered, setIsHovered] = useState(false);
     const APP_NAME = window.APP_NAME || 'Mi Sitio';
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+            navigate('/login');
+        } catch (error) {
+            console.error('Error al cerrar sesión:', error);
+        }
+    };
 
     const navItems = [
         {
@@ -60,11 +73,10 @@ const Sidebar = ({ onExpandChange }) => {
         }
     ];
 
-    // Inicializar los grupos expandidos después de la declaración de navItems
     const [expandedGroups, setExpandedGroups] = useState(() => {
         const initialState = {};
         navItems.forEach(group => {
-            initialState[group.group] = true; // Todos los grupos inician expandidos
+            initialState[group.group] = true;
         });
         return initialState;
     });
@@ -118,7 +130,6 @@ const Sidebar = ({ onExpandChange }) => {
                 <nav className="flex-1 px-2 py-4 space-y-2 overflow-y-auto">
                     {navItems.map((group) => (
                         <div key={group.group} className="border-b border-gray-700 pb-2">
-                            {/* Group Header - Solo visible cuando está expandido */}
                             {isExpanded && (
                                 <button
                                     onClick={() => toggleGroup(group.group)}
@@ -135,7 +146,6 @@ const Sidebar = ({ onExpandChange }) => {
                                 </button>
                             )}
 
-                            {/* Group Items */}
                             <div className={`mt-1 space-y-1 transition-all duration-200 ${
                                 !isExpanded || expandedGroups[group.group] ? 'block' : 'hidden'
                             }`}>
@@ -170,6 +180,22 @@ const Sidebar = ({ onExpandChange }) => {
                         </div>
                     ))}
                 </nav>
+
+                {/* Logout Section */}
+                <div className="border-t border-gray-700 mt-auto">
+                    <button
+                        onClick={handleLogout}
+                        className={`w-full flex items-center px-3 py-4 text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white transition-colors ${
+                            !isExpanded ? 'justify-center' : ''
+                        }`}
+                        title={!isExpanded ? 'Cerrar Sesión' : ''}
+                    >
+                        <ArrowLeftOnRectangleIcon className="w-6 h-6 text-gray-400" />
+                        {isExpanded && (
+                            <span className="ml-3">Cerrar Sesión</span>
+                        )}
+                    </button>
+                </div>
             </div>
         </div>
     );

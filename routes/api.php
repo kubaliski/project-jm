@@ -41,6 +41,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Usuarios y roles
     Route::post('/users/{user}/roles', [UserController::class, 'assignRoles'])
         ->name('users.assign-roles');
+    Route::put('/users/profile', [UserController::class, 'updateProfile'])
+        ->name('users.update-profile');
     Route::apiResource('users', UserController::class);
 
     // Roles y permisos

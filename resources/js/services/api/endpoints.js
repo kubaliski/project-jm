@@ -24,7 +24,8 @@ export const API_ENDPOINTS = {
     users: {
         base: '/api/users',
         byId: (id) => `/api/users/${id}`,
-        assignRoles: (id) => `/api/users/${id}/roles`
+        assignRoles: (id) => `/api/users/${id}/roles`,
+        profile: '/api/users/profile'
     },
     auth: {
         login: '/api/login',

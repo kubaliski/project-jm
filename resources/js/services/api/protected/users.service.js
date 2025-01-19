@@ -26,6 +26,10 @@ class UsersService {
     async assignRoles(id, roles) {
         return authClient.post(API_ENDPOINTS.users.assignRoles(id), { roles });
     }
+
+    async updateProfile(data) {
+        return authClient.put(API_ENDPOINTS.users.profile, data);
+    }
 }
 
 export const usersService = new UsersService();

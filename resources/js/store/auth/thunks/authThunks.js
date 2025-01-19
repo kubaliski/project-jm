@@ -1,6 +1,6 @@
 // src/store/auth/thunks/authThunks.js
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { authService } from '@services/api';
+import { authService, usersService } from '@services/api';
 
 export const loginUser = createAsyncThunk(
   'auth/login',
@@ -31,17 +31,40 @@ export const getCurrentUser = createAsyncThunk(
   }
 );
 
-
 export const logoutUser = createAsyncThunk(
   'auth/logout',
   async (_, { rejectWithValue }) => {
     try {
       await authService.logout();
-      // Mover la limpieza del token aquí
       localStorage.removeItem('token');
       return true;
     } catch (error) {
       return rejectWithValue(error.response?.data);
+    }
+  }
+);
+
+export const updateProfile = createAsyncThunk(
+  'auth/updateProfile',
+  async (formData, { rejectWithValue, dispatch }) => {
+    try {
+      const response = await usersService.updateProfile(formData);
+
+      // Disparar una acción para actualizar el usuario en la lista de usuarios si existe
+      if (response.data.user) {
+        dispatch({
+          type: 'admin/users/updateUserInList',
+          payload: response.data.user
+        });
+      }
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.errors ||
+        error.response?.data ||
+        'Error al actualizar el perfil'
+      );
     }
   }
 );

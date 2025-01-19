@@ -26,6 +26,11 @@ class UserPolicy
         return $user->hasPermission('user.edit');
     }
 
+    public function updateProfile(User $user, User $model): bool
+    {
+        return $user->id === $model->id && $user->hasPermission('user.update-profile');
+    }
+
     public function delete(User $user, User $model): bool
     {
         return $user->hasPermission('user.delete');
