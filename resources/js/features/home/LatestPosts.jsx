@@ -8,7 +8,7 @@ import {
   selectRecentPosts,
   selectSpecificLoadingState,
   selectSpecificErrorState,
-  selectIsCacheValid
+  selectIsRecentPostsCacheValid,
 } from '@store/landing/selectors/publicPostsSelectors';
 
 export default function LatestPosts() {
@@ -16,7 +16,7 @@ export default function LatestPosts() {
     const recentPosts = useSelector(selectRecentPosts);
     const isLoading = useSelector(state => selectSpecificLoadingState(state, 'recentPosts'));
     const error = useSelector(state => selectSpecificErrorState(state, 'recentPosts'));
-    const isCacheValid = useSelector(selectIsCacheValid);
+    const isCacheValid = useSelector(selectIsRecentPostsCacheValid);
 
     useEffect(() => {
         if (!isCacheValid) {

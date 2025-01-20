@@ -12,6 +12,17 @@ export const selectPublicPostsLoading = (state) => state.landing.publicPosts.loa
 export const selectPublicPostsError = (state) => state.landing.publicPosts.error;
 export const selectPagination = (state) => state.landing.publicPosts.pagination;
 
+//Selector para verificar cache de posts recientes
+export const selectIsRecentPostsCacheValid = createSelector(
+  [selectPublicPostsCache],
+  (cache) => {
+      if (!cache.timestamp) return false;
+      const now = Date.now();
+      const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+      return now - cache.timestamp < CACHE_DURATION;
+  }
+);
+
 // Selector para verificar si el caché es válido
 export const selectIsCacheValid = createSelector(
   [selectPublicPostsCache],
