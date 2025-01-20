@@ -1,32 +1,30 @@
 // components/LatestPosts.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { publicPostsService } from '@services/api';
 import { PostCard } from '@components/common';
+import { fetchRecentPosts } from '@store/landing/thunks/publicPostsThunks';
+import {
+  selectRecentPosts,
+  selectSpecificLoadingState,
+  selectSpecificErrorState,
+  selectIsCacheValid
+} from '@store/landing/selectors/publicPostsSelectors';
 
 export default function LatestPosts() {
-    const [posts, setPosts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const dispatch = useDispatch();
+    const recentPosts = useSelector(selectRecentPosts);
+    const isLoading = useSelector(state => selectSpecificLoadingState(state, 'recentPosts'));
+    const error = useSelector(state => selectSpecificErrorState(state, 'recentPosts'));
+    const isCacheValid = useSelector(selectIsCacheValid);
 
     useEffect(() => {
-        const fetchLatestPosts = async () => {
-            try {
-                setLoading(true);
-                const response = await publicPostsService.getRecentPosts();
-                setPosts(response.data?.posts || []);
-            } catch (error) {
-                console.error('Error al cargar los posts recientes:', error);
-                setError('No se pudieron cargar los posts recientes');
-            } finally {
-                setLoading(false);
-            }
-        };
+        if (!isCacheValid) {
+            dispatch(fetchRecentPosts());
+        }
+    }, [dispatch, isCacheValid]);
 
-        fetchLatestPosts();
-    }, []);
-
-    if (loading) {
+    if (isLoading) {
         return (
             <section
                 className="py-20 bg-gray-50"
@@ -74,7 +72,7 @@ export default function LatestPosts() {
                     >
                         <p className="text-lg">{error}</p>
                         <button
-                            onClick={() => window.location.reload()}
+                            onClick={() => dispatch(fetchRecentPosts())}
                             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                         >
                             Intentar de nuevo
@@ -85,7 +83,7 @@ export default function LatestPosts() {
         );
     }
 
-    if (!Array.isArray(posts) || posts.length === 0) {
+    if (!Array.isArray(recentPosts) || recentPosts.length === 0) {
         return (
             <section
                 className="py-20 bg-gray-50"
@@ -117,7 +115,7 @@ export default function LatestPosts() {
                     role="feed"
                     aria-label="Lista de publicaciones recientes"
                 >
-                    {posts.map((post) => (
+                    {recentPosts.map((post) => (
                         <PostCard key={post.id} post={post} />
                     ))}
                 </div>

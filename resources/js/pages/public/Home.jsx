@@ -93,10 +93,10 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* Latest Posts Section */}
+            {/* Post Más recientes */}
             <LatestPosts />
 
-            {/* About Section */}
+            {/* Sección sobre nosotros  */}
             <section
                 className="py-20 bg-white"
                 aria-labelledby="sobre-nosotros-heading"
@@ -130,7 +130,7 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* Testimonials Section */}
+            {/* Sección de testimonios  */}
             <section
                 className="py-20 bg-gray-50"
                 aria-labelledby="testimonios-heading"

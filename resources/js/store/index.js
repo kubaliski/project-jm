@@ -1,17 +1,22 @@
 // src/store/index.js
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
+//Recucers auth
 import authReducer from './auth/slices/authSlice';
+
+// Reducers de la parte de administración
 import postsReducer from './admin/slices/postsSlice';
 import contactsReducer from './admin/slices/contactsSlice';
 import rolesReducer from './admin/slices/rolesSlice';
 import usersReducer from './admin/slices/usersSlice';
 
-// Reducer para la parte pública (landing)
-// const landingReducer = combineReducers({
-//   // Aquí iremos agregando los reducers de la landing
-//   // ejemplo: hero: heroReducer,
-//   // ejemplo: blog: blogReducer,
-// });
+// Reducers de la parte pública (landing)
+import publicPostsReducer from './landing/slices/publicPostsSlice';
+
+
+const landingReducer = combineReducers({
+  publicPosts: publicPostsReducer,
+
+});
 
 // Reducer para la parte de administración
 const adminReducer = combineReducers({
@@ -25,7 +30,8 @@ const adminReducer = combineReducers({
 const rootReducer = combineReducers({
   // landing: landingReducer,
   admin: adminReducer,
-  auth: authReducer
+  auth: authReducer,
+  landing: landingReducer,
 });
 
 // Configuración del store

@@ -1,47 +1,45 @@
 // components/pages/BlogList.jsx
-import React, { useState, useEffect } from 'react';
-import { publicPostsService } from '@services/api';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { SEOManager } from '@components/common';
 import BlogListSkeleton from '@components/ui/Skeletons/BlogListSkeleton';
 import { PostCard } from '@components/common';
-
-const POSTS_PER_PAGE = 9; // 3x3 grid
+import { fetchPublicPosts } from '@store/landing/thunks/publicPostsThunks';
+import { setCurrentPage } from '@store/landing/slices/publicPostsSlice';
+import {
+    selectPaginatedPosts,
+    selectSpecificLoadingState,
+    selectSpecificErrorState,
+    selectPaginationMetadata,
+    selectIsCacheValid
+} from '@store/landing/selectors/publicPostsSelectors';
 
 export default function BlogList() {
-    const [posts, setPosts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [currentPage, setCurrentPage] = useState(1);
+    const dispatch = useDispatch();
+    const paginatedPosts = useSelector(selectPaginatedPosts);
+    const isLoading = useSelector(state => selectSpecificLoadingState(state, 'items'));
+    const error = useSelector(state => selectSpecificErrorState(state, 'items'));
+    const isCacheValid = useSelector(selectIsCacheValid);
+    const {
+        currentPage,
+        totalPages,
+        startIndex,
+        endIndex,
+        totalItems
+    } = useSelector(selectPaginationMetadata);
 
     useEffect(() => {
-        const fetchPosts = async () => {
-            try {
-                setLoading(true);
-                const response = await publicPostsService.getAll();
-                setPosts(response.data?.posts || []);
-            } catch (error) {
-                console.error('Error al cargar los posts:', error);
-                setError('No se pudieron cargar los posts');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchPosts();
-    }, []);
-
-    // Pagination calculations
-    const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
-    const indexOfLastPost = currentPage * POSTS_PER_PAGE;
-    const indexOfFirstPost = indexOfLastPost - POSTS_PER_PAGE;
-    const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
+        if (!isCacheValid) {
+            dispatch(fetchPublicPosts());
+        }
+    }, [dispatch, isCacheValid]);
 
     const handlePageChange = (pageNumber) => {
-        setCurrentPage(pageNumber);
+        dispatch(setCurrentPage(pageNumber));
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
         // Anunciar cambio de página para lectores de pantalla
-        const message = `Página ${pageNumber} de ${totalPages}, mostrando posts del ${indexOfFirstPost + 1} al ${Math.min(indexOfLastPost, posts.length)}`;
+        const message = `Página ${pageNumber} de ${totalPages}, mostrando posts del ${startIndex} al ${endIndex} de ${totalItems}`;
         announcePageChange(message);
     };
 
@@ -53,7 +51,7 @@ export default function BlogList() {
         }
     };
 
-    if (loading) {
+    if (isLoading) {
         return (
             <div
                 role="status"
@@ -84,7 +82,7 @@ export default function BlogList() {
                                     {error}
                                 </p>
                                 <button
-                                    onClick={() => window.location.reload()}
+                                    onClick={() => dispatch(fetchPublicPosts())}
                                     className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                                 >
                                     Intentar de nuevo
@@ -97,7 +95,7 @@ export default function BlogList() {
         );
     }
 
-    if (!Array.isArray(posts) || posts.length === 0) {
+    if (!Array.isArray(paginatedPosts) || paginatedPosts.length === 0) {
         return (
             <>
                 <SEOManager
@@ -147,7 +145,7 @@ export default function BlogList() {
                     role="feed"
                     aria-label="Lista de artículos del blog"
                 >
-                    {currentPosts.map((post) => (
+                    {paginatedPosts.map((post) => (
                         <PostCard key={post.id} post={post} />
                     ))}
                 </div>

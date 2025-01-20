@@ -1,39 +1,48 @@
-import React, { useState, useEffect } from 'react';
+// components/pages/BlogPost.jsx
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { publicPostsService } from '@services/api';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { SEOManager } from '@components/common';
 import BlogPostSkeleton from '@components/ui/Skeletons/BlogPostSkeleton';
-import DOMPurify from 'dompurify'; // Necesitarás instalar esta dependencia
+import DOMPurify from 'dompurify';
+import { fetchPostBySlug } from '@store/landing/thunks/publicPostsThunks';
+import {
+    selectCurrentPost,
+    selectSpecificLoadingState,
+    selectSpecificErrorState,
+    selectIsPostCached,
+} from '@store/landing/selectors/publicPostsSelectors';
 
 export default function BlogPost() {
     const { slug } = useParams();
+    const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [post, setPost] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+
+    const post = useSelector(selectCurrentPost);
+    const isLoading = useSelector(state => selectSpecificLoadingState(state, 'currentPost'));
+    const error = useSelector(state => selectSpecificErrorState(state, 'currentPost'));
+    const isPostCached = useSelector(state => selectIsPostCached(state, slug));
 
     useEffect(() => {
-        const fetchPost = async () => {
-            try {
-                setLoading(true);
-                const response = await publicPostsService.getBySlug(slug);
-                setPost(response.data.post);
-            } catch (error) {
-                if (error.response?.status === 404) {
-                    navigate('/404', { replace: true });
-                } else {
-                    setError('No se pudo cargar el artículo');
-                    console.error('Error:', error);
+        const loadPost = async () => {
+            if (!isPostCached) {
+                try {
+                    const resultAction = await dispatch(fetchPostBySlug(slug)).unwrap();
+                    if (!resultAction) {
+                        navigate('/404', { replace: true });
+                    }
+                } catch (err) {
+                    if (err?.response?.status === 404) {
+                        navigate('/404', { replace: true });
+                    }
                 }
-            } finally {
-                setLoading(false);
             }
         };
 
-        fetchPost();
-    }, [slug, navigate]);
+        loadPost();
+    }, [dispatch, slug, navigate, isPostCached]);
 
     // Sanitizar el HTML y asegurar accesibilidad
     const sanitizeContent = (content) => {
@@ -58,12 +67,12 @@ export default function BlogPost() {
 
         return DOMPurify.sanitize(content, {
             ADD_ATTR: ['target', 'aria-label'],
-            ADD_TAGS: ['iframe'], // Si necesitas permitir embeds
+            ADD_TAGS: ['iframe'],
             FORCE_BODY: true,
         });
     };
 
-    if (loading) {
+    if (isLoading) {
         return (
             <div role="status" aria-busy="true" aria-label="Cargando artículo">
                 <BlogPostSkeleton />
@@ -87,7 +96,7 @@ export default function BlogPost() {
                             <div className="ml-3">
                                 <p className="text-red-700">{error}</p>
                                 <button
-                                    onClick={() => window.location.reload()}
+                                    onClick={() => dispatch(fetchPostBySlug(slug))}
                                     className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                                 >
                                     Intentar de nuevo
