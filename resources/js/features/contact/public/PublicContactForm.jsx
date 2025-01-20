@@ -1,113 +1,36 @@
-import React, { useState } from 'react';
-import { publicContactsService } from '@services/api';
+import React, { useCallback } from 'react';
+import { usePublicContactForm } from '@hooks/usePublicContactForm';
+import { useNotifications } from '@hooks/useNotifications';
+import { notificationService } from '@services/notifications/notifications';
 
 const ContactForm = () => {
-    const [formData, setFormData] = useState({
-        full_name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: ''
+    const {
+        formData,
+        errors,
+        isSubmitting,
+        submitStatus,
+        handleChange,
+        handleSubmit,
+        resetForm
+    } = usePublicContactForm(() => {
+        notificationService.success('¡Mensaje enviado correctamente!');
     });
 
-    const [errors, setErrors] = useState({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [submitStatus, setSubmitStatus] = useState(null);
-
-    const validateForm = () => {
-        const newErrors = {};
-
-        if (formData.full_name.trim().length < 2) {
-            newErrors.full_name = 'El nombre debe tener al menos 2 caracteres';
-        } else if (formData.full_name.trim().length > 255) {
-            newErrors.full_name = 'El nombre no puede exceder los 255 caracteres';
-        }
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(formData.email)) {
-            newErrors.email = 'Por favor, introduce un email válido';
-        }
-
-        if (formData.phone && !/^[0-9+\s()-]{6,20}$/.test(formData.phone)) {
-            newErrors.phone = 'Por favor, introduce un número de teléfono válido';
-        }
-
-        if (formData.subject.trim().length < 3) {
-            newErrors.subject = 'El asunto debe tener al menos 3 caracteres';
-        } else if (formData.subject.trim().length > 255) {
-            newErrors.subject = 'El asunto no puede exceder los 255 caracteres';
-        }
-
-        if (formData.message.trim().length < 10) {
-            newErrors.message = 'El mensaje debe tener al menos 10 caracteres';
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setSubmitStatus(null);
-
-        if (!validateForm()) {
-            // Anunciar errores para lectores de pantalla
-            const firstError = Object.values(errors)[0];
-            if (firstError) {
-                announceError(firstError);
-            }
-            return;
-        }
-
-        setIsSubmitting(true);
-
-        try {
-            await publicContactsService.create(formData);
-            setSubmitStatus('success');
-            announceSuccess('Mensaje enviado correctamente');
-            setFormData({
-                full_name: '',
-                email: '',
-                phone: '',
-                subject: '',
-                message: ''
-            });
-        } catch (error) {
-            setSubmitStatus('error');
-            if (error.response?.data?.errors) {
-                setErrors(error.response.data.errors);
-                announceError('Ha ocurrido un error al enviar el formulario');
-            }
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-
-        if (errors[name]) {
-            setErrors(prev => ({
-                ...prev,
-                [name]: null
-            }));
-        }
-    };
-
     // Función para anunciar mensajes a lectores de pantalla
-    const announceMessage = (message = 'polite') => {
+    const announceMessage = useCallback((message) => {
         const announcement = document.getElementById('announcement');
         if (announcement) {
             announcement.textContent = message;
         }
-    };
+    }, []);
 
-    const announceError = (message) => announceMessage(message, 'assertive');
-    const announceSuccess = (message) => announceMessage(message, 'polite');
+    useNotifications((notification) => {
+        if (notification.type === 'success') {
+            announceMessage(notification.message);
+        } else if (notification.type === 'error') {
+            announceMessage(`Error: ${notification.message}`);
+        }
+    });
 
     return (
         <div className="max-w-3xl mx-auto px-4 py-8">
