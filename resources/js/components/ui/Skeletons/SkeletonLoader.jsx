@@ -5,11 +5,11 @@ export function SkeletonLoader() {
     return (
         <div className="min-h-screen">
             {/* Navbar Skeleton */}
-            <header className="fixed top-0 left-0 right-0 w-full bg-white shadow-md z-50">
+            <header className="fixed top-0 left-0 right-0 w-full bg-transparent z-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="hidden md:flex justify-between items-center h-20">
                         {/* Logo */}
-                        <div className="text-2xl font-bold">
+                        <div className="text-2xl font-bold text-white">
                             TuMarca
                         </div>
 
@@ -18,7 +18,7 @@ export function SkeletonLoader() {
                             <ul className="flex justify-center space-x-8">
                                 {[1, 2, 3, 4].map((item) => (
                                     <li key={item}>
-                                        <div className="h-4 w-20 bg-gray-200 rounded animate-pulse" />
+                                        <div className="h-4 w-20 bg-white bg-opacity-20 rounded animate-pulse" />
                                     </li>
                                 ))}
                             </ul>
@@ -26,7 +26,7 @@ export function SkeletonLoader() {
 
                         {/* Contact Button */}
                         <div className="flex items-center">
-                            <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white">
+                            <div className="flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-white text-white">
                                 <PhoneIcon className="h-5 w-5" aria-hidden="true" />
                                 <span>Llámanos</span>
                             </div>
@@ -35,10 +35,10 @@ export function SkeletonLoader() {
 
                     {/* Mobile Navbar */}
                     <div className="md:hidden flex justify-between items-center h-20">
-                        <div className="text-2xl font-bold">
+                        <div className="text-2xl font-bold text-white">
                             TuMarca
                         </div>
-                        <div className="h-8 w-8 bg-gray-200 rounded animate-pulse" />
+                        <div className="h-8 w-8 bg-white bg-opacity-20 rounded animate-pulse" />
                     </div>
                 </div>
             </header>
