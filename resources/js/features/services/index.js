@@ -1,7 +1,7 @@
 // index.js
 import { ServiceDetail } from './ServiceDetail';
 import { ServiceCard } from './ServiceCard';
-import { FEATURED_SERVICES } from './servicesData';
+import { SERVICES_DATA } from './servicesData';
 
 // Re-exportar todo
-export { ServiceDetail, ServiceCard, FEATURED_SERVICES };
+export { ServiceDetail, ServiceCard, SERVICES_DATA };

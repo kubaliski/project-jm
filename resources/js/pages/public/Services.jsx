@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { SEOManager, CTASection } from '@components/common';
 import { ServiceCard } from '@features/services/ServiceCard';
 import { ServiceDetail } from '@features/services/ServiceDetail';
-import { FEATURED_SERVICES } from '@features/services/servicesData';
+import { SERVICES_DATA  } from '@features/services/servicesData';
 
 export default function Services() {
     const location = useLocation();
@@ -102,11 +102,12 @@ export default function Services() {
                             className="grid grid-cols-1 md:grid-cols-3 gap-8"
                             role="list"
                         >
-                            {FEATURED_SERVICES.map((service) => (
+                            {SERVICES_DATA.featured.map((service) => (
                                 <ServiceCard
                                     key={service.id}
                                     service={service}
-                                    onLearnMore={handleLearnMore}
+                                    variant="button"
+                                    onAction={handleLearnMore}
                                 />
                             ))}
                         </div>
@@ -126,11 +127,11 @@ export default function Services() {
                             Detalles de Nuestros Servicios
                         </h2>
                         <div className="space-y-16">
-                            {FEATURED_SERVICES.map((service) => (
+                            {SERVICES_DATA.featured.map((service) => (
                                 <div
                                     key={service.id}
                                     ref={el => detailsRef.current[service.id] = el}
-                                    className='scroll-mt-32'
+                                    className="scroll-mt-32"
                                 >
                                     <ServiceDetail service={service} />
                                 </div>
