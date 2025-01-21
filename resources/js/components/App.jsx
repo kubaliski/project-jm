@@ -6,19 +6,7 @@ import { store } from '@store';
 import { SEOProvider, ToastProvider } from '@providers';
 import ProtectedRoute from './ProtectedRoute';
 import { AdminLayout, PublicLayout } from '@layouts';
-
-// Componente de carga global
-const GlobalLoading = () => (
-    <div
-        role="status"
-        aria-live="polite"
-        className="min-h-screen flex items-center justify-center"
-    >
-        <div className="text-center">
-            <p>Cargando...</p>
-        </div>
-    </div>
-);
+import { SkeletonLoader } from '@/components/ui/Skeletons/SkeletonLoader';
 
 // Lazy loading de páginas públicas
 const Home = React.lazy(() => import('@pages/public/Home'));
@@ -82,7 +70,7 @@ export default function App() {
                 <RouteAnnouncer />
                 <ToastProvider>
                     <SEOProvider>
-                        <Suspense fallback={<GlobalLoading />}>
+                        <Suspense fallback={<SkeletonLoader />}>
                             <Routes>
                                 {/* Rutas públicas */}
                                 <Route path="/" element={

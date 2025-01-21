@@ -33,15 +33,6 @@
         </noscript>
 
         <!-- Root div para React -->
-        <div id="app">
-            <!-- Fallback loading para SSR o carga lenta -->
-            <div
-                role="status"
-                aria-label="Cargando aplicación"
-                style="height: 100vh; display: flex; align-items: center; justify-content: center;"
-            >
-                Cargando...
-            </div>
-        </div>
+        <div id="app"></div>
     </body>
 </html>
