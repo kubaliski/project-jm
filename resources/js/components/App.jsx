@@ -16,6 +16,7 @@ const BlogPost = React.lazy(() => import('@pages/public/BlogPost'));
 const Contact = React.lazy(() => import('@pages/public/Contact'));
 const Services = React.lazy(() => import('@pages/public/Services'));
 const Login = React.lazy(() => import('@pages/auth/Login'));
+const ResetPassword = React.lazy(() => import('@pages/auth/ResetPassword'));
 const NotFound = React.lazy(() => import('@pages/public/NotFound'));
 
 // Lazy loading de páginas administrativas
@@ -104,6 +105,7 @@ export default function App() {
                                     </PublicLayout>
                                 } />
                                 <Route path="/login" element={<Login />} />
+                                <Route path="/reset-password" element={<ResetPassword />} />
 
                                 {/* Rutas protegidas */}
                                 <Route path="/admin" element={

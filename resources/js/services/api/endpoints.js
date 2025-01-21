@@ -30,7 +30,9 @@ export const API_ENDPOINTS = {
     auth: {
         login: '/api/login',
         logout: '/api/logout',
-        user: '/api/user'
+        user: '/api/user',
+        forgotPassword: '/api/forgot-password',
+        resetPassword: '/api/reset-password'
     },
     roles: {
         base: '/api/roles',

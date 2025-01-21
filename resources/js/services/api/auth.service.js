@@ -13,6 +13,14 @@ class AuthService {
     async getCurrentUser() {
         return authClient.get(API_ENDPOINTS.auth.user);
     }
+
+    async forgotPassword(email) {
+        return publicClient.post(API_ENDPOINTS.auth.forgotPassword, { email });
+    }
+
+    async resetPassword(resetData) {
+        return publicClient.post(API_ENDPOINTS.auth.resetPassword, resetData);
+    }
 }
 
 export const authService = new AuthService();

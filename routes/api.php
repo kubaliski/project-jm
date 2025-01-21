@@ -20,8 +20,12 @@ Route::prefix('public')->group(function () {
     Route::post('/contacts', [PublicContactController::class, 'store']);
 });
 
-// Autenticación
-Route::post('/login', [AuthController::class, 'login']);
+// Autenticación y gestión de contraseña
+Route::controller(AuthController::class)->group(function () {
+    Route::post('/login', 'login');
+    Route::post('/forgot-password', 'forgotPassword')->name('password.email');
+    Route::post('/reset-password', 'resetPassword')->name('password.update');
+});
 
 // Rutas protegidas
 Route::middleware('auth:sanctum')->group(function () {

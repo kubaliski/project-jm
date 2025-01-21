@@ -1,21 +1,21 @@
-// src/store/auth/selectors/authSelectors.js
-
-// Selectores básicos
+// Selectores existentes...
 export const selectUser = (state) => state.auth.user;
 export const selectIsAuthenticated = (state) => state.auth.isAuthenticated;
 export const selectAuthLoading = (state) => state.auth.loading;
 export const selectAuthError = (state) => state.auth.error;
 export const selectToken = (state) => state.auth.token;
-
-// Selectores para roles y permisos
 export const selectUserRoles = (state) => state.auth.roles;
 export const selectUserPermissions = (state) => state.auth.permissions;
-
-// Selectores para el perfil
 export const selectProfileLoading = (state) => state.auth.profile.loading;
 export const selectProfileError = (state) => state.auth.profile.error;
 
-// Selectores compuestos
+// Nuevos selectores para password reset
+export const selectPasswordResetLoading = (state) => state.auth.passwordReset.loading;
+export const selectPasswordResetError = (state) => state.auth.passwordReset.error;
+export const selectPasswordResetSuccess = (state) => state.auth.passwordReset.success;
+export const selectPasswordResetMessage = (state) => state.auth.passwordReset.message;
+
+// Selectores compuestos existentes...
 export const selectHasPermission = (permission) => (state) =>
   state.auth.permissions.includes(permission);
 
@@ -34,6 +34,5 @@ export const selectPermissionsByGroup = (state) => {
   }, {});
 };
 
-// Selector para verificar múltiples permisos
 export const selectHasPermissions = (permissions) => (state) =>
   permissions.every(permission => state.auth.permissions.includes(permission));

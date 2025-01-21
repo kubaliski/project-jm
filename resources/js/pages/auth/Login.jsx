@@ -2,18 +2,20 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@hooks';
+import { FormInput, SubmitButton } from '@components/common';
+import {ForgotPasswordModal} from '@features/auth';
 
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [localError, setLocalError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const { login, error: authError, isAuthenticated } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Redirigir si ya está autenticado
     useEffect(() => {
         if (isAuthenticated) {
             const from = location.state?.from?.pathname || '/admin';
@@ -55,41 +57,60 @@ export default function Login() {
                             <div className="text-sm text-red-700">{error}</div>
                         </div>
                     )}
-                    <div className="rounded-md shadow-sm -space-y-px">
-                        <div>
-                            <input
-                                type="email"
-                                required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                                placeholder="Email"
-                                disabled={isSubmitting}
-                            />
-                        </div>
-                        <div>
-                            <input
-                                type="password"
-                                required
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                                placeholder="Contraseña"
-                                disabled={isSubmitting}
-                            />
+
+                    <div className="space-y-4">
+                        <FormInput
+                            id="email"
+                            name="email"
+                            type="email"
+                            label="Email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="tu@email.com"
+                            required
+                            disabled={isSubmitting}
+                        />
+
+                        <FormInput
+                            id="password"
+                            name="password"
+                            type="password"
+                            label="Contraseña"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Contraseña"
+                            required
+                            disabled={isSubmitting}
+                        />
+                    </div>
+
+                    <div className="flex items-center justify-end">
+                        <div className="text-sm">
+                            <button
+                                type="button"
+                                onClick={() => setIsModalOpen(true)}
+                                className="font-medium text-indigo-600 hover:text-indigo-500"
+                            >
+                                ¿Has olvidado la contraseña?
+                            </button>
                         </div>
                     </div>
+
                     <div>
-                        <button
-                            type="submit"
-                            disabled={isSubmitting}
-                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {isSubmitting ? 'Accediendo...' : 'Acceder'}
-                        </button>
+                        <SubmitButton
+                            isSubmitting={isSubmitting}
+                            submitText="Acceder"
+                            loadingText="Accediendo..."
+                            className="w-full"
+                        />
                     </div>
                 </form>
             </div>
+
+            <ForgotPasswordModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+            />
         </div>
     );
 }

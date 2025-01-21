@@ -1,4 +1,3 @@
-// src/store/auth/thunks/authThunks.js
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { authService, usersService } from '@services/api';
 
@@ -64,6 +63,39 @@ export const updateProfile = createAsyncThunk(
         error.response?.data?.errors ||
         error.response?.data ||
         'Error al actualizar el perfil'
+      );
+    }
+  }
+);
+
+export const forgotPassword = createAsyncThunk(
+  'auth/forgotPassword',
+  async (emailData, { rejectWithValue }) => {
+    try {
+      // Enviamos solo el email como string
+      const response = await authService.forgotPassword(emailData);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.errors ||
+        error.response?.data ||
+        'Error al enviar el correo de recuperación'
+      );
+    }
+  }
+);
+
+export const resetPassword = createAsyncThunk(
+  'auth/resetPassword',
+  async (resetData, { rejectWithValue }) => {
+    try {
+      const response = await authService.resetPassword(resetData);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.errors ||
+        error.response?.data ||
+        'Error al restablecer la contraseña'
       );
     }
   }

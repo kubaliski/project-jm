@@ -1,6 +1,12 @@
-// src/store/auth/slice/authSlice.js
 import { createSlice } from '@reduxjs/toolkit';
-import { loginUser, getCurrentUser, logoutUser, updateProfile } from '../thunks/authThunks';
+import {
+  loginUser,
+  getCurrentUser,
+  logoutUser,
+  updateProfile,
+  forgotPassword,
+  resetPassword
+} from '../thunks/authThunks';
 
 const initialState = {
   user: null,
@@ -13,6 +19,12 @@ const initialState = {
   profile: {
     loading: false,
     error: null
+  },
+  passwordReset: {
+    loading: false,
+    error: null,
+    success: false,
+    message: null
   }
 };
 
@@ -25,11 +37,19 @@ const authSlice = createSlice({
     },
     clearProfileError: (state) => {
       state.profile.error = null;
+    },
+    clearPasswordResetStatus: (state) => {
+      state.passwordReset = {
+        loading: false,
+        error: null,
+        success: false,
+        message: null
+      };
     }
   },
   extraReducers: (builder) => {
     builder
-      // Login
+      // Login cases...
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -46,7 +66,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload?.message || 'Error en el login';
       })
-      // Get Current User
+      // Get Current User cases...
       .addCase(getCurrentUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -67,7 +87,7 @@ const authSlice = createSlice({
         state.permissions = [];
         localStorage.removeItem('token');
       })
-      // Logout
+      // Logout cases...
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
         state.token = null;
@@ -76,7 +96,7 @@ const authSlice = createSlice({
         state.permissions = [];
         localStorage.removeItem('token');
       })
-      // Update Profile
+      // Update Profile cases...
       .addCase(updateProfile.pending, (state) => {
         state.profile.loading = true;
         state.profile.error = null;
@@ -84,18 +104,49 @@ const authSlice = createSlice({
       .addCase(updateProfile.fulfilled, (state, action) => {
         state.profile.loading = false;
         state.profile.error = null;
-        // Actualizamos solo la información del usuario manteniendo roles y permisos
         state.user = {
           ...action.payload.user,
-          roles: state.roles // Mantenemos los roles actuales
+          roles: state.roles
         };
       })
       .addCase(updateProfile.rejected, (state, action) => {
         state.profile.loading = false;
         state.profile.error = action.payload;
+      })
+      // Forgot Password cases...
+      .addCase(forgotPassword.pending, (state) => {
+        state.passwordReset.loading = true;
+        state.passwordReset.error = null;
+        state.passwordReset.success = false;
+        state.passwordReset.message = null;
+      })
+      .addCase(forgotPassword.fulfilled, (state, action) => {
+        state.passwordReset.loading = false;
+        state.passwordReset.success = true;
+        state.passwordReset.message = action.payload.message;
+      })
+      .addCase(forgotPassword.rejected, (state, action) => {
+        state.passwordReset.loading = false;
+        state.passwordReset.error = action.payload;
+      })
+      // Reset Password cases...
+      .addCase(resetPassword.pending, (state) => {
+        state.passwordReset.loading = true;
+        state.passwordReset.error = null;
+        state.passwordReset.success = false;
+        state.passwordReset.message = null;
+      })
+      .addCase(resetPassword.fulfilled, (state, action) => {
+        state.passwordReset.loading = false;
+        state.passwordReset.success = true;
+        state.passwordReset.message = action.payload.message;
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.passwordReset.loading = false;
+        state.passwordReset.error = action.payload;
       });
   }
 });
 
-export const { clearError, clearProfileError } = authSlice.actions;
+export const { clearError, clearProfileError, clearPasswordResetStatus } = authSlice.actions;
 export default authSlice.reducer;
