@@ -364,6 +364,7 @@ export default function UsersList() {
                     itemsPerPage={itemsPerPage}
                     onPageChange={handlePageChange}
                     emptyMessage="No hay usuarios registrados"
+                    mainColumn="user_info"
                 />
             </Paper>
 

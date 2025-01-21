@@ -312,6 +312,7 @@ export default function RoleList() {
                     itemsPerPage={itemsPerPage}
                     onPageChange={handlePageChange}
                     emptyMessage="No hay roles registrados"
+                    mainColumn="role_info"
                 />
             </Paper>
 

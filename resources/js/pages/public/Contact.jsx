@@ -2,21 +2,35 @@
 import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { SEOManager } from '@components/common';
-import {ContactForm, ContactInfo, ContactMap } from '@/features/contact/public';
+import { ContactForm, ContactInfo, ContactMap } from '@/features/contact/public';
 
 export default function Contact() {
     const APP_NAME = window.APP_NAME;
     const location = useLocation();
 
+    const scrollToElement = (element, offset = 0) => {
+        if (!element) return;
+
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+        });
+    };
+
     useEffect(() => {
         if (location.hash) {
             const id = location.hash.slice(1);
             const element = document.getElementById(id);
-            if (element) {
-                setTimeout(() => {
-                    element.scrollIntoView({ behavior: 'smooth' });
-                }, 100);
-            }
+
+            // Esperamos a que el DOM esté completamente cargado
+            setTimeout(() => {
+                if (element) {
+                    scrollToElement(element, 100);
+                }
+            }, 100);
         } else {
             window.scrollTo(0, 0);
         }
@@ -28,7 +42,6 @@ export default function Contact() {
                 title={`${APP_NAME} | Contacto`}
                 description="Estamos aquí para ayudarte, envíanos un mensaje con tus dudas o comentarios"
             />
-
             <main>
                 {/* Hero Section */}
                 <section
@@ -63,8 +76,14 @@ export default function Contact() {
                         <ContactInfo />
 
                         {/* Contact Form */}
-                        <section aria-labelledby="contact-form-heading">
-                            <h2 id="contact-form-heading" className="sr-only">
+                        <section
+                            aria-labelledby="contact-form-heading"
+                            className="scroll-mt-32" // Agregamos scroll margin
+                        >
+                            <h2
+                                id="contact-form-heading"
+                                className="sr-only"
+                            >
                                 Formulario de contacto
                             </h2>
                             <ContactForm />

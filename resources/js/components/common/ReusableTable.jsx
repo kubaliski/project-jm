@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import TableSkeleton, { PaginationSkeleton } from '../ui/Skeletons/TableSkeleton';
+import MobileAccordionList from './MobileAccordionList';
 
 export default function Table({
     columns = [],
@@ -13,8 +14,9 @@ export default function Table({
     onPageChange = () => {},
     itemsPerPage = 10,
     totalItems = 0,
+    mainColumn = columns[0]?.key // Columna principal para la vista móvil
 }) {
-    const renderPagination = () => {
+    const renderDesktopPagination = () => {
         if (!data || data.length === 0) return null;
 
         const pages = [];
@@ -81,8 +83,8 @@ export default function Table({
         return pages;
     };
 
-    return (
-        <div className="bg-white shadow overflow-hidden sm:rounded-md">
+    const renderDesktopTable = () => (
+        <div className="hidden md:block bg-white shadow overflow-hidden sm:rounded-md">
             <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
@@ -140,22 +142,6 @@ export default function Table({
                 <PaginationSkeleton />
             ) : (!isLoading && data && data.length > 0 && totalPages > 1) && (
                 <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
-                    <div className="flex flex-1 justify-between sm:hidden">
-                        <button
-                            onClick={() => onPageChange(currentPage - 1)}
-                            disabled={currentPage === 1}
-                            className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                        >
-                            Anterior
-                        </button>
-                        <button
-                            onClick={() => onPageChange(currentPage + 1)}
-                            disabled={currentPage === totalPages}
-                            className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                        >
-                            Siguiente
-                        </button>
-                    </div>
                     <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
                         <div>
                             <p className="text-sm text-gray-700">
@@ -175,13 +161,36 @@ export default function Table({
                                 className="isolate inline-flex -space-x-px rounded-md shadow-sm"
                                 aria-label="Pagination"
                             >
-                                {renderPagination()}
+                                {renderDesktopPagination()}
                             </nav>
                         </div>
                     </div>
                 </div>
             )}
         </div>
+    );
+
+    return (
+        <>
+            {/* Versión Desktop */}
+            {renderDesktopTable()}
+
+            {/* Versión Mobile */}
+            <div className="md:hidden">
+                <MobileAccordionList
+                    data={data}
+                    columns={columns}
+                    isLoading={isLoading}
+                    emptyMessage={emptyMessage}
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={onPageChange}
+                    itemsPerPage={itemsPerPage}
+                    totalItems={totalItems}
+                    mainColumn={mainColumn}
+                />
+            </div>
+        </>
     );
 }
 
@@ -202,5 +211,6 @@ Table.propTypes = {
     totalPages: PropTypes.number,
     onPageChange: PropTypes.func,
     itemsPerPage: PropTypes.number,
-    totalItems: PropTypes.number
+    totalItems: PropTypes.number,
+    mainColumn: PropTypes.string
 };

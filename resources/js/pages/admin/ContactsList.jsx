@@ -351,6 +351,7 @@ export default function ContactsList() {
                     itemsPerPage={itemsPerPage}
                     onPageChange={handlePageChange}
                     emptyMessage="No hay mensajes de contacto"
+                    mainColumn="contact_info"
                 />
             </Paper>
 

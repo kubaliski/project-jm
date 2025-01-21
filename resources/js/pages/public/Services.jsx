@@ -1,8 +1,6 @@
-// pages/Services.jsx
 import React, { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { SEOManager, CTASection } from '@components/common';
-// Services.jsx
 import { ServiceCard } from '@features/services/ServiceCard';
 import { ServiceDetail } from '@features/services/ServiceDetail';
 import { FEATURED_SERVICES } from '@features/services/servicesData';
@@ -11,29 +9,48 @@ export default function Services() {
     const location = useLocation();
     const detailsRef = useRef({});
 
+    const scrollToElement = (element, offset = 0) => {
+        if (!element) return;
+
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+        });
+
+        // Enfocamos después del scroll para asegurar la accesibilidad
+        setTimeout(() => {
+            element.focus();
+        }, 800); // Esperamos a que termine la animación del scroll
+    };
+
     const handleLearnMore = (serviceId) => {
         const element = detailsRef.current[serviceId];
         if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            element.focus();
+            scrollToElement(element, 100); // Ajustamos el offset para mejor precisión
             window.history.pushState(null, '', `#${serviceId}`);
         }
     };
 
     useEffect(() => {
+        // Manejamos el scroll inicial cuando hay un hash en la URL
         if (location.hash) {
             const id = location.hash.slice(1);
             const element = detailsRef.current[id];
-            if (element) {
-                setTimeout(() => {
-                    element.scrollIntoView({ behavior: 'smooth' });
-                    element.focus();
-                }, 100);
-            }
+
+            // Esperamos a que el DOM esté completamente cargado
+            setTimeout(() => {
+                if (element) {
+                    scrollToElement(element, 100);
+                }
+            }, 100);
         } else {
             window.scrollTo(0, 0);
         }
     }, [location]);
+
 
     return (
         <>
@@ -113,6 +130,7 @@ export default function Services() {
                                 <div
                                     key={service.id}
                                     ref={el => detailsRef.current[service.id] = el}
+                                    className='scroll-mt-32'
                                 >
                                     <ServiceDetail service={service} />
                                 </div>

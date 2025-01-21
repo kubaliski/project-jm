@@ -201,10 +201,10 @@ export default function PostsList() {
                         {post.title}
                     </div>
                     {post.excerpt && (
-                        <div className="text-sm text-gray-500 truncate max-w-xs">
-                            {post.excerpt}
-                        </div>
-                    )}
+                    <div className="text-sm text-gray-500 max-w-[150px] md:max-w-xs truncate">
+                        {post.excerpt}
+                    </div>
+                )}
                 </>
             ),
         },
@@ -304,6 +304,7 @@ export default function PostsList() {
                     itemsPerPage={itemsPerPage}
                     onPageChange={(page) => dispatch(setCurrentPage(page))}
                     emptyMessage="No hay posts creados"
+                    mainColumn="title"
                 />
             </Paper>
 

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Proptypes from 'prop-types';
 import { Link, useLocation } from 'react-router-dom';
 import {
     Bars3Icon,
@@ -147,6 +148,10 @@ const MobileSidebar = ({ onLogout }) => {
             </div>
         </>
     );
+};
+
+MobileSidebar.propTypes = {
+    onLogout: Proptypes.func.isRequired,
 };
 
 export default MobileSidebar;
