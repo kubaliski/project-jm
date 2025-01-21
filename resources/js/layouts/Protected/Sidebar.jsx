@@ -212,12 +212,12 @@ const Sidebar = ({ onExpandChange }) => {
                 {/* Logout Section */}
                 <div className="border-t border-gray-700 mt-auto">
                     <button
-                        onClick={handleLogout}
-                        className={`w-full flex items-center px-3 py-4 text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white transition-colors ${
-                            !isExpanded ? "justify-center" : ""
-                        }`}
-                        title={!isExpanded ? "Cerrar Sesión" : ""}
-                    >
+                            onClick={handleLogout}
+                            className={`w-full flex items-center px-3 py-2.5 text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white transition-colors ${
+                                !isExpanded ? "justify-center" : ""
+                            }`}
+                            title={!isExpanded ? "Cerrar Sesión" : ""}
+                        >
                         <ArrowLeftOnRectangleIcon className="w-6 h-6 text-gray-400" />
                         {isExpanded && (
                             <span className="ml-3">Cerrar Sesión</span>
