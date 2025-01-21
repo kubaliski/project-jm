@@ -8,10 +8,7 @@ const ToastProvider = ({ children }) => {
     const [toasts, setToasts] = useState([]);
     const timeoutsRef = useRef([]);
 
-    // Debug log del estado de toasts
-    useEffect(() => {
-        console.log('Current toasts:', toasts);
-    }, [toasts]);
+
 
     useEffect(() => {
         return () => {
@@ -21,11 +18,9 @@ const ToastProvider = ({ children }) => {
     }, []);
 
     const addToast = useCallback((message, type = 'info') => {
-        console.log('Adding toast:', { message, type });
         const id = Date.now();
         setToasts(prevToasts => {
             const newToasts = [...prevToasts, { id, message, type }];
-            console.log('New toasts state:', newToasts);
             return newToasts;
         });
 
@@ -37,7 +32,6 @@ const ToastProvider = ({ children }) => {
     }, []);
 
     const removeToast = useCallback((id) => {
-        console.log('Removing toast:', id);
         setToasts(prevToasts => prevToasts.filter(toast => toast.id !== id));
     }, []);
 
