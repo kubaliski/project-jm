@@ -27,20 +27,17 @@ class UpdateRequest extends FormRequest
 
 
             if ($rolesAreDifferent && !$this->user()->hasPermission('user.assign-roles')) {
-                Log::info('Access denied: Attempting to change roles without permission');
                 return false;
             }
         }
 
         // Si intenta cambiar la contraseña
         if ($this->filled('password') && !$this->user()->hasPermission('user.change-password')) {
-            Log::info('Access denied: Attempting to change password without permission');
             return false;
         }
 
         // Verificar permiso base de edición
         $canEdit = $this->user()->hasPermission('user.edit');
-        Log::info('Final authorization result:', ['canEdit' => $canEdit]);
         return $canEdit;
     }
 
