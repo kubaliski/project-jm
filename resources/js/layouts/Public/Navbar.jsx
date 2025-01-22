@@ -1,10 +1,11 @@
 // components/Navbar.jsx
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { Link, useLocation } from 'react-router-dom';
 import { PhoneIcon } from '@heroicons/react/24/solid';
 import MobileNavbar from './MobileNavbar';
 
-export default function Navbar() {
+export default function Navbar({ hasActiveBanner }) {
     const [hasScrolled, setHasScrolled] = useState(false);
     const location = useLocation();
     const isHome = location.pathname === '/';
@@ -15,19 +16,25 @@ export default function Navbar() {
             setHasScrolled(scrollTop > 0);
         };
 
-        if (isHome) {
-            window.addEventListener('scroll', handleScroll);
-            return () => window.removeEventListener('scroll', handleScroll);
-        }
-    }, [isHome]);
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     const navbarClasses = isHome
-        ? `w-full transition-all duration-300 z-50 ${
+        ? `w-full transition-all duration-300 ${
             hasScrolled
                 ? 'fixed top-0 left-0 right-0 bg-white shadow-md'
                 : 'absolute bg-transparent'
           }`
-        : 'fixed top-0 left-0 right-0 w-full bg-white shadow-md z-50';
+        : 'fixed top-0 left-0 right-0 w-full bg-white shadow-md';
+
+    const getMarginTop = () => {
+        if (isHome) {
+            return hasScrolled ? '0' : (hasActiveBanner ? '48px' : '0');
+        } else {
+            return window.scrollY === 0 && hasActiveBanner ? '48px' : '0';
+        }
+    };
 
     const getLinkStyles = (isHomeStyle = false) => {
         if (!isHome) return 'text-gray-600 hover:text-blue-600 focus:ring-2 focus:ring-blue-600 focus:outline-none rounded';
@@ -48,7 +55,14 @@ export default function Navbar() {
     };
 
     return (
-        <header className={navbarClasses} role="banner">
+        <header
+            className={navbarClasses}
+            role="banner"
+            style={{
+                zIndex: 40,
+                marginTop: getMarginTop()
+            }}
+        >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Versión móvil */}
                 <div className="md:hidden">
@@ -127,3 +141,7 @@ export default function Navbar() {
         </header>
     );
 }
+
+Navbar.propTypes = {
+    hasActiveBanner: PropTypes.bool
+};

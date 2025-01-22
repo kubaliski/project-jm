@@ -1,13 +1,20 @@
 // resources/js/services/api/endpoints.js
 export const API_ENDPOINTS = {
-    posts: {
+    auth: {
+        login: '/api/login',
+        logout: '/api/logout',
+        user: '/api/user',
+        forgotPassword: '/api/forgot-password',
+        resetPassword: '/api/reset-password'
+    },
+    banners: {
         admin: {
-            base: '/api/posts',
-            byId: (id) => `/api/posts/${id}`
+            base: '/api/banners',
+            byId: (id) => `/api/banners/${id}`,
+            priority: (id) => `/api/banners/${id}/priority`
         },
         public: {
-            base: '/api/public/posts',
-            bySlug: (slug) => `/api/public/posts/${slug}`
+            active: '/api/public/banner/active'
         }
     },
     contacts: {
@@ -21,18 +28,15 @@ export const API_ENDPOINTS = {
             create: '/api/public/contacts'
         }
     },
-    users: {
-        base: '/api/users',
-        byId: (id) => `/api/users/${id}`,
-        assignRoles: (id) => `/api/users/${id}/roles`,
-        profile: '/api/users/profile'
-    },
-    auth: {
-        login: '/api/login',
-        logout: '/api/logout',
-        user: '/api/user',
-        forgotPassword: '/api/forgot-password',
-        resetPassword: '/api/reset-password'
+    posts: {
+        admin: {
+            base: '/api/posts',
+            byId: (id) => `/api/posts/${id}`
+        },
+        public: {
+            base: '/api/public/posts',
+            bySlug: (slug) => `/api/public/posts/${slug}`
+        }
     },
     roles: {
         base: '/api/roles',
@@ -43,5 +47,11 @@ export const API_ENDPOINTS = {
             add: (roleId) => `/api/roles/${roleId}/permissions`,
             remove: (roleId) => `/api/roles/${roleId}/permissions`
         }
+    },
+    users: {
+        base: '/api/users',
+        byId: (id) => `/api/users/${id}`,
+        assignRoles: (id) => `/api/users/${id}/roles`,
+        profile: '/api/users/profile'
     },
 };

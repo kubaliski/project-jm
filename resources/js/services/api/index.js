@@ -7,3 +7,5 @@ export { publicPostsService } from './public/posts.service';
 export { rolesService } from './protected/roles.service';
 export { usersService } from './protected/users.service';
 export { authService } from './auth.service';
+export {adminBannersService} from './protected/banners.service';
+export {publicBannersService} from './public/banners.service';

@@ -20,12 +20,13 @@ const ResetPassword = React.lazy(() => import('@pages/auth/ResetPassword'));
 const NotFound = React.lazy(() => import('@pages/public/NotFound'));
 
 // Lazy loading de páginas administrativas
+const BannersList = React.lazy(() => import('@pages/admin/BannersList'));
+const ContactsList = React.lazy(() => import('@pages/admin/ContactsList'));
 const Dashboard = React.lazy(() => import('@pages/admin/Dashboard'));
 const PostsList = React.lazy(() => import('@pages/admin/PostsList'));
-const ContactsList = React.lazy(() => import('@pages/admin/ContactsList'));
-const UsersList = React.lazy(() => import('@pages/admin/UsersList'));
-const RolesList = React.lazy(() => import('@pages/admin/RolesList'));
 const Profile = React.lazy(() => import('@pages/admin/Profile'));
+const RolesList = React.lazy(() => import('@pages/admin/RolesList'));
+const UsersList = React.lazy(() => import('@pages/admin/UsersList'));
 
 // Componente para manejar el scroll al cambiar de ruta
 function ScrollToTop() {
@@ -112,6 +113,13 @@ export default function App() {
                                     <ProtectedRoute>
                                         <AdminLayout>
                                             <Dashboard />
+                                        </AdminLayout>
+                                    </ProtectedRoute>
+                                } />
+                                <Route path="/admin/banners" element={
+                                    <ProtectedRoute requiredPermissions={['banner.index']}>
+                                        <AdminLayout>
+                                            <BannersList />
                                         </AdminLayout>
                                     </ProtectedRoute>
                                 } />

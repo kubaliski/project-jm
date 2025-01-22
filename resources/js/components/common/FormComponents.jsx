@@ -81,6 +81,7 @@ FormInput.propTypes = {
         "tel",
         "number",
         "textarea",
+        "date",
     ]),
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     onChange: PropTypes.func.isRequired,

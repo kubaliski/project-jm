@@ -12,6 +12,7 @@ import {
     DocumentCheckIcon,
     ChevronDownIcon,
     ArrowLeftOnRectangleIcon,
+    ArrowUpOnSquareIcon,
 } from "@heroicons/react/24/outline";
 
 const Sidebar = ({ onExpandChange, onLogout }) => {
@@ -34,16 +35,23 @@ const Sidebar = ({ onExpandChange, onLogout }) => {
                     permissions: [],
                 },
                 {
-                    path: "/admin/posts",
-                    label: "Posts",
-                    icon: DocumentTextIcon,
-                    permissions: ["post.index"],
+                    path: "/admin/banners",
+                    label: "Banners",
+                    icon: ArrowUpOnSquareIcon,
+                    permissions: ["banner.index"],
+
                 },
                 {
                     path: "/admin/contacts",
                     label: "Comunicaciones",
                     icon: ChatBubbleBottomCenterIcon,
                     permissions: ["contact.index"],
+                },
+                {
+                    path: "/admin/posts",
+                    label: "Posts",
+                    icon: DocumentTextIcon,
+                    permissions: ["post.index"],
                 },
             ],
         },

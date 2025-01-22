@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BannerController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PostController;
@@ -18,6 +19,9 @@ Route::prefix('public')->group(function () {
 
     // Contactos públicos
     Route::post('/contacts', [PublicContactController::class, 'store']);
+
+    // Banner público activo
+    Route::get('/banner/active', [BannerController::class, 'active']);
 });
 
 // Autenticación y gestión de contraseña
@@ -55,4 +59,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('roles/{role}/permissions', [RoleController::class, 'addPermissions']);
     Route::delete('roles/{role}/permissions', [RoleController::class, 'removePermissions']);
     Route::apiResource('roles', RoleController::class);
+
+    // Banners
+    Route::patch('banners/{banner}/priority', [BannerController::class, 'updatePriority'])
+        ->name('banners.update-priority');
+    Route::apiResource('banners', BannerController::class);
 });

@@ -1,13 +1,18 @@
 // components/layout/PublicLayout.jsx
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
+import PublicBanner from './PublicBanner';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import CookieManager from './CookieManager';
+import { selectHasActiveBanner,selectBannerHidden } from '@store/landing/selectors/publicBannersSelectors';
 
 export default function PublicLayout({ children }) {
     const location = useLocation();
+    const hasActiveBanner = useSelector(selectHasActiveBanner);
+    const isHidden = useSelector(selectBannerHidden);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -35,8 +40,13 @@ export default function PublicLayout({ children }) {
                 </a>
             </div>
 
+
+            {/* Banner */}
+            <PublicBanner />
+
             {/* Header con Navbar */}
-            <Navbar />
+            <Navbar  hasActiveBanner={hasActiveBanner && !isHidden}/>
+
 
             {/* Contenido Principal */}
             <main

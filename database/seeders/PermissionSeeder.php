@@ -193,12 +193,52 @@ class PermissionSeeder extends Seeder
             ],
         ];
 
+        $bannerPermissions = [
+            [
+                'name' => 'banner.index',
+                'display_name' => 'List Banners',
+                'group' => 'banner',
+                'description' => 'Can view list of all banners'
+            ],
+            [
+                'name' => 'banner.create',
+                'display_name' => 'Create Banners',
+                'group' => 'banner',
+                'description' => 'Can create new banners'
+            ],
+            [
+                'name' => 'banner.edit',
+                'display_name' => 'Edit Banners',
+                'group' => 'banner',
+                'description' => 'Can edit existing banners'
+            ],
+            [
+                'name' => 'banner.delete',
+                'display_name' => 'Delete Banners',
+                'group' => 'banner',
+                'description' => 'Can delete banners'
+            ],
+            [
+                'name' => 'banner.view',
+                'display_name' => 'View Banner Details',
+                'group' => 'banner',
+                'description' => 'Can view individual banner details'
+            ],
+            [
+                'name' => 'banner.update-priority',
+                'display_name' => 'Update Banner Priority',
+                'group' => 'banner',
+                'description' => 'Can update the priority order of banners'
+            ],
+        ];
+
         $allPermissions = array_merge(
             $postPermissions,
             $contactPermissions,
             $statsPermissions,
             $userPermissions,
-            $rolePermissions
+            $rolePermissions,
+            $bannerPermissions
         );
 
         foreach ($allPermissions as $permission) {

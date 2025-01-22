@@ -97,7 +97,47 @@ export default function TableFilters({
                         )}
                     </div>
                 );
-
+                case "dateRange":
+                    return (
+                        <div className="flex space-x-2">
+                            <div className="relative flex-1">
+                                <input
+                                    type="date"
+                                    className="block w-full px-3 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    placeholder={filterConfig.placeholder?.start || "Fecha inicio"}
+                                    value={currentValue?.startDate || ""}
+                                    onChange={(e) =>
+                                        onFilterChange(filterConfig.key, {
+                                            ...currentValue,
+                                            startDate: e.target.value
+                                        })
+                                    }
+                                />
+                            </div>
+                            <div className="relative flex-1">
+                                <input
+                                    type="date"
+                                    className="block w-full px-3 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    placeholder={filterConfig.placeholder?.end || "Fecha fin"}
+                                    value={currentValue?.endDate || ""}
+                                    onChange={(e) =>
+                                        onFilterChange(filterConfig.key, {
+                                            ...currentValue,
+                                            endDate: e.target.value
+                                        })
+                                    }
+                                />
+                            </div>
+                            {(currentValue?.startDate || currentValue?.endDate) && (
+                                <button
+                                    onClick={() => handleReset(filterConfig)}
+                                    className="inline-flex items-center justify-center p-2 text-gray-400 hover:text-gray-600"
+                                >
+                                    <XMarkIcon className="h-4 w-4" />
+                                </button>
+                            )}
+                        </div>
+                    );
             default:
                 return null;
         }
@@ -153,10 +193,11 @@ TableFilters.propTypes = {
             PropTypes.shape({
                 key: PropTypes.string.isRequired,
                 label: PropTypes.string.isRequired,
-                type: PropTypes.string.isRequired,
+                type: PropTypes.oneOf(['select', 'search', 'custom', 'dateRange']).isRequired,
                 defaultValue: PropTypes.oneOfType([
                     PropTypes.string,
                     PropTypes.number,
+                    PropTypes.object,
                 ]),
                 options: PropTypes.arrayOf(
                     PropTypes.shape({
@@ -167,7 +208,13 @@ TableFilters.propTypes = {
                         label: PropTypes.string,
                     })
                 ),
-                placeholder: PropTypes.string,
+                placeholder: PropTypes.oneOfType([
+                    PropTypes.string,
+                    PropTypes.shape({
+                        start: PropTypes.string,
+                        end: PropTypes.string,
+                    }),
+                ]),
             })
         ),
         sortOptions: PropTypes.arrayOf(
