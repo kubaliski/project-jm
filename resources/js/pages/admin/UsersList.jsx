@@ -62,7 +62,9 @@ export default function UsersList() {
         edit: hasPermission("user.edit"),
         delete: hasPermission("user.delete"),
         view: hasPermission("user.view"),
-        assignRoles: hasPermission("user.assign-roles")
+        password: hasPermission("user.change-password"),
+        assignRoles: hasPermission("user.assign-roles"),
+        viewListRoles: hasPermission("role.index"),
     }), [hasPermission]);
 
     // Selectores
@@ -84,10 +86,16 @@ export default function UsersList() {
             try {
                 if (!permissions.viewList) return;
 
-                const loadPromises = [
-                    dispatch(fetchUsers()).unwrap(),
-                    dispatch(fetchRoles()).unwrap()
-                ];
+                const loadPromises = [];
+
+                // Agregar fetchUsers si tiene permiso de ver la lista
+                loadPromises.push(dispatch(fetchUsers()).unwrap());
+
+                // Agregar fetchRoles solo si tiene el permiso role.index
+                if (permissions.viewListRoles) {
+                    loadPromises.push(dispatch(fetchRoles()).unwrap());
+                }
+
                 await Promise.all(loadPromises);
             } catch (error) {
                 toast.error("Error al cargar los datos: " + error.message);
@@ -377,6 +385,9 @@ export default function UsersList() {
                 }}
                 onSuccess={() => handleModalSuccess(editModal.mode)}
                 readOnly={selectedUser && !permissions.edit}
+                canEditRoles={permissions.assignRoles}
+                canRenderRoles={permissions.viewListRoles}
+                canChangePassword={permissions.password}
             />
 
             <UserRolesModal

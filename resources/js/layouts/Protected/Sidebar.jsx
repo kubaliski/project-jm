@@ -14,22 +14,14 @@ import {
     ArrowLeftOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 
-const Sidebar = ({ onExpandChange }) => {
+const Sidebar = ({ onExpandChange, onLogout }) => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { logout } = useAuth();
+    const { hasPermission } = useAuth();
     const [isPinned, setIsPinned] = useState(true);
     const [isHovered, setIsHovered] = useState(false);
     const APP_NAME = window.APP_NAME || "Mi Sitio";
 
-    const handleLogout = async () => {
-        try {
-            await logout();
-            navigate("/login");
-        } catch (error) {
-            console.error("Error al cerrar sesión:", error);
-        }
-    };
 
     const navItems = [
         {
@@ -81,6 +73,14 @@ const Sidebar = ({ onExpandChange }) => {
         });
         return initialState;
     });
+    // Filtra los items basándose en los permisos
+    const filteredNavItems = navItems.map(group => ({
+            ...group,
+            items: group.items.filter(item =>
+                // Si no hay permisos requeridos o si tiene todos los permisos necesarios
+                !item.permissions.length || item.permissions.every(permission => hasPermission(permission))
+            )
+    })).filter(group => group.items.length > 0);
 
     const isExpanded = isPinned || isHovered;
 
@@ -133,7 +133,7 @@ const Sidebar = ({ onExpandChange }) => {
 
                 {/* Navigation */}
                 <nav className="flex-1 px-2 py-4 space-y-2 overflow-y-auto">
-                    {navItems.map((group) => (
+                    {filteredNavItems.map((group) => (
                         <div
                             key={group.group}
                             className="border-b border-gray-700 pb-2"
@@ -212,7 +212,7 @@ const Sidebar = ({ onExpandChange }) => {
                 {/* Logout Section */}
                 <div className="border-t border-gray-700 mt-auto">
                     <button
-                            onClick={handleLogout}
+                            onClick={onLogout}
                             className={`w-full flex items-center px-3 py-2.5 text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white transition-colors ${
                                 !isExpanded ? "justify-center" : ""
                             }`}
@@ -231,6 +231,7 @@ const Sidebar = ({ onExpandChange }) => {
 
 Sidebar.propTypes = {
     onExpandChange: PropTypes.func,
+    onLogout: PropTypes.func.isRequired,
 };
 
 export default Sidebar;

@@ -14,6 +14,9 @@ export default function UserForm({
     isSubmitting = false,
     readOnly = false,
     mode,
+    canEditRoles,
+    canRenderRoles,
+    canChangePassword,
 }) {
     const serverErrors = useSelector(selectUsersError);
     const [errors, setErrors] = useState({});
@@ -83,7 +86,7 @@ export default function UserForm({
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validaciones
+        // Validaciones actuales...
         const validationErrors = {};
         if (!formData.name.trim()) {
             validationErrors.name = "El nombre es requerido";
@@ -96,7 +99,9 @@ export default function UserForm({
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
             validationErrors.email = "El email no es válido";
         }
-        if (!formData.role_id) {
+
+        // Solo validar rol_id en creación o si cambió en edición
+        if (mode === "create" && !formData.role_id) {
             validationErrors.role_id = "Debe seleccionar un rol";
         }
 
@@ -104,12 +109,10 @@ export default function UserForm({
             validationErrors.password = "La contraseña es requerida";
         }
         if (formData.password && formData.password.length < 8) {
-            validationErrors.password =
-                "La contraseña debe tener al menos 8 caracteres";
+            validationErrors.password = "La contraseña debe tener al menos 8 caracteres";
         }
         if (formData.password !== formData.password_confirmation) {
-            validationErrors.password_confirmation =
-                "Las contraseñas no coinciden";
+            validationErrors.password_confirmation = "Las contraseñas no coinciden";
         }
 
         if (Object.keys(validationErrors).length > 0) {
@@ -119,23 +122,35 @@ export default function UserForm({
 
         try {
             const dataToSubmit = {
-                ...formData,
-                roles: formData.role_id ? [formData.role_id] : [],
+                name: formData.name,
+                last_name: formData.last_name,
+                email: formData.email,
             };
 
-            if (mode === "edit" && !formData.password) {
-                delete dataToSubmit.password;
-                delete dataToSubmit.password_confirmation;
+            // Solo incluir roles si:
+            // 1. Es una creación nueva, o
+            // 2. Es una edición y el rol ha cambiado
+            if (mode === "create" || (mode === "edit" && user?.roles?.[0]?.id !== formData.role_id)) {
+                dataToSubmit.roles = formData.role_id ? [formData.role_id] : [];
+            }
+
+            // Solo incluir password si está presente y no está vacío
+            if (formData.password && formData.password.trim() !== '') {
+                dataToSubmit.password = formData.password;
+                dataToSubmit.password_confirmation = formData.password_confirmation;
             }
 
             await onSubmit(dataToSubmit);
         } catch (error) {
+            // Manejo de errores...
             if (error.response?.data?.errors) {
                 setErrors(error.response.data.errors);
+            } else if (error.response?.data?.message) {
+                setErrors({ general: error.response.data.message });
+            } else if (typeof error === 'string') {
+                setErrors({ general: error });
             } else {
-                setErrors({
-                    general: "Ocurrió un error al guardar el usuario.",
-                });
+                setErrors({ general: "Ocurrió un error al guardar el usuario." });
             }
         }
     };
@@ -203,22 +218,19 @@ export default function UserForm({
                     />
                 </div>
 
-                {/* Password fields - Solo mostrar en crear o editar */}
-                {!readOnly && (
+                {/* Password fields - Solo mostrar en crear o si tiene permiso */}
+                {(mode === "create" || (mode === "edit" && canChangePassword)) && (
                     <>
                         <FormInput
                             id="password"
                             name="password"
                             type="password"
-                            label={
-                                mode === "edit"
-                                    ? "Nueva contraseña (opcional)"
-                                    : "Contraseña"
-                            }
+                            label={mode === "edit" ? "Nueva contraseña (opcional)" : "Contraseña"}
                             value={formData.password}
                             onChange={handleChange}
                             error={errors.password}
-                            required={!user}
+                            required={mode === "create"}
+                            disabled={readOnly}
                         />
 
                         <FormInput
@@ -230,22 +242,25 @@ export default function UserForm({
                             onChange={handleChange}
                             error={errors.password_confirmation}
                             required={!!formData.password}
+                            disabled={readOnly}
                         />
                     </>
                 )}
             </div>
 
             {/* Sección de Rol */}
-            <div className="pt-4">
-                <RoleForm
-                    selectedRole={formData.role_id}
-                    availableRoles={roles}
-                    onRoleChange={handleRoleChange}
-                    isSubmitting={isSubmitting}
-                    errors={errors}
-                    readOnly={readOnly}
-                />
-            </div>
+             {canRenderRoles && (
+                <div className="pt-4">
+                    <RoleForm
+                        selectedRole={formData.role_id}
+                        availableRoles={roles}
+                        onRoleChange={handleRoleChange}
+                        isSubmitting={isSubmitting}
+                        errors={errors}
+                        readOnly={readOnly || !canEditRoles}
+                    />
+                </div>
+            )}
 
             {/* Botones de acción */}
             <div className="flex justify-end space-x-3 pt-4">
@@ -295,4 +310,7 @@ UserForm.propTypes = {
     isSubmitting: PropTypes.bool,
     readOnly: PropTypes.bool,
     mode: PropTypes.oneOf(["create", "edit", "view"]),
+    canEditRoles: PropTypes.bool,
+    canRenderRoles: PropTypes.bool,
+    canChangePassword: PropTypes.bool,
 };

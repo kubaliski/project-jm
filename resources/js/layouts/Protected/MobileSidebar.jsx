@@ -11,11 +11,13 @@ import {
     DocumentCheckIcon,
     ArrowLeftOnRectangleIcon,
 } from '@heroicons/react/24/outline';
+import { useAuth } from '@hooks';
 
 const MobileSidebar = ({ onLogout }) => {
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
     const APP_NAME = window.APP_NAME || "Mi Sitio";
+    const {hasPermission} = useAuth();
 
     const navItems = [
         {
@@ -59,7 +61,13 @@ const MobileSidebar = ({ onLogout }) => {
             ],
         },
     ];
-
+    const filteredNavItems = navItems.map(group => ({
+            ...group,
+            items: group.items.filter(item =>
+                // Si no hay permisos requeridos o si tiene todos los permisos necesarios
+                !item.permissions.length || item.permissions.every(permission => hasPermission(permission))
+            )
+    })).filter(group => group.items.length > 0);
     return (
         <>
             {/* Botón hamburguesa */}
@@ -98,7 +106,7 @@ const MobileSidebar = ({ onLogout }) => {
 
                 {/* Navegación */}
                 <nav className="flex-1 px-2 py-4 overflow-y-auto">
-                    {navItems.map((group) => (
+                    {filteredNavItems.map((group) => (
                         <div key={group.group} className="mb-6">
                             <h2 className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
                                 {group.group}

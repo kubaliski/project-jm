@@ -15,7 +15,16 @@ import {
 import { createUser, updateUser } from "@store/admin/thunks/usersThunks";
 import { setSelectedUser } from "@store/admin/slices/usersSlice";
 
-const UserModal = ({ isOpen, mode, onClose, onSuccess, readOnly = false }) => {
+const UserModal = ({
+    isOpen,
+    mode,
+    onClose,
+    onSuccess,
+    readOnly = false,
+    canEditRoles,
+    canRenderRoles,
+    canChangePassword }) => {
+
     const dispatch = useDispatch();
     const selectedUser = useSelector(selectSelectedUser);
     const isLoading = useSelector(selectUsersLoading);
@@ -78,6 +87,9 @@ const UserModal = ({ isOpen, mode, onClose, onSuccess, readOnly = false }) => {
                     isSubmitting={isSubmitting}
                     readOnly={readOnly || mode === "view"}
                     mode={mode}
+                    canEditRoles={canEditRoles}
+                    canRenderRoles={canRenderRoles}
+                    canChangePassword={canChangePassword}
                 />
             </div>
         </ReusableModal>
@@ -90,6 +102,8 @@ UserModal.propTypes = {
     onClose: PropTypes.func.isRequired,
     onSuccess: PropTypes.func,
     readOnly: PropTypes.bool,
+    canEditRoles: PropTypes.bool,
+    canRenderRoles: PropTypes.bool,
 };
 
 export default UserModal;

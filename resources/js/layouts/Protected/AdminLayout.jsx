@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 
 export default function AdminLayout({ children }) {
     const [sidebarExpanded, setSidebarExpanded] = useState(true);
-    const { logout } = useAuth();
+    const { logout, hasPermission } = useAuth();
     const navigate = useNavigate();
 
     const handleLogout = async () => {

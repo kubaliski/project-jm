@@ -132,6 +132,12 @@ class PermissionSeeder extends Seeder
                 'group' => 'user',
                 'description' => 'Can update own profile'
             ],
+            [
+                'name' => 'user.change-password',
+                'display_name' => 'Change Password',
+                'group' => 'user',
+                'description' => 'Can change other users password'
+            ]
         ];
         $rolePermissions = [
             [
