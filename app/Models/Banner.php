@@ -16,15 +16,26 @@ class Banner extends Model
         'start_date',
         'end_date',
         'is_active',
-        'priority'
+        'priority',
+        'custom_class',
     ];
 
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
         'is_active' => 'boolean',
-        'priority' => 'integer'
+        'priority' => 'integer',
+        'custom_class' => 'array'
     ];
+
+    public const AVAILABLE_CLASSES = [
+        'default' => '',
+        'marquee' => 'relative overflow-hidden whitespace-nowrap',
+        'pulse' => 'animate-pulse',
+        'gradient' => 'bg-gradient animate-gradient bg-[length:200%_100%]',
+        'glass' => 'backdrop-filter backdrop-blur-md bg-opacity-80 shadow-lg'
+    ];
+
 
     public function isValidForDisplay(): bool
     {

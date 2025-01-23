@@ -17,6 +17,7 @@ return new class extends Migration
             $table->date('end_date')->nullable();
             $table->boolean('is_active')->default(false);
             $table->integer('priority')->default(0);
+            $table->string('custom_class')->nullable();
             $table->timestamps();
         });
     }

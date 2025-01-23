@@ -4,11 +4,27 @@ import { useSelector } from "react-redux";
 import { XCircleIcon } from "@heroicons/react/24/solid";
 import { SubmitButton, FormInput } from "@components/common";
 import { selectBannersError } from "@store/admin/selectors/bannersSelectors";
+import {  BANNER_CLASSES,
+    MARQUEE_CLASSES,
+    getClassValue,
+    getClassPreview,
+    getGradientStyle,
+    getGlassStyle,
+    combineClasses
+ } from "../bannerCustomClasses";
 import {
     formatDateOnlyForInput,
     formatDateForServer,
     isValidDateFormat
 } from "@utils/dateUtils";
+
+const MarqueePreview = ({ text }) => (
+    <div className={MARQUEE_CLASSES.content}>
+        <span className="inline-block mx-16 whitespace-nowrap">{text}</span>
+        <span className="inline-block mx-16 whitespace-nowrap">{text}</span>
+        <span className="inline-block mx-16 whitespace-nowrap">{text}</span>
+    </div>
+);
 
 export default function BannerForm({
     banner = null,
@@ -26,7 +42,8 @@ export default function BannerForm({
         start_date: "",
         end_date: "",
         is_active: false,
-        priority: 0
+        priority: 0,
+        custom_class: "default"
     });
 
     // Efectos
@@ -45,7 +62,8 @@ export default function BannerForm({
                 start_date: banner.start_date ? formatDateOnlyForInput(banner.start_date) : "",
                 end_date: banner.end_date ? formatDateOnlyForInput(banner.end_date) : "",
                 is_active: banner.is_active || false,
-                priority: banner.priority || 0
+                priority: banner.priority || 0,
+                custom_class: banner.custom_class || "default"
             });
         }
         setErrors({});
@@ -130,6 +148,19 @@ export default function BannerForm({
             }
         }
     };
+
+    const isMarquee = formData.custom_class === 'marquee';
+    const isGradient = formData.custom_class === 'gradient';
+    const isGlass = formData.custom_class === 'glass';
+    const basePreviewClasses = 'w-full p-4 text-center transition-all duration-200';
+    const customClasses = getClassValue(formData.custom_class);
+
+    const backgroundStyle = isGradient
+    ? getGradientStyle(formData.background_color)
+    : isGlass
+        ? getGlassStyle(formData.background_color)
+        : { backgroundColor: formData.background_color };
+
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             {/* Error General */}
@@ -149,24 +180,33 @@ export default function BannerForm({
                 </div>
             )}
 
-            {/* Preview */}
-            <div className="mb-6">
+             {/* Preview */}
+             <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                     Vista previa
                 </label>
                 <div
-                    className="w-full p-4 text-center transition-colors duration-200"
+                    className={combineClasses(basePreviewClasses, customClasses)}
                     style={{
-                        backgroundColor: formData.background_color,
+                        ...backgroundStyle,
                         color: formData.text_color
                     }}
                 >
-                    {formData.text || "Vista previa del banner"}
+                    {isMarquee ? (
+                        <div className={combineClasses(
+                            MARQUEE_CLASSES.container,
+                            'px-8'
+                        )}>
+                            <MarqueePreview text={formData.text || "Vista previa del banner"} />
+                        </div>
+                    ) : (
+                        <span>{formData.text || "Vista previa del banner"}</span>
+                    )}
                 </div>
             </div>
-
             {/* Contenido */}
             <div className="space-y-4">
+                {/* Texto del banner */}
                 <FormInput
                     id="text"
                     name="text"
@@ -177,6 +217,33 @@ export default function BannerForm({
                     required
                     readOnly={readOnly}
                 />
+
+                {/* Selector de clase personalizada */}
+                <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                        Estilo personalizado
+                    </label>
+                    <select
+                        name="custom_class"
+                        value={formData.custom_class}
+                        onChange={handleChange}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        disabled={readOnly}
+                    >
+                        {Object.entries(BANNER_CLASSES).map(([key, { label }]) => (
+                            <option key={key} value={key}>
+                                {label}
+                            </option>
+                        ))}
+                    </select>
+
+                    {/* Descripción del estilo seleccionado */}
+                    {formData.custom_class && formData.custom_class !== 'default' && (
+                        <p className="text-sm text-gray-500 mt-1">
+                            {getClassPreview(formData.custom_class)}
+                        </p>
+                    )}
+                </div>
 
                 {/* Colores */}
                 <div className="grid grid-cols-2 gap-4">
