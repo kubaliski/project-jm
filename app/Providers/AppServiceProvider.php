@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use App\Commands\PublishScheduledPosts;
+use App\Commands\PublishScheduledBanners;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +24,7 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 PublishScheduledPosts::class,
+                PublishScheduledBanners::class,
             ]);
         }
     }
