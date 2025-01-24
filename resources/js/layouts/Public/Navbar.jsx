@@ -1,15 +1,19 @@
 // components/Navbar.jsx
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 import { PhoneIcon } from '@heroicons/react/24/solid';
 import MobileNavbar from './MobileNavbar';
+import { selectPublicAppInfo } from '@/store/landing/selectors/publicAppInfoSelectors';
 
 export default function Navbar({ hasActiveBanner }) {
     const [hasScrolled, setHasScrolled] = useState(false);
     const location = useLocation();
+    const appInfo = useSelector(selectPublicAppInfo);
+    const defaultPhone = '+34 166 666 666';
+    const phoneNumber = appInfo?.phone_1 || defaultPhone;
     const isHome = location.pathname === '/';
-
     useEffect(() => {
         const handleScroll = () => {
             const scrollTop = window.scrollY;
@@ -128,9 +132,9 @@ export default function Navbar({ hasActiveBanner }) {
                     {/* Botón de contacto */}
                     <div className="flex items-center">
                         <a
-                            href="tel:+34600000000"
+                            href={`tel:${phoneNumber}`}
                             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors duration-300 ${getButtonStyles()}`}
-                            aria-label="Llamar ahora al +34 600 000 000"
+                            aria-label={`Llámanos al ${phoneNumber}`}
                         >
                             <PhoneIcon className="h-5 w-5" aria-hidden="true" />
                             <span>Llámanos</span>

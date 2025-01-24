@@ -7,6 +7,14 @@ export const API_ENDPOINTS = {
         forgotPassword: '/api/forgot-password',
         resetPassword: '/api/reset-password'
     },
+    appInfo: {
+        admin: {
+            update: (id) => `/api/app-info/${id}`
+        },
+        public: {
+            get: '/api/public/app-info'
+        }
+    },
     banners: {
         admin: {
             base: '/api/banners',

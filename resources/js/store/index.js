@@ -4,6 +4,7 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import authReducer from './auth/slices/authSlice';
 
 // Reducers de la parte de administración
+import appInfoReducer from './admin/slices/appInfoSlice';
 import bannersReducer from './admin/slices/bannersSlice';
 import contactsReducer from './admin/slices/contactsSlice';
 import postsReducer from './admin/slices/postsSlice';
@@ -12,17 +13,20 @@ import usersReducer from './admin/slices/usersSlice';
 
 
 // Reducers de la parte pública (landing)
+import publicAppInfoReducer from './landing/slices/publicAppInfoSlice';
 import publicBannersReducer  from './landing/slices/publicBannersSlice';
 import publicPostsReducer from './landing/slices/publicPostsSlice';
 
 
 const landingReducer = combineReducers({
+  publicAppInfo: publicAppInfoReducer,
   publicPosts: publicPostsReducer,
   publicBanners: publicBannersReducer,
 });
 
 // Reducer para la parte de administración
 const adminReducer = combineReducers({
+    appInfo: appInfoReducer,
     banners: bannersReducer,
     contacts: contactsReducer,
     posts: postsReducer,

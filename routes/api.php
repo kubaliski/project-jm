@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AppInfoController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\RoleController;
@@ -22,6 +23,9 @@ Route::prefix('public')->group(function () {
 
     // Banner público activo
     Route::get('/banner/active', [BannerController::class, 'active']);
+
+    // Información de la aplicación
+    Route::get('/app-info', [AppInfoController::class, 'index']);
 });
 
 // Autenticación y gestión de contraseña
@@ -37,14 +41,23 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
 
-    // Posts
-    Route::get('posts/count', [PostController::class, 'count']);
-    Route::apiResource('posts', PostController::class);
+    // Información de la aplicación
+    Route::put('app-info/{app_info}', [AppInfoController::class, 'update']);
+
+    // Banners
+    Route::patch('banners/{banner}/priority', [BannerController::class, 'updatePriority'])
+        ->name('banners.update-priority');
+    Route::apiResource('banners', BannerController::class);
 
     // Contactos
     Route::get('/contacts/count', [ContactController::class, 'count']);
     Route::patch('/contacts/{contact}/status', [ContactController::class, 'updateStatus']);
     Route::apiResource('contacts', ContactController::class);
+
+    // Posts
+    Route::get('posts/count', [PostController::class, 'count']);
+    Route::apiResource('posts', PostController::class);
+
 
     // Usuarios y roles
     Route::post('/users/{user}/roles', [UserController::class, 'assignRoles'])
@@ -60,8 +73,4 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('roles/{role}/permissions', [RoleController::class, 'removePermissions']);
     Route::apiResource('roles', RoleController::class);
 
-    // Banners
-    Route::patch('banners/{banner}/priority', [BannerController::class, 'updatePriority'])
-        ->name('banners.update-priority');
-    Route::apiResource('banners', BannerController::class);
 });

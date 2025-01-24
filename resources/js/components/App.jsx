@@ -20,6 +20,7 @@ const ResetPassword = React.lazy(() => import('@pages/auth/ResetPassword'));
 const NotFound = React.lazy(() => import('@pages/public/NotFound'));
 
 // Lazy loading de páginas administrativas
+const AppInfoList = React.lazy(() => import('@pages/admin/AppInfoList'));
 const BannersList = React.lazy(() => import('@pages/admin/BannersList'));
 const ContactsList = React.lazy(() => import('@pages/admin/ContactsList'));
 const Dashboard = React.lazy(() => import('@pages/admin/Dashboard'));
@@ -158,7 +159,13 @@ export default function App() {
                                         </AdminLayout>
                                     </ProtectedRoute>
                                 } />
-
+                                <Route path="/admin/app-info" element={
+                                    <ProtectedRoute requiredPermissions={['appinfo.index']}>
+                                        <AdminLayout>
+                                            <AppInfoList />
+                                        </AdminLayout>
+                                    </ProtectedRoute>
+                                } />
                                 {/* Ruta 404 */}
                                 <Route path="*" element={
                                     <PublicLayout>

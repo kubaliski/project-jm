@@ -1,18 +1,34 @@
 // components/layout/PublicLayout.jsx
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import PublicBanner from './PublicBanner';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import CookieManager from './CookieManager';
 import { selectHasActiveBanner,selectBannerHidden } from '@store/landing/selectors/publicBannersSelectors';
+import { fetchAppInfo} from '@/store/landing/thunks/publicAppInfoThunks';
+
+
 
 export default function PublicLayout({ children }) {
+    const dispatch = useDispatch();
     const location = useLocation();
     const hasActiveBanner = useSelector(selectHasActiveBanner);
     const isHidden = useSelector(selectBannerHidden);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                await dispatch(fetchAppInfo()).unwrap();
+            } catch (error) {
+                console.error('Error al cargar la información: ' + error.message);
+            }
+        };
+
+        loadData();
+    }, [dispatch]);
 
     useEffect(() => {
         window.scrollTo(0, 0);

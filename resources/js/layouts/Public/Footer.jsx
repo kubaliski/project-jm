@@ -1,8 +1,17 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import {selectPublicAppInfo} from '@/store/landing/selectors/publicAppInfoSelectors';
 import { FacebookIcon, InstragramIcon, LinkedInIcon } from '@/assets/icons';
 
 export default function Footer() {
+    const appInfo = useSelector(selectPublicAppInfo);
+    const defaultEmail= 'info@example.com';
+    const defaultPhone = '+34 166 666 666';
+    const defaultAddress = 'Calle Falsa 123, 28000 Madrid';
+    const contactEmail= appInfo?.contact_email || defaultEmail;
+    const phoneNumber = appInfo?.phone_1 || defaultPhone;
+    const address = appInfo?.address || defaultAddress;
     return (
         <footer className="bg-blue-900 text-blue-200" role="contentinfo" aria-label="Pie de página">
             <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
@@ -40,21 +49,21 @@ export default function Footer() {
                             <ul className="space-y-2 text-sm text-blue-200/90">
                                 <li>
                                     <a
-                                        href="mailto:info@tumarca.com"
+                                        href={`mailto:${contactEmail}`}
                                         className="hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-900"
                                     >
-                                        info@tumarca.com
+                                        {contactEmail}
                                     </a>
                                 </li>
                                 <li>
                                     <a
-                                        href="tel:+34900000000"
+                                        href={`tel:${phoneNumber}`}
                                         className="hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-900"
                                     >
-                                        +34 900 000 000
+                                        {phoneNumber}
                                     </a>
                                 </li>
-                                <li>Ciudad, País</li>
+                                <li>{address}</li>
                             </ul>
                         </address>
                     </div>

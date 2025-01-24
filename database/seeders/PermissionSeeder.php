@@ -9,6 +9,21 @@ class PermissionSeeder extends Seeder
 {
     public function run()
     {
+        // Permisos para AppInfo
+        $appInfoPermissions = [
+            [
+                'name' => 'appinfo.index',
+                'display_name' => 'View App Info',
+                'group' => 'appinfo',
+                'description' => 'Can view app information'
+            ],
+            [
+                'name' => 'appinfo.update',
+                'display_name' => 'Update App Info',
+                'group' => 'appinfo',
+                'description' => 'Can update app information'
+            ],
+        ];
         // Permisos para Posts
         $postPermissions = [
             [
@@ -233,6 +248,7 @@ class PermissionSeeder extends Seeder
         ];
 
         $allPermissions = array_merge(
+            $appInfoPermissions,
             $postPermissions,
             $contactPermissions,
             $statsPermissions,

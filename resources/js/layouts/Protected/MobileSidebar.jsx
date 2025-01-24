@@ -10,6 +10,8 @@ import {
     UserGroupIcon,
     DocumentCheckIcon,
     ArrowLeftOnRectangleIcon,
+    ArrowUpOnSquareIcon,
+    IdentificationIcon
 } from '@heroicons/react/24/outline';
 import { useAuth } from '@hooks';
 
@@ -30,6 +32,13 @@ const MobileSidebar = ({ onLogout }) => {
                     permissions: [],
                 },
                 {
+                    path: "/admin/banners",
+                    label: "Banners",
+                    icon: ArrowUpOnSquareIcon,
+                    permissions: ["banner.index"],
+
+                },
+                {
                     path: "/admin/posts",
                     label: "Posts",
                     icon: DocumentTextIcon,
@@ -46,6 +55,12 @@ const MobileSidebar = ({ onLogout }) => {
         {
             group: "Gestión",
             items: [
+                {
+                    path: "/admin/app-info",
+                    label: "Información",
+                    icon: IdentificationIcon,
+                    permissions: ["appinfo.index"],
+                },
                 {
                     path: "/admin/users",
                     label: "Usuarios",

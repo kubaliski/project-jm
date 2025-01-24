@@ -13,6 +13,7 @@ import {
     ChevronDownIcon,
     ArrowLeftOnRectangleIcon,
     ArrowUpOnSquareIcon,
+    IdentificationIcon,
 } from "@heroicons/react/24/outline";
 
 const Sidebar = ({ onExpandChange, onLogout }) => {
@@ -58,6 +59,12 @@ const Sidebar = ({ onExpandChange, onLogout }) => {
         {
             group: "Gestión",
             items: [
+                {
+                    path: "/admin/app-info",
+                    label: "Información",
+                    icon: IdentificationIcon,
+                    permissions: ["appinfo.index"],
+                },
                 {
                     path: "/admin/users",
                     label: "Usuarios",

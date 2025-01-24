@@ -9,3 +9,5 @@ export { usersService } from './protected/users.service';
 export { authService } from './auth.service';
 export {adminBannersService} from './protected/banners.service';
 export {publicBannersService} from './public/banners.service';
+export {adminAppInfoService} from './protected/appInfo.service';
+export {publicAppInfoService} from './public/appInfo.service';

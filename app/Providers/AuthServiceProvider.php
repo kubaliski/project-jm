@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+use App\Models\AppInfo;
+use App\Policies\AppInfoPolicy;
 use App\Models\Banner;
 use App\Policies\BannerPolicy;
 use App\Models\Contact;
@@ -23,6 +25,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
+        AppInfo::class => AppInfoPolicy::class,
         Banner::class => BannerPolicy::class,
         Contact::class => ContactPolicy::class,
         Post::class => PostPolicy::class,
