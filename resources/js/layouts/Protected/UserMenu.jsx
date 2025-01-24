@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { UserCircleIcon } from '@heroicons/react/24/outline';
+import React, { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { UserCircleIcon } from "@heroicons/react/24/outline";
 
 const UserMenu = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -9,13 +9,17 @@ const UserMenu = () => {
     // Cerrar el dropdown cuando se hace click fuera
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target)
+            ) {
                 setIsOpen(false);
             }
         };
 
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
+        document.addEventListener("mousedown", handleClickOutside);
+        return () =>
+            document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
     return (
@@ -39,6 +43,15 @@ const UserMenu = () => {
                     >
                         Perfil
                     </Link>
+                    <a
+                        href="/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setIsOpen(false)}
+                    >
+                        Abrir Página Principal
+                    </a>
                 </div>
             )}
         </div>
