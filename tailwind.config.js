@@ -29,7 +29,7 @@ export default {
                 },
                 'marquee': {
                   '0%': { transform: 'translateX(100%)' },
-                  '100%': { transform: 'translateX(-200%)' }
+                  '100%': { transform: 'translateX(-100%)' }
                 },
                 'gradient': {
                   '0%': { backgroundPosition: '0% 50%' },
@@ -41,7 +41,7 @@ export default {
                 'fade-in': 'fade-in 0.5s ease-out',
                 'slide-in': 'slide-in 0.3s ease-out',
                 'slide-down': 'slide-down 0.5s ease-out',
-                'marquee': 'marquee 55s linear infinite',
+                'marquee': 'marquee 120s linear infinite',
                 'gradient': 'gradient 8s ease infinite'
               },
         },

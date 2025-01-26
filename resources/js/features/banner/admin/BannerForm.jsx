@@ -19,10 +19,44 @@ import {
 } from "@utils/dateUtils";
 
 const MarqueePreview = ({ text }) => (
-    <div className={MARQUEE_CLASSES.content}>
-        <span className="inline-block mx-16 whitespace-nowrap">{text}</span>
-        <span className="inline-block mx-16 whitespace-nowrap">{text}</span>
-        <span className="inline-block mx-16 whitespace-nowrap">{text}</span>
+    <div className="w-full overflow-hidden relative">
+        <div
+            className="whitespace-nowrap animate-marquee"
+            style={{
+                display: 'inline-block',
+                whiteSpace: 'nowrap',
+                animation: 'marquee 120s linear infinite',
+                position: 'relative',
+                left: 0
+            }}
+        >
+            {[...Array(15)].map((_, i) => (
+                <span
+                    key={i}
+                    className="inline-block px-4"
+                >
+                    {text || 'Texto de ejemplo'}
+                </span>
+            ))}
+        </div>
+        {/* Segunda capa para transición suave */}
+        <div
+            className="whitespace-nowrap animate-marquee absolute top-0 left-full"
+            style={{
+                display: 'inline-block',
+                whiteSpace: 'nowrap',
+                animation: 'marquee 120s linear infinite'
+            }}
+        >
+            {[...Array(15)].map((_, i) => (
+                <span
+                    key={`clone-${i}`}
+                    className="inline-block px-4"
+                >
+                    {text || 'Texto de ejemplo'}
+                </span>
+            ))}
+        </div>
     </div>
 );
 
@@ -181,7 +215,7 @@ export default function BannerForm({
             )}
 
              {/* Preview */}
-             <div className="mb-6">
+            <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                     Vista previa
                 </label>
@@ -189,16 +223,12 @@ export default function BannerForm({
                     className={combineClasses(basePreviewClasses, customClasses)}
                     style={{
                         ...backgroundStyle,
-                        color: formData.text_color
+                        color: formData.text_color,
+                        minHeight: '3rem' // Ensure minimum height
                     }}
                 >
                     {isMarquee ? (
-                        <div className={combineClasses(
-                            MARQUEE_CLASSES.container,
-                            'px-8'
-                        )}>
-                            <MarqueePreview text={formData.text || "Vista previa del banner"} />
-                        </div>
+                        <MarqueePreview text={formData.text || "Vista previa del banner"} />
                     ) : (
                         <span>{formData.text || "Vista previa del banner"}</span>
                     )}

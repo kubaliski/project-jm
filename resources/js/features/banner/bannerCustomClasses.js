@@ -1,9 +1,8 @@
 // Clases específicas para el marquee
 export const MARQUEE_CLASSES = {
     container: 'overflow-hidden relative w-full',
-    content: 'flex whitespace-nowrap animate-marquee'
+    content: 'inline-flex whitespace-nowrap animate-marquee min-w-full'
 };
-
 // Lista de clases disponibles
 export const BANNER_CLASSES = {
     default: {
@@ -18,7 +17,7 @@ export const BANNER_CLASSES = {
     },
     'marquee': {
         label: 'Texto deslizante',
-        value: 'relative overflow-hidden whitespace-nowrap',
+        value: 'relative overflow-hidden',
         preview: 'El texto se desplazará horizontalmente de derecha a izquierda'
     },
     'gradient': {

@@ -20,13 +20,45 @@ import {
 const LOCAL_STORAGE_KEY = 'banner_hidden';
 
 const MarqueeContent = ({ text }) => (
-    <div className={MARQUEE_CLASSES.content}>
-        <span className="inline-block mx-16 whitespace-nowrap">{text}</span>
-        <span className="inline-block mx-16 whitespace-nowrap">{text}</span>
-        <span className="inline-block mx-16 whitespace-nowrap">{text}</span>
+    <div className="group">
+        <div
+            className="whitespace-nowrap animate-marquee group-hover:[animation-play-state:paused]"
+            style={{
+                display: 'inline-block',
+                whiteSpace: 'nowrap',
+                animation: 'marquee 120s linear infinite',
+                transform: 'translateX(0)'
+            }}
+        >
+            {[...Array(15)].map((_, i) => (
+                <span
+                    key={i}
+                    className="inline-block px-4"
+                >
+                    {text}
+                </span>
+            ))}
+        </div>
+        <div
+            className="whitespace-nowrap animate-marquee absolute top-0 left-0 group-hover:[animation-play-state:paused]"
+            style={{
+                display: 'inline-block',
+                whiteSpace: 'nowrap',
+                animation: 'marquee 120s linear infinite',
+                animationDelay: '-60s'
+            }}
+        >
+            {[...Array(15)].map((_, i) => (
+                <span
+                    key={`clone-${i}`}
+                    className="inline-block px-4"
+                >
+                    {text}
+                </span>
+            ))}
+        </div>
     </div>
 );
-
 export default function PublicBanner() {
     const dispatch = useDispatch();
     const banner = useSelector(selectActiveBanner);
@@ -91,12 +123,12 @@ export default function PublicBanner() {
                 className={combineClasses(baseClasses, customClasses)}
             >
                 {isMarquee ? (
-                    <div className={combineClasses(
-                        MARQUEE_CLASSES.container,
-                        'px-8'
-                    )}>
-                        <MarqueeContent text={banner.text} />
-                    </div>
+                <div className={combineClasses(
+                    MARQUEE_CLASSES.container,
+                    'px-8 relative overflow-hidden'
+                )}>
+                    <MarqueeContent text={banner.text} />
+                </div>
                 ) : (
                     <div
                         tabIndex={0}
