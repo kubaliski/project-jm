@@ -246,6 +246,26 @@ class PermissionSeeder extends Seeder
                 'description' => 'Can update the priority order of banners'
             ],
         ];
+        $securityPermissions = [
+            [
+                'name' => 'security.view-blocked',
+                'display_name' => 'View Blocked IPs',
+                'group' => 'security',
+                'description' => 'Can view list of blocked IP addresses'
+            ],
+            [
+                'name' => 'security.block-ip',
+                'display_name' => 'Block IP Addresses',
+                'group' => 'security',
+                'description' => 'Can manually block IP addresses'
+            ],
+            [
+                'name' => 'security.unblock-ip',
+                'display_name' => 'Unblock IP Addresses',
+                'group' => 'security',
+                'description' => 'Can remove IP addresses from blacklist'
+            ]
+        ];
 
         $allPermissions = array_merge(
             $appInfoPermissions,
@@ -254,7 +274,8 @@ class PermissionSeeder extends Seeder
             $statsPermissions,
             $userPermissions,
             $rolePermissions,
-            $bannerPermissions
+            $bannerPermissions,
+            $securityPermissions
         );
 
         foreach ($allPermissions as $permission) {

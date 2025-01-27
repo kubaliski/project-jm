@@ -25,6 +25,14 @@ export const API_ENDPOINTS = {
             active: '/api/public/banner/active'
         }
     },
+    blacklist: {
+        admin: {
+            base: '/api/blacklist',
+            block: '/api/blacklist/block',
+            unblock: '/api/blacklist/unblock',
+            stats: '/api/blacklist/stats'
+        }
+    },
     config:{
         editor:'/api/config/editor'
 

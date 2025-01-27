@@ -14,6 +14,7 @@ import {
     ArrowLeftOnRectangleIcon,
     ArrowUpOnSquareIcon,
     IdentificationIcon,
+    ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
 
 const Sidebar = ({ onExpandChange, onLogout }) => {
@@ -64,6 +65,12 @@ const Sidebar = ({ onExpandChange, onLogout }) => {
                     label: "Información",
                     icon: IdentificationIcon,
                     permissions: ["appinfo.index"],
+                },
+                {
+                    path: "/admin/blacklist",
+                    label: "Seguridad",
+                    icon: ShieldCheckIcon,
+                    permissions: ["security.view-blocked"],
                 },
                 {
                     path: "/admin/users",

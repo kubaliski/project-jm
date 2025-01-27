@@ -11,3 +11,4 @@ export {adminBannersService} from './protected/banners.service';
 export {publicBannersService} from './public/banners.service';
 export {adminAppInfoService} from './protected/appInfo.service';
 export {publicAppInfoService} from './public/appInfo.service';
+export {adminBlacklistService} from './protected/blackList.service';

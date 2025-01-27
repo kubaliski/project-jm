@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useAuth, useToast } from "@hooks";
 import { StatCard, Paper } from "@components/common";
+import  BlacklistStats  from "@features/blacklist/BlacklistStats";
 import { countPosts } from "@store/admin/thunks/postsThunks";
+import { fetchBlacklistStats } from "@store/admin/thunks/blacklistThunks";
 import { countContacts } from "@store/admin/thunks/contactsThunks";
 import {
     selectTotalPosts,
@@ -26,7 +28,9 @@ export default function Dashboard() {
 
     const canViewStats = {
         posts: hasPermission("stats.posts"),
-        contacts: hasPermission("stats.contacts")
+        contacts: hasPermission("stats.contacts"),
+        security: hasPermission("security.view-blocked")
+
     };
 
     useEffect(() => {
@@ -55,14 +59,15 @@ export default function Dashboard() {
         const loadStats = async () => {
             try {
                 const loadPromises = [];
-
                 if (canViewStats.posts) {
                     loadPromises.push(dispatch(countPosts()).unwrap());
                 }
                 if (canViewStats.contacts) {
                     loadPromises.push(dispatch(countContacts()).unwrap());
                 }
-
+                if (canViewStats.security) {
+                    loadPromises.push(dispatch(fetchBlacklistStats()).unwrap());
+                }
                 await Promise.all(loadPromises);
             } catch (error) {
                 toast.error(
@@ -103,9 +108,13 @@ export default function Dashboard() {
                 )}
             </div>
             <Paper title="Actividad reciente" titleLevel="h2">
-                <p className="py-4 text-gray-500 text-sm">
-                    No hay actividad reciente
-                </p>
+                {canViewStats.security ? (
+                    <BlacklistStats />
+                ) : (
+                    <p className="py-4 text-gray-500 text-sm">
+                        No hay actividad reciente
+                    </p>
+                )}
             </Paper>
         </div>
     );
