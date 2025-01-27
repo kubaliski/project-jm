@@ -5,17 +5,10 @@ import { useAuth } from "@hooks";
 import {
     Bars3Icon,
     XMarkIcon,
-    HomeIcon,
-    DocumentTextIcon,
-    ChatBubbleBottomCenterIcon,
-    UserGroupIcon,
-    DocumentCheckIcon,
     ChevronDownIcon,
     ArrowLeftOnRectangleIcon,
-    ArrowUpOnSquareIcon,
-    IdentificationIcon,
-    ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
+import { navItems } from "@config/data/navItems";
 
 const Sidebar = ({ onExpandChange, onLogout }) => {
     const location = useLocation();
@@ -25,69 +18,6 @@ const Sidebar = ({ onExpandChange, onLogout }) => {
     const [isHovered, setIsHovered] = useState(false);
     const APP_NAME = window.APP_NAME || "Mi Sitio";
 
-
-    const navItems = [
-        {
-            group: "General",
-            items: [
-                {
-                    path: "/admin",
-                    label: "Dashboard",
-                    icon: HomeIcon,
-                    permissions: [],
-                },
-                {
-                    path: "/admin/banners",
-                    label: "Banners",
-                    icon: ArrowUpOnSquareIcon,
-                    permissions: ["banner.index"],
-
-                },
-                {
-                    path: "/admin/contacts",
-                    label: "Comunicaciones",
-                    icon: ChatBubbleBottomCenterIcon,
-                    permissions: ["contact.index"],
-                },
-                {
-                    path: "/admin/posts",
-                    label: "Posts",
-                    icon: DocumentTextIcon,
-                    permissions: ["post.index"],
-                },
-            ],
-        },
-        {
-            group: "Gestión",
-            items: [
-                {
-                    path: "/admin/app-info",
-                    label: "Información",
-                    icon: IdentificationIcon,
-                    permissions: ["appinfo.index"],
-                },
-                {
-                    path: "/admin/blacklist",
-                    label: "Seguridad",
-                    icon: ShieldCheckIcon,
-                    permissions: ["security.view-blocked"],
-                },
-                {
-                    path: "/admin/users",
-                    label: "Usuarios",
-                    icon: UserGroupIcon,
-                    permissions: ["user.index"],
-                },
-                {
-                    path: "/admin/roles",
-                    label: "Roles",
-                    icon: DocumentCheckIcon,
-                    permissions: ["role.index"],
-                },
-            ],
-        },
-    ];
-
     const [expandedGroups, setExpandedGroups] = useState(() => {
         const initialState = {};
         navItems.forEach((group) => {
@@ -95,13 +25,14 @@ const Sidebar = ({ onExpandChange, onLogout }) => {
         });
         return initialState;
     });
+
     // Filtra los items basándose en los permisos
     const filteredNavItems = navItems.map(group => ({
-            ...group,
-            items: group.items.filter(item =>
-                // Si no hay permisos requeridos o si tiene todos los permisos necesarios
-                !item.permissions.length || item.permissions.every(permission => hasPermission(permission))
-            )
+        ...group,
+        items: group.items.filter(item =>
+            // Si no hay permisos requeridos o si tiene todos los permisos necesarios
+            !item.permissions.length || item.permissions.every(permission => hasPermission(permission))
+        )
     })).filter(group => group.items.length > 0);
 
     const isExpanded = isPinned || isHovered;
