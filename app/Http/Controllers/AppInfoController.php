@@ -13,12 +13,6 @@ class AppInfoController extends Controller
         $this->authorizeResource(AppInfo::class, 'app_info');
     }
 
-    public function index(): JsonResponse
-    {
-        $appInfo = AppInfo::firstOrCreate([]);
-        return response()->json($appInfo);
-    }
-
     public function update(UpdateRequest $request, AppInfo $appInfo): JsonResponse
     {
         $appInfo->update($request->validated());
