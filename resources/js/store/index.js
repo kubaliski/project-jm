@@ -6,6 +6,7 @@ import authReducer from './auth/slices/authSlice';
 // Reducers de la parte de administración
 import appInfoReducer from './admin/slices/appInfoSlice';
 import bannersReducer from './admin/slices/bannersSlice';
+import configRedurer from './admin/slices/configSlice';
 import contactsReducer from './admin/slices/contactsSlice';
 import postsReducer from './admin/slices/postsSlice';
 import rolesReducer from './admin/slices/rolesSlice';
@@ -28,6 +29,7 @@ const landingReducer = combineReducers({
 const adminReducer = combineReducers({
     appInfo: appInfoReducer,
     banners: bannersReducer,
+    config: configRedurer,
     contacts: contactsReducer,
     posts: postsReducer,
     roles: rolesReducer,

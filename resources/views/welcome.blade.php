@@ -18,7 +18,6 @@
             window.APP_NAME = "{{ config('app.name') }}";
             window.config = {
                 appName: "{{ config('app.name') }}",
-                tinymceApiKey: "{{ config('services.tinymce.key') }}"
             };
         </script>
         @viteReactRefresh

@@ -25,6 +25,10 @@ export const API_ENDPOINTS = {
             active: '/api/public/banner/active'
         }
     },
+    config:{
+        editor:'/api/config/editor'
+
+    },
     contacts: {
         admin: {
             base: '/api/contacts',

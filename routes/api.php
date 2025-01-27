@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AppInfoController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PublicContactController;
@@ -72,5 +73,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('roles/{role}/permissions', [RoleController::class, 'addPermissions']);
     Route::delete('roles/{role}/permissions', [RoleController::class, 'removePermissions']);
     Route::apiResource('roles', RoleController::class);
+
+    // Config y ApiKeys
+    Route::get('/config/editor', [ConfigController::class, 'editorConfig']);
 
 });
