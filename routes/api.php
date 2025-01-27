@@ -7,6 +7,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\PublicAppInfoController;
 use App\Http\Controllers\PublicContactController;
 use App\Http\Controllers\PublicPostController;
 use App\Http\Controllers\UserController;
@@ -26,7 +27,7 @@ Route::prefix('public')->group(function () {
     Route::get('/banner/active', [BannerController::class, 'active']);
 
     // Información de la aplicación
-    Route::get('/app-info', [AppInfoController::class, 'index']);
+    Route::get('/app-info', [PublicAppInfoController::class, 'index']);
 });
 
 // Autenticación y gestión de contraseña
