@@ -28,7 +28,6 @@ export function ServiceCard({
         ? `${baseCardStyles} hover:bg-gray-100 group block`
         : `${baseCardStyles} shadow-sm hover:shadow-md`;
 
-    // Unificamos los estilos del contenedor de iconos
     const iconContainerStyles = "bg-blue-500 rounded-lg mb-6 flex items-center justify-center text-white transition-colors" +
         (variant === 'link'
             ? " w-12 h-12 group-hover:bg-blue-600"
@@ -46,15 +45,14 @@ export function ServiceCard({
 
     const CardWrapper = variant === 'link' ? Link : 'article';
     const wrapperProps = variant === 'link'
-        ? { to: service.link }
+        ? {
+            to: service.link,
+            'aria-label': `${service.title}: ${service.description}`
+        }
         : {};
 
-    return (
-        <CardWrapper
-            className={`${cardStyles} ${className}`}
-            role="listitem"
-            {...wrapperProps}
-        >
+    const content = (
+        <>
             <div className={iconContainerStyles}>
                 <IconComponent className={iconStyles} aria-hidden="true" />
             </div>
@@ -88,7 +86,18 @@ export function ServiceCard({
                     </button>
                 </div>
             )}
-        </CardWrapper>
+        </>
+    );
+
+    return (
+        <div role="listitem">
+            <CardWrapper
+                className={`${cardStyles} ${className}`}
+                {...wrapperProps}
+            >
+                {content}
+            </CardWrapper>
+        </div>
     );
 }
 

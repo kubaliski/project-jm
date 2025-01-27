@@ -1,4 +1,3 @@
-// features/home/TestimonialSection.jsx
 import React from 'react';
 
 const TESTIMONIOS = [
@@ -23,25 +22,24 @@ const TESTIMONIOS = [
 ];
 
 const TestimonialCard = React.memo(({ testimonial }) => (
-    <article
-        className="p-6 bg-white rounded-lg shadow-lg"
-        role="listitem"
-    >
-        <div className="flex items-center mb-4">
-            <div
-                className="w-12 h-12 bg-gray-200 rounded-full"
-                role="img"
-                aria-label={testimonial.avatarAlt}
-            />
-            <div className="ml-4">
-                <h3 className="font-semibold">{testimonial.name}</h3>
-                <p className="text-gray-500">{testimonial.company}</p>
+    <div role="listitem">
+        <article className="p-6 bg-white rounded-lg shadow-lg">
+            <div className="flex items-center mb-4">
+                <div
+                    className="w-12 h-12 bg-gray-200 rounded-full"
+                    role="img"
+                    aria-label={testimonial.avatarAlt}
+                />
+                <div className="ml-4">
+                    <h3 className="font-semibold">{testimonial.name}</h3>
+                    <p className="text-gray-500">{testimonial.company}</p>
+                </div>
             </div>
-        </div>
-        <blockquote>
-            <p className="text-gray-600">"{testimonial.testimonial}"</p>
-        </blockquote>
-    </article>
+            <blockquote>
+                <p className="text-gray-600">"{testimonial.testimonial}"</p>
+            </blockquote>
+        </article>
+    </div>
 ));
 
 TestimonialCard.displayName = 'TestimonialCard';
@@ -62,6 +60,7 @@ export default function TestimonialSection() {
                 <div
                     className="grid grid-cols-1 md:grid-cols-3 gap-8"
                     role="list"
+                    aria-label="Lista de testimonios de clientes"
                 >
                     {TESTIMONIOS.map((testimonial) => (
                         <TestimonialCard
