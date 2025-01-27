@@ -25,12 +25,12 @@ const MarqueePreview = ({ text }) => (
             style={{
                 display: 'inline-block',
                 whiteSpace: 'nowrap',
-                animation: 'marquee 120s linear infinite',
+                animation: 'marquee 30s linear infinite', // Duración reducida
                 position: 'relative',
                 left: 0
             }}
         >
-            {[...Array(15)].map((_, i) => (
+            {[...Array(10)].map((_, i) => ( // Ajusta el número de repeticiones
                 <span
                     key={i}
                     className="inline-block px-4"
@@ -45,10 +45,11 @@ const MarqueePreview = ({ text }) => (
             style={{
                 display: 'inline-block',
                 whiteSpace: 'nowrap',
-                animation: 'marquee 120s linear infinite'
+                animation: 'marquee 30s linear infinite', // Duración reducida
+                animationDelay: '-15s' // Sincronización ajustada
             }}
         >
-            {[...Array(15)].map((_, i) => (
+            {[...Array(10)].map((_, i) => ( // Ajusta el número de repeticiones
                 <span
                     key={`clone-${i}`}
                     className="inline-block px-4"
