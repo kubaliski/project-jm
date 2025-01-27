@@ -179,7 +179,7 @@ export default function Footer() {
                 </div>
                 <div className="mt-8 pt-8 border-t border-blue-800/50 text-sm text-center text-blue-200/80">
                     <p>
-                        © {new Date().getFullYear()} TuMarca. Todos los derechos
+                        © {new Date().getFullYear()} WedPlan. Todos los derechos
                         reservados.
                     </p>
                 </div>

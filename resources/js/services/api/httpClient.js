@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const baseConfig = {
-    baseURL: 'http://localhost:8000',
+    baseURL: 'https://wedplan.es',
     headers: {
         'X-Requested-With': 'XMLHttpRequest'
     },

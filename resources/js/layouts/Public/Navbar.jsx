@@ -81,7 +81,7 @@ export default function Navbar({ hasActiveBanner }) {
                         className={`text-2xl font-bold transition-colors duration-300 ${getLinkStyles(true)}`}
                         aria-label="TuMarca - Ir a inicio"
                     >
-                        TuMarca
+                        We'dPlan
                     </Link>
 
                     {/* Navegación principal */}
