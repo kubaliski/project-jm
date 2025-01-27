@@ -41,7 +41,7 @@ export default {
                 'fade-in': 'fade-in 0.5s ease-out',
                 'slide-in': 'slide-in 0.3s ease-out',
                 'slide-down': 'slide-down 0.5s ease-out',
-                'marquee': 'marquee 120s linear infinite',
+                'marquee': 'marquee 20s linear infinite',
                 'gradient': 'gradient 8s ease infinite'
               },
         },
