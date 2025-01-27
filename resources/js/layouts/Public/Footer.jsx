@@ -12,13 +12,18 @@ export default function Footer() {
     const contactEmail = appInfo?.contact_email || defaultEmail;
     const phoneNumber = appInfo?.phone_1 || defaultPhone;
     const address = appInfo?.address || defaultAddress;
+
     return (
         <footer
             className="bg-blue-900 text-blue-200"
             role="contentinfo"
             aria-label="Pie de página"
         >
-            <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+            <div
+                id="footer-navigation"
+                tabIndex="-1"
+                className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8"
+            >
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
                     <div>
                         <h3 className="text-white text-lg font-semibold mb-4">
