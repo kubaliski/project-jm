@@ -18,6 +18,8 @@ const Services = React.lazy(() => import('@pages/public/Services'));
 const Login = React.lazy(() => import('@pages/auth/Login'));
 const ResetPassword = React.lazy(() => import('@pages/auth/ResetPassword'));
 const NotFound = React.lazy(() => import('@pages/public/NotFound'));
+const PrivacyPolicy = React.lazy(() => import('@pages/public/PrivacyPolicy'));
+const LegalNotice = React.lazy(() => import('@pages/public/LegalNotice'));
 
 // Lazy loading de páginas administrativas
 const AppInfoList = React.lazy(() => import('@pages/admin/AppInfoList'));
@@ -105,6 +107,16 @@ export default function App() {
                                 <Route path="/servicios" element={
                                     <PublicLayout>
                                         <Services />
+                                    </PublicLayout>
+                                } />
+                                <Route path="/privacidad" element={
+                                    <PublicLayout>
+                                        <PrivacyPolicy />
+                                    </PublicLayout>
+                                } />
+                                <Route path="/aviso-legal" element={
+                                    <PublicLayout>
+                                        <LegalNotice />
                                     </PublicLayout>
                                 } />
                                 <Route path="/login" element={<Login />} />

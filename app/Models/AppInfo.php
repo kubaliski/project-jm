@@ -10,6 +10,7 @@ class AppInfo extends Model
     use HasFactory;
 
     protected $fillable = [
+        'company_name',
         'legal_representative',
         'address',
         'contact_email',
