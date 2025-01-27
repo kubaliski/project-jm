@@ -22,6 +22,7 @@ const NotFound = React.lazy(() => import('@pages/public/NotFound'));
 // Lazy loading de páginas administrativas
 const AppInfoList = React.lazy(() => import('@pages/admin/AppInfoList'));
 const BannersList = React.lazy(() => import('@pages/admin/BannersList'));
+const Blacklist = React.lazy(() => import('@pages/admin/Blacklist'));
 const ContactsList = React.lazy(() => import('@pages/admin/ContactsList'));
 const Dashboard = React.lazy(() => import('@pages/admin/Dashboard'));
 const PostsList = React.lazy(() => import('@pages/admin/PostsList'));
@@ -166,6 +167,14 @@ export default function App() {
                                         </AdminLayout>
                                     </ProtectedRoute>
                                 } />
+                                <Route path="/admin/blacklist" element={
+                                    <ProtectedRoute requiredPermissions={['security.view-blocked']}>
+                                        <AdminLayout>
+                                            <Blacklist />
+                                        </AdminLayout>
+                                    </ProtectedRoute>
+                                } />
+
                                 {/* Ruta 404 */}
                                 <Route path="*" element={
                                     <PublicLayout>

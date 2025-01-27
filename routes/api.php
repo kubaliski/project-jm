@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AppInfoController;
+use App\Http\Controllers\BlacklistController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ConfigController;
@@ -50,6 +51,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('banners/{banner}/priority', [BannerController::class, 'updatePriority'])
         ->name('banners.update-priority');
     Route::apiResource('banners', BannerController::class);
+
+    // Blacklist
+    Route::get('/blacklist', [BlacklistController::class, 'index']);
+    Route::get('/blacklist/stats', [BlacklistController::class, 'stats']);
+    Route::post('/blacklist/block', [BlacklistController::class, 'blockIp']);
+    Route::post('/blacklist/unblock', [BlacklistController::class, 'unblockIp']);
 
     // Contactos
     Route::get('/contacts/count', [ContactController::class, 'count']);

@@ -5,3 +5,4 @@ export {default as UsersList} from './UsersList';
 export {default as RolesList} from './RolesList';
 export {default as Profile} from './Profile';
 export {default as BannersList} from './BannersList';
+export {default as Blacklist} from './Blacklist';

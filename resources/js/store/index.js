@@ -11,6 +11,7 @@ import contactsReducer from './admin/slices/contactsSlice';
 import postsReducer from './admin/slices/postsSlice';
 import rolesReducer from './admin/slices/rolesSlice';
 import usersReducer from './admin/slices/usersSlice';
+import blacklistReducer from './admin/slices/blacklistSlice';
 
 
 // Reducers de la parte pública (landing)
@@ -29,6 +30,7 @@ const landingReducer = combineReducers({
 const adminReducer = combineReducers({
     appInfo: appInfoReducer,
     banners: bannersReducer,
+    blacklist: blacklistReducer,
     config: configRedurer,
     contacts: contactsReducer,
     posts: postsReducer,

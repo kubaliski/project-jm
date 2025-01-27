@@ -11,7 +11,8 @@ import {
     DocumentCheckIcon,
     ArrowLeftOnRectangleIcon,
     ArrowUpOnSquareIcon,
-    IdentificationIcon
+    IdentificationIcon,
+    ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 import { useAuth } from '@hooks';
 
@@ -60,6 +61,12 @@ const MobileSidebar = ({ onLogout }) => {
                     label: "Información",
                     icon: IdentificationIcon,
                     permissions: ["appinfo.index"],
+                },
+                {
+                    path: "/admin/blacklist",
+                    label: "Seguridad",
+                    icon: ShieldCheckIcon,
+                    permissions: ["security.view-blocked"],
                 },
                 {
                     path: "/admin/users",
