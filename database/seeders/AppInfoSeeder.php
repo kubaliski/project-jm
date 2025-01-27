@@ -12,6 +12,7 @@ class AppInfoSeeder extends Seeder
         AppInfo::firstOrCreate(
             [],
             [
+                'company_name' => 'Company Name',
                 'legal_representative' => 'John Doe',
                 'address' => '123 Main Street, City, Country',
                 'contact_email' => 'contact@example.com',

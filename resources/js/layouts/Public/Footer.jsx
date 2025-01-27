@@ -113,10 +113,10 @@ export default function Footer() {
                             </li>
                             <li>
                                 <Link
-                                    to="/terminos"
+                                    to="/aviso-legal"
                                     className="text-blue-200/90 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-900"
                                 >
-                                    Términos de Uso
+                                    Aviso Legal
                                 </Link>
                             </li>
                             <li>
