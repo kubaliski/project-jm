@@ -6,6 +6,7 @@ import { useLocation } from 'react-router-dom';
 import PublicBanner from './PublicBanner';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import ScrollToTop from './ScrollToTop';
 import CookieManager from './CookieManager';
 import { selectHasActiveBanner,selectBannerHidden } from '@store/landing/selectors/publicBannersSelectors';
 import { fetchAppInfo} from '@/store/landing/thunks/publicAppInfoThunks';
@@ -63,6 +64,8 @@ export default function PublicLayout({ children }) {
             {/* Header con Navbar */}
             <Navbar  hasActiveBanner={hasActiveBanner && !isHidden}/>
 
+            {/* Scroll To Top Button */}
+            <ScrollToTop />
 
             {/* Contenido Principal */}
             <main
