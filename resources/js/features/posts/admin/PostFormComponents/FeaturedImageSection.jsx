@@ -11,11 +11,6 @@ const FeaturedImageSection = ({
     readOnly,
     errors,
 }) => {
-    useEffect(() => {
-        if (previewImage && typeof previewImage === 'object') {
-            console.log('FeaturedImageSection - Image formats:', previewImage.formats);
-        }
-    }, [previewImage]);
 
     const getImageDisplay = () => {
         if (!previewImage) return null;

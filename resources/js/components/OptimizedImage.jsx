@@ -15,14 +15,7 @@ const OptimizedImage = ({
     const [loaded, setLoaded] = useState(false);
     const [error, setError] = useState(false);
 
-    useEffect(() => {
-        // Debug
-        console.log('OptimizedImage - Received image:', image);
-        console.log('OptimizedImage - Requested variant:', variant);
-    }, [image, variant]);
-
     if (!image?.formats) {
-        console.log('OptimizedImage - No formats available');
         return (
             <div
                 className={clsx(
@@ -59,11 +52,6 @@ const OptimizedImage = ({
     const fullWebpUrl = baseUrl + webpUrl;
     const fullFallbackUrl = baseUrl + fallbackUrl;
 
-    console.log('OptimizedImage - URLs:', {
-        webp: fullWebpUrl,
-        fallback: fullFallbackUrl
-    });
-
     return (
         <div
             className={clsx(
@@ -92,7 +80,6 @@ const OptimizedImage = ({
                     )}
                     loading={priority ? 'eager' : 'lazy'}
                     onLoad={() => {
-                        console.log('OptimizedImage - Image loaded successfully');
                         setLoaded(true);
                     }}
                     onError={(e) => {

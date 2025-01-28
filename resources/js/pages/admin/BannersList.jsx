@@ -69,9 +69,6 @@ export default function BannersList() {
 
         dispatch(fetchBanners())
             .unwrap()
-            .then(response => {
-                console.log('Banners from server:', response); // Añade este log
-            })
             .catch(error => {
                 toast.error("Error al cargar los banners: " + error.message);
             });
