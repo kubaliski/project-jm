@@ -58,123 +58,6 @@ class ImageService
         );
     }
 
-    // ... otros métodos sin cambios ...
-
-    /**
-     * Determine output format based on input mime type
-     */
-    protected function determineOutputFormat(string $mimeType): string
-    {
-        return match($mimeType) {
-            'image/png' => 'png',
-            'image/jpeg', 'image/jpg' => 'jpg',
-            'image/webp' => 'webp',
-            default => 'jpg'
-        };
-    }
-
-    /**
-     * Generate original versions of the image
-     */
-    protected function generateOriginalVersions($image, string $path, string $filename, string $originalFormat = 'jpg'): array
-    {
-        $formats = [];
-        $config = $this->defaultOptions['sizes']['original'];
-
-        // Clone the image for processing
-        $processedImage = clone $image;
-
-        // Resize original if needed
-        if ($processedImage->width() > $config['maxWidth']) {
-            $processedImage->resize($config['maxWidth'], null, function ($constraint) {
-                $constraint->aspectRatio();
-                $constraint->preventUpsize();
-            });
-        }
-
-        // Save original version in original format
-        $formats['original'] = $this->saveImage(
-            $processedImage,
-            $path,
-            "{$filename}_original",
-            $originalFormat,
-            $this->defaultOptions['quality'][$originalFormat === 'jpg' ? 'jpeg' : $originalFormat]
-        );
-
-        // Save WebP version
-        $formats['original_webp'] = $this->saveImage(
-            $processedImage,
-            $path,
-            "{$filename}_original",
-            'webp',
-            $this->defaultOptions['quality']['webp']
-        );
-
-        return $formats;
-    }
-
-    /**
-     * Generate different size versions of the image
-     */
-    protected function generateSizeVersions($image, string $path, string $filename, string $size, array $config, string $originalFormat = 'jpg'): array
-    {
-        $formats = [];
-        $processedImage = clone $image;
-
-        // Apply resizing based on mode
-        if ($config['mode'] === 'crop') {
-            $processedImage->cover($config['width'], $config['height']);
-        } else {
-            $processedImage->resize($config['width'], $config['height'], function ($constraint) {
-                $constraint->aspectRatio();
-                $constraint->preventUpsize();
-            });
-        }
-
-        // Save in original format
-        $formats["{$size}"] = $this->saveImage(
-            $processedImage,
-            $path,
-            "{$filename}_{$size}",
-            $originalFormat,
-            $this->defaultOptions['quality'][$originalFormat === 'jpg' ? 'jpeg' : $originalFormat]
-        );
-
-        // Save WebP version
-        $formats["{$size}_webp"] = $this->saveImage(
-            $processedImage,
-            $path,
-            "{$filename}_{$size}",
-            'webp',
-            $this->defaultOptions['quality']['webp']
-        );
-
-        return $formats;
-    }
-
-    /**
-     * Save image to storage
-     */
-    protected function saveImage($image, string $path, string $filename, string $format, int $quality): string
-    {
-        $fullPath = "{$path}/{$filename}.{$format}";
-
-        // Seleccionar el encoder correcto según el formato
-        $encoder = match($format) {
-            'webp' => new WebpEncoder($quality),
-            'jpg', 'jpeg' => new JpegEncoder($quality),
-            'png' => new PngEncoder($quality),
-            default => throw new Exception("Formato no soportado: {$format}")
-        };
-
-        Storage::disk($this->disk)->put(
-            $fullPath,
-            $image->encode($encoder)->toString()
-        );
-
-        return $fullPath;
-    }
-
     /**
      * Handle the upload and processing of a featured image
      */
@@ -214,7 +97,8 @@ class ImageService
                         'width' => $image->width(),
                         'height' => $image->height(),
                         'mime_type' => $file->getMimeType(),
-                        'size' => $file->getSize()
+                        'size' => $file->getSize(),
+                        'format' => $originalFormat
                     ]
                 ]
             ];
@@ -236,6 +120,152 @@ class ImageService
         } catch (Exception $e) {
             \Log::error('Error processing image: ' . $e->getMessage());
             throw new Exception('Error processing image: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Generate original and WebP versions of the image
+     */
+    protected function generateOriginalVersions($image, string $path, string $filename, string $originalFormat = 'jpg'): array
+    {
+        $formats = [];
+        $config = $this->defaultOptions['sizes']['original'];
+
+        // Clone the image for processing
+        $processedImage = clone $image;
+
+        // Resize original if needed
+        if ($processedImage->width() > $config['maxWidth']) {
+            $processedImage->resize($config['maxWidth'], null, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->preventUpsize();
+            });
+        }
+
+        // Save original version in original format
+        $formats['original'] = $this->saveImage(
+            $processedImage,
+            $path,
+            "{$filename}_original",
+            $originalFormat,
+            $this->defaultOptions['quality'][$originalFormat === 'jpg' ? 'jpeg' : $originalFormat]
+        );
+
+        // Save WebP version if original is not already WebP
+        if ($originalFormat !== 'webp') {
+            $formats['original_webp'] = $this->saveImage(
+                $processedImage,
+                $path,
+                "{$filename}_original",
+                'webp',
+                $this->defaultOptions['quality']['webp']
+            );
+        }
+
+        return $formats;
+    }
+
+    /**
+     * Generate different size versions of the image
+     */
+    protected function generateSizeVersions($image, string $path, string $filename, string $size, array $config, string $originalFormat = 'jpg'): array
+    {
+        $formats = [];
+        $processedImage = clone $image;
+
+        // Apply resizing based on mode
+        if ($config['mode'] === 'crop') {
+            $processedImage->cover($config['width'], $config['height']);
+        } else {
+            $processedImage->resize($config['width'], $config['height'], function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->preventUpsize();
+            });
+        }
+
+        // Save in original format
+        $formats["{$size}"] = $this->saveImage(
+            $processedImage,
+            $path,
+            "{$filename}_{$size}",
+            $originalFormat,
+            $this->defaultOptions['quality'][$originalFormat === 'jpg' ? 'jpeg' : $originalFormat]
+        );
+
+        // Save WebP version if original is not already WebP
+        if ($originalFormat !== 'webp') {
+            $formats["{$size}_webp"] = $this->saveImage(
+                $processedImage,
+                $path,
+                "{$filename}_{$size}",
+                'webp',
+                $this->defaultOptions['quality']['webp']
+            );
+        }
+
+        return $formats;
+    }
+
+    /**
+     * Save image to storage
+     */
+    protected function saveImage($image, string $path, string $filename, string $format, int $quality): string
+    {
+        $fullPath = "{$path}/{$filename}.{$format}";
+
+        // Seleccionar el encoder correcto según el formato
+        $encoder = match($format) {
+            'webp' => new WebpEncoder($quality),
+            'jpg', 'jpeg' => new JpegEncoder($quality),
+            'png' => new PngEncoder($quality),
+            default => throw new Exception("Formato no soportado: {$format}")
+        };
+
+        Storage::disk($this->disk)->put(
+            $fullPath,
+            $image->encode($encoder)->toString()
+        );
+
+        return $fullPath;
+    }
+
+    /**
+     * Delete all versions of an image
+     */
+    protected function deleteImages(?array $images): void
+    {
+        if (!$images || !isset($images['formats'])) return;
+
+        foreach ($images['formats'] as $path) {
+            if (Storage::disk($this->disk)->exists($path)) {
+                Storage::disk($this->disk)->delete($path);
+            }
+        }
+    }
+
+    /**
+     * Determine output format based on input mime type
+     */
+    protected function determineOutputFormat(string $mimeType): string
+    {
+        return match($mimeType) {
+            'image/png' => 'png',
+            'image/jpeg', 'image/jpg' => 'jpg',
+            'image/webp' => 'webp',
+            default => 'jpg'
+        };
+    }
+
+    /**
+     * Validate image dimensions
+     */
+    public function validateDimensions(UploadedFile $file, int $minWidth = 200, int $minHeight = 200): bool
+    {
+        try {
+            $image = $this->manager->read($file);
+            return $image->width() >= $minWidth && $image->height() >= $minHeight;
+        } catch (Exception $e) {
+            return false;
         }
     }
 }
