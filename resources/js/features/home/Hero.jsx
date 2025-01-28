@@ -22,14 +22,17 @@ const slides = [
 const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [prevSlide, setPrevSlide] = useState(slides.length - 1);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setPrevSlide(currentSlide);
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, [currentSlide]);
+    if (!isPaused) {
+      const timer = setInterval(() => {
+        setPrevSlide(currentSlide);
+        setCurrentSlide((prev) => (prev + 1) % slides.length);
+      }, 5000);
+      return () => clearInterval(timer);
+    }
+  }, [currentSlide, isPaused]);
 
   const handleSlideChange = (index) => {
     if (index !== currentSlide) {
@@ -38,12 +41,21 @@ const Hero = () => {
     }
   };
 
+  const handleKeyDown = (e, index) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleSlideChange(index);
+    }
+  };
+
   return (
     <section
       className="relative h-screen overflow-hidden"
-      aria-labelledby="hero-heading"
-      role="region"
+      role="group"
       aria-roledescription="carousel"
+      aria-label="Carrusel de servicios"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
     >
       {/* Background layers */}
       {slides.map((slide, index) => (
@@ -58,15 +70,24 @@ const Hero = () => {
           }`}
           aria-hidden={currentSlide !== index}
         >
-          <div className={`absolute inset-0 bg-gradient-to-r ${slide.gradient}`} />
-          <div className="absolute inset-0 bg-black/30" />
+          <div
+            className={`absolute inset-0 bg-gradient-to-r ${slide.gradient}`}
+            role="presentation"
+          />
+          <div
+            className="absolute inset-0 bg-black/30"
+            role="presentation"
+          />
         </div>
       ))}
 
-      {/* Content layers - Ajustado para posición inferior izquierda */}
+      {/* Content layers */}
       {slides.map((slide, index) => (
         <div
           key={`content-${index}`}
+          id={`slide-${index}`}
+          role="group"
+          aria-roledescription="slide"
           className={`absolute inset-0 transition-all duration-700 ${
             index === currentSlide
               ? 'opacity-100 translate-y-0 z-30'
@@ -76,19 +97,17 @@ const Hero = () => {
         >
           <div className="relative h-full flex flex-col justify-end pb-24 px-8 md:px-16 lg:px-24">
             <div className="max-w-2xl mb-16">
-              <h1
-                id={`slide-title-${index}`}
+              <h2
                 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight transform transition-transform text-white"
               >
                 {slide.title}
-              </h1>
+              </h2>
               <p className="text-xl md:text-2xl mb-8 text-white/90">
                 {slide.description}
               </p>
               <Link
                 to="/servicios"
                 className="inline-block bg-white text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-blue-50 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-500"
-                role="button"
               >
                 Comenzar ahora
               </Link>
@@ -97,25 +116,36 @@ const Hero = () => {
         </div>
       ))}
 
-      {/* Slide indicators - Ajustado el margen inferior */}
+      {/* Navigation controls */}
       <div
-        className="absolute bottom-8 left-0 right-0 flex justify-center gap-2 z-40"
-        role="tablist"
+        className="absolute bottom-8 left-0 right-0 flex justify-center gap-4 z-40"
+        role="group"
         aria-label="Navegación de diapositivas"
       >
         {slides.map((_, index) => (
           <button
             key={index}
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${
-              currentSlide === index ? "bg-white w-8" : "bg-white/50 hover:bg-white/70"
-            }`}
+            className={`w-12 h-12 flex items-center justify-center p-2 transition-all duration-300 hover:bg-white/10 rounded-full focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-500`}
             onClick={() => handleSlideChange(index)}
-            aria-label={`Ir a diapositiva ${index + 1}`}
-            aria-selected={currentSlide === index}
-            role="tab"
-            aria-controls={`slide-title-${index}`}
-          />
+            onKeyDown={(e) => handleKeyDown(e, index)}
+            aria-label={`Ir a diapositiva ${index + 1} de ${slides.length}`}
+            aria-pressed={currentSlide === index}
+            role="button"
+            aria-controls={`slide-${index}`}
+          >
+            <span
+              className={`block w-2 h-2 rounded-full transition-all duration-300 ${
+                currentSlide === index ? "bg-white w-8" : "bg-white/50 hover:bg-white/70"
+              }`}
+              aria-hidden="true"
+            />
+          </button>
         ))}
+      </div>
+
+      {/* Live region for screen readers */}
+      <div className="sr-only" aria-live="polite">
+        {`Mostrando diapositiva ${currentSlide + 1} de ${slides.length}: ${slides[currentSlide].title}`}
       </div>
     </section>
   );
