@@ -14,6 +14,9 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            blur: {
+              xs: '2px',
+            },
             keyframes: {
               'fade-in': {
                     '0%': { opacity: '0' },
@@ -44,6 +47,9 @@ export default {
                 'marquee': 'marquee 20s linear infinite',
                 'gradient': 'gradient 8s ease infinite'
               },
+              transitionProperty: {
+                'blur': 'filter',
+            },
         },
     },
     variants: {
@@ -52,5 +58,8 @@ export default {
           transform: ['hover', 'focus'],
         },
     },
-    plugins: [forms],
+    plugins: [
+      forms,
+      require('@tailwindcss/aspect-ratio')
+    ],
 }

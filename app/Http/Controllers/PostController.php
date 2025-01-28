@@ -3,19 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Services\PostService;
 use App\Http\Requests\Post\StoreRequest;
 use App\Http\Requests\Post\UpdateRequest;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
 {
-    public function __construct()
+    public function __construct(protected PostService $postService)
     {
         $this->authorizeResource(Post::class, 'post');
     }
 
-    public function index()
+    /**
+     * Display a listing of posts
+     */
+    public function index(): JsonResponse
     {
         $posts = Post::with('user')
             ->orderBy('created_at', 'desc')
@@ -24,79 +28,178 @@ class PostController extends Controller
         return response()->json($posts);
     }
 
-    public function store(StoreRequest $request)
+    /**
+     * Store a newly created post
+     */
+    public function store(StoreRequest $request): JsonResponse
     {
-        $validated = $request->validated();
+        try {
+            DB::beginTransaction();
 
-        if ($request->hasFile('featured_image')) {
-            $path = $request->file('featured_image')
-                ->store('posts/images', 'public');
-            $validated['featured_image'] = Storage::disk('public')->url($path);
+            // Validar la imagen si existe
+            if ($request->hasFile('featured_image')) {
+                $this->postService->validateImage($request->file('featured_image'));
+            }
+
+            // Procesar los datos del post
+            $postData = $this->postService->processPostData(
+                $request->validated(),
+                $request->file('featured_image')
+            );
+
+            // Crear el post
+            $post = $request->user()->posts()->create($postData);
+
+            // Manejar el estado de publicación
+            $publicationStatus = $this->postService->handlePublicationStatus($request->validated());
+            if ($publicationStatus['is_published']) {
+                $this->authorize('publish', $post);
+            }
+            $post->update($publicationStatus);
+
+            DB::commit();
+            return response()->json($post->load('user'), 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Error al crear el post',
+                'errors' => ['general' => $e->getMessage()]
+            ], 422);
         }
-
-        // Crear el post primero para tener una instancia
-        $post = $request->user()->posts()->create($validated);
-
-        // Manejar la fecha de publicación
-        if ($validated['is_published']) {
-            $this->authorize('publish', $post);
-            $post->published_at = now();
-        } elseif ($request->filled('published_at')) {
-            $this->authorize('publish', $post);
-            $post->published_at = $validated['published_at'];
-        }
-
-        $post->save();
-        return response()->json($post, 201);
     }
 
-    public function show(Post $post)
+    /**
+     * Display the specified post
+     */
+    public function show(Post $post): JsonResponse
     {
         return response()->json($post->load('user'));
     }
 
-    public function update(UpdateRequest $request, Post $post)
+    /**
+     * Update the specified post
+     */
+    public function update(UpdateRequest $request, Post $post): JsonResponse
     {
-        $validated = $request->validated();
+        try {
+            DB::beginTransaction();
 
-        // Manejar la fecha de publicación
-        if ($validated['is_published'] && !$post->published_at) {
-            $this->authorize('publish', $post);
-            $validated['published_at'] = now();
-        } elseif ($request->filled('published_at') && !$validated['is_published']) {
-            $this->authorize('publish', $post);
-            $validated['published_at'] = $validated['published_at'];
-        } elseif (!$validated['is_published']) {
-            $validated['published_at'] = null;
-        }
-
-        // Manejar la imagen destacada
-        if ($request->hasFile('featured_image')) {
-            if ($post->featured_image) {
-                $oldPath = Str::after($post->featured_image, '/storage/');
-                Storage::disk('public')->delete($oldPath);
+            // Validar la imagen si existe
+            if ($request->hasFile('featured_image')) {
+                $this->postService->validateImage($request->file('featured_image'));
             }
 
-            $path = $request->file('featured_image')
-                ->store('posts/images', 'public');
-            $validated['featured_image'] = Storage::disk('public')->url($path);
-        }
+            // Procesar los datos del post
+            $postData = $this->postService->processPostData(
+                $request->validated(),
+                $request->file('featured_image'),
+                $post->featured_image
+            );
 
-        $post->update($validated);
-        return response()->json($post);
+            // Manejar el estado de publicación
+            $publicationStatus = $this->postService->handlePublicationStatus($request->validated());
+            if ($publicationStatus['is_published'] && !$post->is_published) {
+                $this->authorize('publish', $post);
+            }
+
+            // Actualizar el post
+            $post->update([
+                ...$postData,
+                ...$publicationStatus
+            ]);
+
+            DB::commit();
+            return response()->json($post->load('user'));
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Error al actualizar el post',
+                'errors' => ['general' => $e->getMessage()]
+            ], 422);
+        }
     }
 
-    public function destroy(Post $post)
+    /**
+     * Remove the specified post
+     */
+    public function destroy(Post $post): JsonResponse
     {
-        if ($post->featured_image) {
-            $path = Str::after($post->featured_image, '/storage/');
-            Storage::disk('public')->delete($path);
+        try {
+            $post->delete();
+            return response()->json(null, 204);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al eliminar el post',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $post->delete();
-        return response()->json(null, 204);
     }
 
+    /**
+     * Get published posts
+     */
+    public function published(): JsonResponse
+    {
+        $posts = Post::with('user')
+            ->published()
+            ->orderBy('published_at', 'desc')
+            ->get();
+
+        return response()->json($posts);
+    }
+
+    /**
+     * Get scheduled posts
+     */
+    public function scheduled(): JsonResponse
+    {
+        $this->authorize('viewAny', Post::class);
+
+        $posts = Post::with('user')
+            ->scheduled()
+            ->orderBy('published_at', 'asc')
+            ->get();
+
+        return response()->json($posts);
+    }
+
+    /**
+     * Get draft posts
+     */
+    public function drafts(): JsonResponse
+    {
+        $this->authorize('viewAny', Post::class);
+
+        $posts = Post::with('user')
+            ->where('is_published', false)
+            ->whereNull('published_at')
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
+        return response()->json($posts);
+    }
+
+    /**
+     * Get post statistics
+     */
+    public function stats(): JsonResponse
+    {
+        $this->authorize('viewStats', Post::class);
+
+        $stats = [
+            'total' => Post::count(),
+            'published' => Post::published()->count(),
+            'scheduled' => Post::scheduled()->count(),
+            'draft' => Post::where('is_published', false)
+                ->whereNull('published_at')
+                ->count(),
+        ];
+
+        return response()->json($stats);
+    }
+    // Va ser depreciado por stats , hay que actualizar la logica en el front
     public function count()
     {
         $this->authorize('viewStats', Post::class);

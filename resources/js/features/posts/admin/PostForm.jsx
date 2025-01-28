@@ -46,7 +46,7 @@ export default function PostForm({
                 title: post.title || "",
                 content: typeof post.content === "string" ? post.content : "",
                 excerpt: post.excerpt || "",
-                featured_image: post.featured_image || null,
+                featured_image: null, // Mantenemos null para el File object
                 seo_title: post.seo_title || "",
                 seo_description: post.seo_description || "",
                 is_published: post.is_published || false,
@@ -56,6 +56,7 @@ export default function PostForm({
                 schedule_publication:
                     (post.published_at !== null && !post.is_published) || false,
             });
+            // Guardamos el objeto completo de imagen para el preview
             setPreviewImage(post.featured_image || null);
         }
         setErrors({});
@@ -67,15 +68,21 @@ export default function PostForm({
 
         const { name, value, type, checked, files } = e.target;
 
+        // Manejo de archivos de imagen
         if (type === "file" && files?.[0]) {
             const file = files[0];
-            if (!file.type.startsWith("image/")) {
+
+            // Validación de tipo
+            const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            if (!validTypes.includes(file.type)) {
                 setErrors((prev) => ({
                     ...prev,
-                    featured_image: "El archivo debe ser una imagen",
+                    featured_image: "El archivo debe ser una imagen (JPEG, PNG, GIF o WebP)",
                 }));
                 return;
             }
+
+            // Validación de tamaño
             if (file.size > 10 * 1024 * 1024) {
                 setErrors((prev) => ({
                     ...prev,
@@ -84,30 +91,74 @@ export default function PostForm({
                 return;
             }
 
-            setFormData((prev) => ({
-                ...prev,
-                featured_image: file,
-            }));
-            setPreviewImage(URL.createObjectURL(file));
-        } else if (type === "checkbox") {
+            // Validación de dimensiones
+            const img = new Image();
+            img.onload = () => {
+                if (img.width < 200 || img.height < 200) {
+                    setErrors((prev) => ({
+                        ...prev,
+                        featured_image: "La imagen debe tener al menos 200x200 píxeles",
+                    }));
+                    return;
+                }
+                if (img.width > 5000 || img.height > 5000) {
+                    setErrors((prev) => ({
+                        ...prev,
+                        featured_image: "La imagen no debe exceder los 5000x5000 píxeles",
+                    }));
+                    return;
+                }
+
+                setFormData((prev) => ({
+                    ...prev,
+                    featured_image: file,
+                }));
+                // Para el preview usamos URL.createObjectURL
+                setPreviewImage(URL.createObjectURL(file));
+            };
+            img.onerror = () => {
+                setErrors((prev) => ({
+                    ...prev,
+                    featured_image: "Error al procesar la imagen",
+                }));
+            };
+            img.src = URL.createObjectURL(file);
+
+            // Limpiar el error si existía
+            if (errors.featured_image) {
+                setErrors((prev) => ({ ...prev, featured_image: null }));
+            }
+            return;
+        }
+
+        // Manejo de checkboxes
+        if (type === "checkbox") {
             handlePublicationStateChange(name, checked);
-        } else if (name === "content") {
+            return;
+        }
+
+        // Manejo del contenido del editor
+        if (name === "content") {
             setFormData((prev) => ({
                 ...prev,
                 content: typeof value === "string" ? value : "",
             }));
-        } else {
+        }
+        // Manejo de otros campos
+        else {
             setFormData((prev) => ({
                 ...prev,
                 [name]: value,
             }));
         }
 
+        // Limpiar errores del campo modificado
         if (errors[name]) {
             setErrors((prev) => ({ ...prev, [name]: null }));
         }
     };
 
+    // Función auxiliar para manejar los estados de publicación
     const handlePublicationStateChange = (name, checked) => {
         if (name === "is_published") {
             setFormData((prev) => ({
@@ -347,7 +398,13 @@ PostForm.propTypes = {
         title: PropTypes.string,
         content: PropTypes.string,
         excerpt: PropTypes.string,
-        featured_image: PropTypes.string,
+        featured_image: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.shape({
+                formats: PropTypes.object,
+                metadata: PropTypes.object
+            })
+        ]),
         seo_title: PropTypes.string,
         seo_description: PropTypes.string,
         is_published: PropTypes.bool,

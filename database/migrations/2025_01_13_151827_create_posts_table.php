@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->text('content');
             $table->text('excerpt')->nullable();
-            $table->string('featured_image')->nullable();
+            $table->json('featured_image')->nullable();
             $table->string('seo_title')->nullable();
             $table->text('seo_description')->nullable();
             $table->boolean('is_published')->default(false);

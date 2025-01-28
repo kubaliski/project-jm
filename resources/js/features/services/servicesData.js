@@ -33,18 +33,18 @@ export const SERVICES_DATA = {
             }
         },
         {
-            id: 'marketing',
-            title: 'Marketing Digital',
-            description: 'Estrategias efectivas para aumentar tu visibilidad y alcance en el mundo digital.',
-            icon: 'trending-up',
-            link: '/servicios#marketing',
+            id: 'cloud',
+            title: 'Infraestructura Cloud',
+            description: 'Soluciones de infraestructura en la nube para escalar y optimizar tus operaciones digitales.',
+            icon: 'cloud',
+            link: '/servicios#cloud',
             details: {
-                description: 'Creamos estrategias digitales personalizadas para aumentar tu presencia online y conectar con tu audiencia.',
+                description: 'Implementamos y gestionamos infraestructuras cloud robustas y escalables adaptadas a tus necesidades empresariales.',
                 benefits: [
-                    'SEO y SEM',
-                    'Gestión de redes sociales',
-                    'Email marketing',
-                    'Análisis y reportes'
+                    'Servicios AWS/Azure/GCP',
+                    'Arquitectura serverless',
+                    'Optimización de costos cloud',
+                    'Monitoreo y seguridad 24/7'
                 ]
             }
         }

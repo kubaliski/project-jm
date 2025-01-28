@@ -2,6 +2,7 @@
 import React, { lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { CTASection } from '@/components/common';
+import Hero from '@/features/home/Hero';
 
 // Lazy loaded components
 const LatestPosts = lazy(() =>
@@ -21,30 +22,6 @@ const TestimonialSection = lazy(() =>
 
 const AboutSection = lazy(() =>
   import('@features/home/AboutSection')
-);
-
-// Hero Component
-const Hero = () => (
-    <section
-        className="relative h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600"
-        aria-labelledby="hero-heading"
-    >
-        <div className="text-center text-white">
-            <h1 id="hero-heading" className="text-5xl md:text-6xl font-bold mb-6">
-                Bienvenido a TuMarca
-            </h1>
-            <p className="text-xl md:text-2xl mb-8">
-                Descubre todo lo que podemos hacer por ti
-            </p>
-            <Link
-                to="/servicios"
-                className="inline-block bg-white text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-blue-50 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-500"
-                role="button"
-            >
-                Comenzar ahora
-            </Link>
-        </div>
-    </section>
 );
 
 // Loading Fallback Component
