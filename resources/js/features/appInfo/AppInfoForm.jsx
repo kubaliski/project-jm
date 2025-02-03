@@ -15,6 +15,7 @@ export default function AppInfoForm({
     const serverErrors = useSelector(selectAdminAppInfoError);
     const [errors, setErrors] = useState({});
     const [formData, setFormData] = useState({
+        company_name:"",
         legal_representative: "",
         address: "",
         contact_email: "",
@@ -31,6 +32,7 @@ export default function AppInfoForm({
     useEffect(() => {
         if (initialData) {
             setFormData({
+                company_name: initialData.company_name || "",
                 legal_representative: initialData.legal_representative || "",
                 address: initialData.address || "",
                 contact_email: initialData.contact_email || "",
@@ -57,6 +59,9 @@ export default function AppInfoForm({
         e.preventDefault();
 
         const validationErrors = {};
+        if (!formData.company_name.trim()) {
+            validationErrors.company_name = "El nombre de la empresa es requerido";
+        }
         if (!formData.legal_representative.trim()) {
             validationErrors.legal_representative = "El representante legal es requerido";
         }
@@ -107,7 +112,17 @@ export default function AppInfoForm({
                     </div>
                 </div>
             )}
-
+            <FormInput
+                id="company_name"
+                name="company_name"
+                label="Nombre de la Empresa"
+                value={formData.company_name}
+                onChange={handleChange}
+                error={errors.company_name}
+                required
+                readOnly={readOnly}
+                disabled={readOnly}
+            />
             <FormInput
                 id="legal_representative"
                 name="legal_representative"

@@ -14,6 +14,7 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'company_name' => 'nullable|string|max:255',
             'legal_representative' => 'nullable|string|max:255',
             'address' => 'nullable|string|max:255',
             'contact_email' => 'nullable|email|max:255',
