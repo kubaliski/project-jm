@@ -62,6 +62,12 @@ class PermissionSeeder extends Seeder
                 'group' => 'post',
                 'description' => 'Can view individual post details'
             ],
+            [
+                'name' => 'post.download',
+                'display_name' => 'Download Post Data',
+                'group' => 'post',
+                'description' => 'Can download post data'
+            ]
         ];
 
         // Permisos para Contacts
@@ -102,6 +108,12 @@ class PermissionSeeder extends Seeder
                 'group' => 'contact',
                 'description' => 'Can update the status of contacts'
             ],
+            [
+                'name' => 'contact.download',
+                'display_name' => 'Download Contact Data',
+                'group' => 'contact',
+                'description' => 'Can download contact data'
+            ]
         ];
 
         $userPermissions = [
@@ -152,6 +164,12 @@ class PermissionSeeder extends Seeder
                 'display_name' => 'Change Password',
                 'group' => 'user',
                 'description' => 'Can change other users password'
+            ],
+            [
+                'name' => 'user.download',
+                'display_name' => 'Download User Data',
+                'group' => 'user',
+                'description' => 'Can download user data'
             ]
         ];
         $rolePermissions = [
@@ -245,6 +263,12 @@ class PermissionSeeder extends Seeder
                 'group' => 'banner',
                 'description' => 'Can update the priority order of banners'
             ],
+            [
+                'name' => 'banner.download',
+                'display_name' => 'Download Banner Data',
+                'group' => 'banner',
+                'description' => 'Can download banner data'
+            ]
         ];
         $securityPermissions = [
             [
