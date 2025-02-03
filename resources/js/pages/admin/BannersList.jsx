@@ -7,6 +7,7 @@ import {
     ConfirmationDialog,
     Paper,
     Button,
+    ExcelDownloadButton,
 } from "@components/common";
 import { BannerModal } from "@/features/banner/admin";
 import { formatDateForDisplay } from "@utils/dateUtils";
@@ -60,7 +61,8 @@ export default function BannersList() {
         edit: hasPermission("banner.edit"),
         delete: hasPermission("banner.delete"),
         create: hasPermission("banner.create"),
-        updatePriority: hasPermission("banner.update-priority")
+        updatePriority: hasPermission("banner.update-priority"),
+        download: hasPermission("banner.download"),
     }), [hasPermission]);
 
     // Carga inicial de datos
@@ -319,10 +321,20 @@ export default function BannersList() {
             />
 
             <Paper contentClassName="space-y-4">
-                {permissions.create && (
-                    <Button onClick={handleCreateClick}>Crear banner</Button>
-                )}
-
+                <div className="flex space-x-4">
+                    {permissions.create && (
+                        <Button onClick={handleCreateClick}>Crear banner</Button>
+                    )}
+                    {permissions.download && (
+                        <ExcelDownloadButton
+                            data={filteredBanners}
+                            filename="banners.xlsx"
+                            columns={columns}
+                            hasPermission={permissions.download}
+                            isLoading={isLoading}
+                        />
+                    )}
+                </div>
                 <TableFilters
                     config={bannersTableConfig}
                     filters={filters}
