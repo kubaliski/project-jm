@@ -81,7 +81,7 @@ export default function Navbar({ hasActiveBanner }) {
                         className={`text-2xl font-bold transition-colors duration-300 ${getLinkStyles(true)}`}
                         aria-label="TuMarca - Ir a inicio"
                     >
-                        We'dPlan
+                        WedPlan
                     </Link>
 
                     {/* Navegación principal */}
@@ -132,9 +132,10 @@ export default function Navbar({ hasActiveBanner }) {
                     {/* Botón de contacto */}
                     <div className="flex items-center">
                         <a
+
                             href={`tel:${phoneNumber}`}
                             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors duration-300 ${getButtonStyles()}`}
-                            aria-label={`Llámanos al ${phoneNumber}`}
+                            aria-label={`Llamanos al ${phoneNumber}`}
                         >
                             <PhoneIcon className="h-5 w-5" aria-hidden="true" />
                             <span>Llámanos</span>

@@ -29,6 +29,7 @@ export default function ForgotPasswordModal({ isOpen, onClose }) {
             toast.success(message);
             handleClose();
         }
+     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [success, message]);
 
     // Manejar errores
@@ -39,6 +40,7 @@ export default function ForgotPasswordModal({ isOpen, onClose }) {
                 : 'Error al procesar la solicitud';
             toast.error(errorMessage);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [error]);
 
     const handleSubmit = async (e) => {

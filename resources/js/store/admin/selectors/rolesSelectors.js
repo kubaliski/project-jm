@@ -69,7 +69,45 @@ export const selectPaginatedRoles = createSelector(
 // Selector para permisos organizados por grupo
 export const selectPermissionsByGroup = createSelector(
   [selectPermissions],
-  (permissions) => permissions
+  (permissions) => {
+    // Transformamos el objeto de permisos para mantener la estructura pero crear nuevas referencias
+    return Object.entries(permissions).reduce((groups, [groupName, permissions]) => {
+      groups[groupName] = permissions.map(permission => ({
+        ...permission,
+        group: groupName // Aseguramos que cada permiso tenga su grupo explícitamente
+      }));
+      return groups;
+    }, {});
+  }
+);
+// Selector para obtener todos los permisos en una lista plana
+export const selectAllPermissionsList = createSelector(
+  [selectPermissions],
+  (permissions) => {
+    return Object.entries(permissions).flatMap(([groupName, groupPermissions]) =>
+      groupPermissions.map(permission => ({
+        ...permission,
+        group: groupName
+      }))
+    );
+  }
+);
+
+// Para obtener los grupos de permisos disponibles
+export const selectPermissionGroups = createSelector(
+  [selectPermissions],
+  (permissions) => Object.keys(permissions)
+);
+
+// Para contar permisos por grupo
+export const selectPermissionCountByGroup = createSelector(
+  [selectPermissions],
+  (permissions) => {
+    return Object.entries(permissions).reduce((counts, [group, perms]) => {
+      counts[group] = perms.length;
+      return counts;
+    }, {});
+  }
 );
 
 // Selector para obtener los nombres de los permisos de un rol
