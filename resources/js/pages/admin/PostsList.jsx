@@ -7,6 +7,7 @@ import {
     ConfirmationDialog,
     Paper,
     Button,
+    ExcelDownloadButton,
 } from "@components/common";
 import { PostModal } from "@/features/posts";
 import { formatDateForDisplay, isFutureDate } from "@utils/dateUtils";
@@ -64,7 +65,8 @@ export default function PostsList() {
         edit: hasPermission("post.edit"),
         delete: hasPermission("post.delete"),
         create: hasPermission("post.create"),
-        viewStats: hasPermission("stats.contacts")
+        viewStats: hasPermission("stats.contacts"),
+        download: hasPermission("post.download"),
     }), [hasPermission]);
 
     // Carga inicial de datos
@@ -284,9 +286,22 @@ export default function PostsList() {
             </Paper>
 
             <Paper contentClassName="space-y-4">
-                {permissions.create && (
-                    <Button onClick={handleCreateClick}>Crear post</Button>
-                )}
+                <div className="flex space-x-4">
+                    {permissions.create && (
+                        <Button onClick={handleCreateClick}>Crear post</Button>
+                    )}
+                    {permissions.download && (
+                        <ExcelDownloadButton
+                            data={filteredPosts}
+                            columns={columns}
+                            filename="posts.xlsx"
+                            hasPermission={permissions.download}
+                            isLoading={isLoading}
+                        >
+                            Descargar Excel
+                        </ExcelDownloadButton>
+                    )}
+                </div>
                 <TableFilters
                     config={postsTableConfig}
                     filters={filters}

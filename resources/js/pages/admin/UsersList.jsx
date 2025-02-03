@@ -12,6 +12,7 @@ import {
     ConfirmationDialog,
     Paper,
     Button,
+    ExcelDownloadButton,
 } from "@components/common";
 import { UserModal, UserRolesModal } from "@features/user";
 import { formatDateForDisplay } from "@utils/dateUtils";
@@ -65,6 +66,7 @@ export default function UsersList() {
         password: hasPermission("user.change-password"),
         assignRoles: hasPermission("user.assign-roles"),
         viewListRoles: hasPermission("role.index"),
+        download: hasPermission("user.download"),
     }), [hasPermission]);
 
     // Selectores
@@ -335,10 +337,21 @@ export default function UsersList() {
                 subtitle="Gestión de usuarios"
                 contentClassName="sm:flex sm:items-center sm:justify-between"
             />
-            <Paper>
-                {permissions.create && (
-                    <Button onClick={handleCreateClick}>Nuevo usuario</Button>
-                )}
+            <Paper contentClassName="space-y-4">
+                <div className="flex space-x-4">
+                    {permissions.create && (
+                        <Button onClick={handleCreateClick}>Nuevo usuario</Button>
+                    )}
+                    {permissions.download && (
+                        <ExcelDownloadButton
+                            data={filteredUsers}
+                            filename="usuarios.xlsx"
+                            columns={columns}
+                            hasPermission={permissions.download}
+                            isLoading={isLoading}
+                        />
+                    )}
+                </div>
                 <TableFilters
                     config={tableConfig}
                     filters={filters}
