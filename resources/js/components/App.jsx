@@ -24,7 +24,7 @@ const LegalNotice = React.lazy(() => import('@pages/public/LegalNotice'));
 // Lazy loading de páginas administrativas
 const AppInfoList = React.lazy(() => import('@pages/admin/AppInfoList'));
 const BannersList = React.lazy(() => import('@pages/admin/BannersList'));
-const Blacklist = React.lazy(() => import('@pages/admin/Blacklist'));
+const Blacklist = React.lazy(() => import('@/pages/admin/Blacklist'));
 const ContactsList = React.lazy(() => import('@pages/admin/ContactsList'));
 const Dashboard = React.lazy(() => import('@pages/admin/Dashboard'));
 const PostsList = React.lazy(() => import('@pages/admin/PostsList'));
