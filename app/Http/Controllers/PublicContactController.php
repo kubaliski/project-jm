@@ -47,7 +47,7 @@ class PublicContactController extends Controller
             $contact = Contact::create($validated);
 
             // Send email
-            Mail::to('angel.ccapb@gmail.com')->send(new NewContactMail($contact));
+            Mail::to('info@wedplan.es')->send(new NewContactMail($contact));
 
             // Reset any previous attempts on successful submission
             $this->blacklistService->resetAttempts($request->ip(), 'contact_form');
