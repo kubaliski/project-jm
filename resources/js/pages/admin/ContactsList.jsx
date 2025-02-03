@@ -8,6 +8,7 @@ import {
     StatusDropdown,
     Paper,
     Button,
+    ExcelDownloadButton,
 } from "@components/common";
 import { ContactModal } from "@features/contact";
 import { formatDateForDisplay } from "@utils/dateUtils";
@@ -58,7 +59,8 @@ export default function ContactsList() {
         delete: hasPermission("contact.delete"),
         view: hasPermission("contact.view"),
         updateStatus: hasPermission("contact.update-status"),
-        viewStats: hasPermission("stats.contacts")
+        viewStats: hasPermission("stats.contacts"),
+        download: hasPermission("contact.download"),
     }), [hasPermission]);
 
     // Selectores
@@ -313,9 +315,20 @@ export default function ContactsList() {
             </Paper>
 
             <Paper contentClassName="space-y-4">
+            <div className="flex space-x-4">
                 {permissions.create && (
                     <Button onClick={handleCreateClick}>Nuevo mensaje</Button>
                 )}
+                {permissions.download && (
+                    <ExcelDownloadButton
+                        data={filteredContacts}
+                        columns={columns}
+                        filename="contactos.xlsx"
+                        hasPermission={permissions.download}
+                        isLoading={isLoading}
+                    />
+                )}
+            </div>
                 <TableFilters
                     config={contactsTableConfig}
                     filters={filters}
