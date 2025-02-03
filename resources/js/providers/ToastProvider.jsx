@@ -1,14 +1,11 @@
-import React, { createContext, useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { ToastContainer } from '@/components/common';
-
-export const ToastContext = createContext(null);
+import { ToastContainer } from '@components/common';
+import { ToastContext } from '@context/ToastContext';
 
 const ToastProvider = ({ children }) => {
     const [toasts, setToasts] = useState([]);
     const timeoutsRef = useRef([]);
-
-
 
     useEffect(() => {
         return () => {
@@ -27,7 +24,6 @@ const ToastProvider = ({ children }) => {
         const timeout = setTimeout(() => {
             setToasts(prevToasts => prevToasts.filter(toast => toast.id !== id));
         }, 5000);
-
         timeoutsRef.current.push(timeout);
     }, []);
 

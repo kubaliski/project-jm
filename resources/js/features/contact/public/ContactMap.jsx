@@ -1,5 +1,5 @@
 import React from 'react';
-import { CONTACT_INFO } from './contactData';
+
 
 export function ContactMap() {
     return (

@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { XMarkIcon } from '@heroicons/react/24/solid';
 import {
@@ -59,6 +60,11 @@ const MarqueeContent = ({ text }) => (
         </div>
     </div>
 );
+
+MarqueeContent.propTypes = {
+    text: PropTypes.string.isRequired
+};
+
 export default function PublicBanner() {
     const dispatch = useDispatch();
     const banner = useSelector(selectActiveBanner);

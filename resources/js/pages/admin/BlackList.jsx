@@ -1,10 +1,9 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { XMarkIcon } from '@heroicons/react/24/solid';
 import {
     Table,
     TableFilters,
-    ConfirmationDialog,
     Paper,
     Button
 } from '@components/common';
@@ -15,7 +14,6 @@ import  BlockIpModal  from '@/features/blacklist/BlockIpModal';
 
 import {
     fetchBlockedIps,
-    blockIp,
     unblockIp
 } from '@store/admin/thunks/blacklistThunks';
 
@@ -62,6 +60,7 @@ export default function Blacklist() {
         if (permissions.viewList) {
             dispatch(fetchBlockedIps());
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleFilterChange = (key, value) => {
@@ -87,7 +86,7 @@ export default function Blacklist() {
         }
     };
 
-    const handleUnblockIp = async (ip) => {
+    const handleUnblockIp = useCallback(async (ip) => {
         if (!permissions.unblock) {
             toast.warning('You don\'t have permission to unblock IPs');
             return;
@@ -100,7 +99,7 @@ export default function Blacklist() {
         } catch (error) {
             toast.error('Error unblocking IP: ' + error.message);
         }
-    };
+    }, [permissions.unblock, dispatch, toast]);
 
     const columns = useMemo(() => [
         {
@@ -145,7 +144,7 @@ export default function Blacklist() {
                 )
             ),
         },
-    ], [permissions]);
+    ], [permissions, handleUnblockIp]);
 
     if (!permissions.viewList) {
         return (

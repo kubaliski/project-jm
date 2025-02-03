@@ -86,6 +86,7 @@ export default function PostsList() {
         };
 
         fetchInitialData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Handlers

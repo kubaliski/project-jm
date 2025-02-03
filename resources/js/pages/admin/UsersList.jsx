@@ -105,6 +105,7 @@ export default function UsersList() {
         };
 
         fetchInitialData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []); // Solo se ejecuta al montar el componente
 
     // Configuración de filtros de roles memoizada

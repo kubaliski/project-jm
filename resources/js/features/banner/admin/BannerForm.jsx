@@ -5,7 +5,6 @@ import { XCircleIcon } from "@heroicons/react/24/solid";
 import { SubmitButton, FormInput } from "@components/common";
 import { selectBannersError } from "@store/admin/selectors/bannersSelectors";
 import {  BANNER_CLASSES,
-    MARQUEE_CLASSES,
     getClassValue,
     getClassPreview,
     getGradientStyle,
@@ -60,6 +59,10 @@ const MarqueePreview = ({ text }) => (
         </div>
     </div>
 );
+
+MarqueePreview.propTypes = {
+    text: PropTypes.string
+};
 
 export default function BannerForm({
     banner = null,

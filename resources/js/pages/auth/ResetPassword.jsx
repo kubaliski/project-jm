@@ -35,7 +35,7 @@ export default function ResetPassword() {
             toast.error('Enlace de recuperación inválido');
             navigate('/login');
         }
-    }, [formData.token, formData.email]);
+    }, [formData.token, formData.email, navigate, toast]);
 
     useEffect(() => {
         if (success) {
@@ -43,13 +43,13 @@ export default function ResetPassword() {
             dispatch(clearPasswordResetStatus());
             navigate('/login');
         }
-    }, [success]);
+    }, [success, dispatch, navigate, toast]);
 
     useEffect(() => {
         if (error) {
             toast.error(typeof error === 'string' ? error : 'Error al restablecer la contraseña');
         }
-    }, [error]);
+    }, [error,toast]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
