@@ -11,7 +11,6 @@ const ContactForm = () => {
         submitStatus,
         handleChange,
         handleSubmit,
-        resetForm
     } = usePublicContactForm(() => {
         notificationService.success('¡Mensaje enviado correctamente!');
     });

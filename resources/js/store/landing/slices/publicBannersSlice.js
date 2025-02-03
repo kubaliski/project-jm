@@ -2,7 +2,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { fetchActiveBanner } from '../thunks/publicBannersThunks';
 
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos en milisegundos
+
 
 const initialState = {
   // Banner data

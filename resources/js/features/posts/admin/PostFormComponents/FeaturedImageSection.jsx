@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import { XCircleIcon } from "@heroicons/react/24/solid";
 import OptimizedImage from "@components/OptimizedImage";

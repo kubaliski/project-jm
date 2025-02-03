@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
     PencilIcon,
@@ -95,6 +95,7 @@ export default function RoleList() {
         };
 
         fetchInitialData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Event Handlers básicos
@@ -121,7 +122,7 @@ export default function RoleList() {
         }
     };
 
-    const handleEditClick = (role) => {
+    const handleEditClick = useCallback((role) => {
         if (permissions.edit || (permissions.view && !permissions.edit)) {
             dispatch(setSelectedRole(role));
             dispatch(
@@ -133,25 +134,26 @@ export default function RoleList() {
         } else {
             toast.warning("No tienes permisos para editar roles");
         }
-    };
+    }, [permissions.edit, permissions.view, dispatch, toast]);
 
-    const handlePermissionsClick = (role) => {
+    const handlePermissionsClick = useCallback((role) => {
         if (permissions.managePermissions) {
             dispatch(setSelectedRole(role));
             dispatch(setPermissionsModalState({ isOpen: true }));
         } else {
             toast.warning("No tienes permisos para gestionar permisos");
         }
-    };
+    }, [permissions.managePermissions, dispatch, toast]);
 
-    const handleDeleteClick = (role) => {
+    const handleDeleteClick = useCallback((role) => {
         if (permissions.delete) {
             dispatch(setSelectedRole(role));
             dispatch(setDeleteModalState({ isOpen: true }));
         } else {
             toast.warning("No tienes permisos para eliminar roles");
         }
-    };
+    }, [permissions.delete, dispatch, toast]);
+
     const handleConfirmDelete = async () => {
         if (!selectedRole || !permissions.delete) return;
 
@@ -189,7 +191,6 @@ export default function RoleList() {
         }
     };
 
-    // Definición de columnas memoizada
     const columns = useMemo(() => [
         {
             key: "role_info",

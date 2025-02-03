@@ -88,7 +88,8 @@ const RichTextEditor = ({
                     `,
                     branding: false,
                     promotion: false,
-                    images_upload_handler: (blobInfo, progress) => new Promise((resolve, reject) => {
+
+                    images_upload_handler: () => new Promise((resolve, reject) => {
                         reject('Funcionalidad de subida de imágenes no implementada');
                     }),
                     style_formats: [

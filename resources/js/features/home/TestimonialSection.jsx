@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const TESTIMONIOS = [
     {
@@ -36,11 +37,20 @@ const TestimonialCard = React.memo(({ testimonial }) => (
                 </div>
             </div>
             <blockquote>
-                <p className="text-gray-600">"{testimonial.testimonial}"</p>
+                <p className="text-gray-600">&ldquo;{testimonial.testimonial}&rdquo;</p>
             </blockquote>
         </article>
     </div>
 ));
+
+TestimonialCard.propTypes = {
+    testimonial: PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        company: PropTypes.string.isRequired,
+        testimonial: PropTypes.string.isRequired,
+        avatarAlt: PropTypes.string.isRequired
+    }).isRequired
+};
 
 TestimonialCard.displayName = 'TestimonialCard';
 

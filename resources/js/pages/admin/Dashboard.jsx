@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useAuth, useToast } from "@hooks";
 import { StatCard, Paper } from "@components/common";
@@ -26,12 +26,11 @@ export default function Dashboard() {
     const [isStatsLoading, setIsStatsLoading] = useState(false);
 
 
-    const canViewStats = {
+    const canViewStats = useMemo(() => ({
         posts: hasPermission("stats.posts"),
         contacts: hasPermission("stats.contacts"),
         security: hasPermission("security.view-blocked")
-
-    };
+    }), [hasPermission]);
 
     useEffect(() => {
         let loadingTimeout;
@@ -52,7 +51,7 @@ export default function Dashboard() {
                 clearTimeout(loadingTimeout);
             }
         };
-    }, [isPostsStatsLoading, isContactStatsLoading]);
+    }, [isPostsStatsLoading, isContactStatsLoading, canViewStats]);
 
     // Modificamos este efecto para que solo se ejecute una vez
     useEffect(() => {
@@ -76,6 +75,7 @@ export default function Dashboard() {
             }
         };
         loadStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []); // Solo se ejecuta al montar el componente
 
     const fullName = user ? `${user.name} ${user.last_name}`.trim() : "";

@@ -1,6 +1,5 @@
 // pages/Home.jsx
 import React, { lazy, Suspense } from 'react';
-import { Link } from 'react-router-dom';
 import { CTASection } from '@/components/common';
 import Hero from '@/features/home/Hero';
 

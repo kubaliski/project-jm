@@ -74,6 +74,7 @@ export default function BannersList() {
             .catch(error => {
                 toast.error("Error al cargar los banners: " + error.message);
             });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Handlers

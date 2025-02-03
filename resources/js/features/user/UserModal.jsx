@@ -104,6 +104,7 @@ UserModal.propTypes = {
     readOnly: PropTypes.bool,
     canEditRoles: PropTypes.bool,
     canRenderRoles: PropTypes.bool,
+    canChangePassword: PropTypes.bool,
 };
 
 export default UserModal;
