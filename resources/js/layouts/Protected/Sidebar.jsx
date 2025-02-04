@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@hooks";
 import {
     Bars3Icon,
@@ -12,7 +12,6 @@ import { navItems } from "@config/data/navItems";
 
 const Sidebar = ({ onExpandChange, onLogout }) => {
     const location = useLocation();
-    const navigate = useNavigate();
     const { hasPermission } = useAuth();
     const [isPinned, setIsPinned] = useState(true);
     const [isHovered, setIsHovered] = useState(false);

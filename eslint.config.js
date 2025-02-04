@@ -25,6 +25,10 @@ export default [
                 requestAnimationFrame: "readonly",
                 cancelAnimationFrame: "readonly",
                 clearTimeout: "readonly",
+                setInterval: "readonly",
+                clearInterval: "readonly",
+                Blob: "readonly",
+                Image: "readonly",
             },
             parserOptions: {
                 ecmaFeatures: {

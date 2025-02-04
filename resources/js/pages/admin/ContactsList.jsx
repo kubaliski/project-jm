@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { PencilIcon, TrashIcon, EyeIcon } from "@heroicons/react/24/solid";
 import {
@@ -96,6 +96,7 @@ export default function ContactsList() {
         };
 
         fetchInitialData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleFilterChange = (key, value) => {
@@ -115,7 +116,8 @@ export default function ContactsList() {
         dispatch(setCurrentPage(page));
     };
 
-    const handleStatusChange = async (contactId, newStatus) => {
+
+    const handleStatusChange = useCallback(async (contactId, newStatus) => {
         if (permissions.updateStatus) {
             try {
                 await dispatch(
@@ -126,7 +128,7 @@ export default function ContactsList() {
                 toast.error("Error al actualizar el estado: " + error.message);
             }
         }
-    };
+    }, [permissions.updateStatus, dispatch, toast]);
 
     const handleCreateClick = () => {
         if (permissions.create) {
@@ -137,7 +139,7 @@ export default function ContactsList() {
         }
     };
 
-    const handleEditClick = (contact) => {
+    const handleEditClick = useCallback((contact) => {
         if (permissions.edit || (permissions.view && !permissions.edit)) {
             dispatch(setSelectedContact(contact));
             dispatch(
@@ -149,16 +151,17 @@ export default function ContactsList() {
         } else {
             toast.warning("No tienes permisos para ver/editar contactos");
         }
-    };
+    }, [permissions.edit, permissions.view, dispatch, toast]);
 
-    const handleDeleteClick = (contact) => {
+    const handleDeleteClick = useCallback((contact) => {
         if (permissions.delete) {
             dispatch(setSelectedContact(contact));
             dispatch(setDeleteModalState({ isOpen: true }));
         } else {
             toast.warning("No tienes permisos para eliminar contactos");
         }
-    };
+    }, [permissions.delete, dispatch, toast]);
+
 
     const handleConfirmDelete = async () => {
         if (!selectedContact || !permissions.delete) return;

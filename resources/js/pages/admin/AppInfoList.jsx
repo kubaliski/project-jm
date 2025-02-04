@@ -42,7 +42,8 @@ export default function AppInfo() {
         };
 
         loadData();
-    }, [dispatch, permissions.view]);
+     // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const handleSubmit = async (formData) => {
         if (!permissions.edit) {

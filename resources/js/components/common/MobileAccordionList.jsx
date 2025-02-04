@@ -11,8 +11,6 @@ const MobileAccordionList = ({
     currentPage = 1,
     totalPages = 1,
     onPageChange = () => {},
-    itemsPerPage = 10,
-    totalItems = 0
 }) => {
     const [openItems, setOpenItems] = useState(new Set());
 
