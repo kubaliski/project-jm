@@ -54,7 +54,8 @@ class AuthController extends Controller
 
             Log::info('Successful login', [
                 'user_id' => $user->id,
-                'email' => $user->email
+                'email' => $user->email,
+                'ip' => $request->ip()
             ]);
 
             $user->load('roles.permissions');
