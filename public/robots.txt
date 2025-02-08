@@ -1,2 +1,37 @@
+# Global rules
 User-agent: *
-Disallow:
+Allow: /
+
+# Proteger rutas administrativas y APIs
+Disallow: /admin/
+Disallow: /api/
+Disallow: /login
+Disallow: /reset-password
+Disallow: /sanctum/
+Disallow: /livewire/
+Disallow: /storage/
+Disallow: /temp/
+
+# Proteger rutas de autenticación y seguridad
+Disallow: /*?*token=
+Disallow: /*?*password=
+Disallow: /*?*auth=
+Disallow: /*/json
+Disallow: /*/api/*
+
+# Permitir acceso a contenido público
+Allow: /blog
+Allow: /nosotros
+Allow: /servicios
+Allow: /contacto
+Allow: /privacidad
+Allow: /aviso-legal
+Allow: /assets/
+Allow: /images/
+Allow: /sitemap.xml
+
+# Configuración de rastreo
+Crawl-delay: 10
+
+# Ubicación del Sitemap
+Sitemap: https://wedplan.es/sitemap.xml
