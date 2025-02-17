@@ -5,8 +5,8 @@ import { Provider } from 'react-redux';
 import { store } from '@store';
 import { SkeletonLoader } from '@/components/ui/Skeletons/SkeletonLoader';
 import { ScrollToTop, RouteAnnouncer } from '@/components/utils/RouterUtils';
-import { publicRoutes } from '@/routes/publicRoutes';
-import { adminRoutes } from '@/routes/adminRoutes';
+import { publicRoutes } from '@/routes/PublicRoutes';
+import { adminRoutes } from '@/routes/AdminRoutes';
 
 // Lazy load para providers no críticos
 const ToastProvider = lazy(() => import('@providers/ToastProvider'));
