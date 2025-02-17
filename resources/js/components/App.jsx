@@ -7,7 +7,7 @@ import { SEOProvider, ToastProvider } from '@providers';
 import { SkeletonLoader } from '@/components/ui/Skeletons/SkeletonLoader';
 import { ScrollToTop, RouteAnnouncer } from '@/components/utils/RouterUtils';
 import { publicRoutes } from '@/routes/PublicRoutes';
-import { adminRoutes } from '@/routes/adminRoutes';
+import { adminRoutes } from '@/routes/AdminRoutes';
 
 /**
  * Componente principal de la aplicación
