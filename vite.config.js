@@ -2,6 +2,7 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import react from '@vitejs/plugin-react';
+import { VitePWA } from 'vite-plugin-pwa';
 import path from 'path';
 
 export default defineConfig({
@@ -11,6 +12,37 @@ export default defineConfig({
             refresh: true,
         }),
         react(),
+        VitePWA({
+            strategies: 'injectManifest',
+            srcDir: 'resources/js',
+            filename: 'sw.js',
+            registerType: 'autoUpdate',
+            manifest: {
+                name: 'TuMarca',
+                short_name: 'TuMarca',
+                description: 'Plataforma digital para servicios web y marketing',
+                theme_color: '#3B82F6',
+                background_color: '#ffffff',
+                display: 'standalone',
+                orientation: 'portrait',
+                icons: [
+                    {
+                        src: '/favicon-192x192.png',  // Directamente en la raíz
+                        sizes: '192x192',
+                        type: 'image/png'
+                    },
+                    {
+                        src: '/favicon-512x512.png',  // Directamente en la raíz
+                        sizes: '512x512',
+                        type: 'image/png'
+                    }
+                ]
+            },
+            injectRegister: false,
+            devOptions: {
+                enabled: true
+            }
+        })
     ],
     build: {
         rollupOptions: {
