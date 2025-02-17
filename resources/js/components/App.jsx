@@ -7,6 +7,8 @@ import { SEOProvider, ToastProvider } from '@providers';
 import ProtectedRoute from './ProtectedRoute';
 import { AdminLayout, PublicLayout } from '@layouts';
 import { SkeletonLoader } from '@/components/ui/Skeletons/SkeletonLoader';
+import { CookieManager } from 'react-cookie-manager';
+import "react-cookie-manager/style.css";
 
 // Lazy loading de páginas públicas
 const Home = React.lazy(() => import('@pages/public/Home'));
