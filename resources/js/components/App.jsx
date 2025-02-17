@@ -6,7 +6,7 @@ import { store } from '@store';
 import { SEOProvider, ToastProvider } from '@providers';
 import { SkeletonLoader } from '@/components/ui/Skeletons/SkeletonLoader';
 import { ScrollToTop, RouteAnnouncer } from '@/components/utils/RouterUtils';
-import { publicRoutes } from '@/routes/publicRoutes';
+import { publicRoutes } from '@/routes/PublicRoutes';
 import { adminRoutes } from '@/routes/adminRoutes';
 
 /**
