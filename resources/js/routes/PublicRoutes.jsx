@@ -20,7 +20,7 @@ export const publicRoutes = [
     {
         path: "/",
         element: (
-            <PublicLayout>
+            <PublicLayout isHomePage ={true}>
                 <Home />
             </PublicLayout>
         )

@@ -16,12 +16,24 @@ export default defineConfig({
         rollupOptions: {
             output: {
                 manualChunks: (id) => {
-                    // Solo dividimos en dos grandes chunks: vendors y app
+                    // Vendors
                     if (id.includes('node_modules')) {
                         if (id.includes('@tinymce') || id.includes('tinymce-i18n')) {
-                            return 'vendor-editor'; // TinyMCE en su propio chunk por ser grande
+                            return 'vendor-editor';
                         }
-                        return 'vendor'; // Todas las demás dependencias juntas
+                        return 'vendor';
+                    }
+
+                    // Código crítico de home
+                    if (id.includes('/features/home/Hero') ||
+                        id.includes('/features/home/hooks') ||
+                        id.includes('/features/home/utils')) {
+                        return 'home-critical';
+                    }
+
+                    // Código no crítico de home
+                    if (id.includes('/features/home/')) {
+                        return 'home-deferred';
                     }
 
                     // Código de la aplicación por secciones
@@ -35,6 +47,12 @@ export default defineConfig({
             }
         },
         chunkSizeWarningLimit: 1000,
+        minify: 'esbuild',
+        sourcemap: true
+    },
+    optimizeDeps: {
+        include: ['react', 'react-dom', 'react-router-dom', '@reduxjs/toolkit', 'react-redux'],
+        force: true
     },
     resolve: {
         alias: {
@@ -51,7 +69,7 @@ export default defineConfig({
             '@features': path.resolve(__dirname, './resources/js/features'),
             '@config': path.resolve(__dirname, './resources/js/config'),
             '@store': path.resolve(__dirname, './resources/js/store'),
-            '@routes':path.resolve(__dirname, './resources/js/routes')
+            '@routes': path.resolve(__dirname, './resources/js/routes')
         }
-    },
+    }
 });

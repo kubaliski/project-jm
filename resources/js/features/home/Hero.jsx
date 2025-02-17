@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import { Link } from 'react-router-dom';
 
+// Datos estáticos para reducir el JavaScript inicial
 const slides = [
   {
     title: "Soluciones Empresariales",
@@ -19,136 +20,119 @@ const slides = [
   }
 ];
 
-const Hero = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [prevSlide, setPrevSlide] = useState(slides.length - 1);
-  const [isPaused, setIsPaused] = useState(false);
+// Componente para el fondo optimizado
+const SlideBackground = memo(({ gradient, isActive }) => (
+  <div
+    className={`absolute inset-0 transition-opacity duration-500 ${
+      isActive ? 'opacity-100' : 'opacity-0'
+    }`}
+    aria-hidden="true"
+  >
+    <div className={`absolute inset-0 bg-gradient-to-r ${gradient}`} />
+    <div className="absolute inset-0 bg-black/30" />
+  </div>
+));
 
-  useEffect(() => {
-    if (!isPaused) {
-      const timer = setInterval(() => {
-        setPrevSlide(currentSlide);
-        setCurrentSlide((prev) => (prev + 1) % slides.length);
-      }, 5000);
-      return () => clearInterval(timer);
-    }
-  }, [currentSlide, isPaused]);
-
-  const handleSlideChange = (index) => {
-    if (index !== currentSlide) {
-      setPrevSlide(currentSlide);
-      setCurrentSlide(index);
-    }
-  };
-
-  const handleKeyDown = (e, index) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      handleSlideChange(index);
-    }
-  };
+// Componente para el contenido del slide
+const SlideContent = memo(({ slide, isActive }) => {
+  if (!isActive) return null;
 
   return (
-    <section
-      className="relative h-screen overflow-hidden"
-      role="group"
-      aria-roledescription="carousel"
-      aria-label="Carrusel de servicios"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-    >
-      {/* Background layers */}
+    <div className="max-w-2xl">
+      <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 text-white">
+        {slide.title}
+      </h1>
+      <p className="text-lg sm:text-xl md:text-2xl mb-8 text-white/90">
+        {slide.description}
+      </p>
+    </div>
+  );
+});
+
+// Botón de navegación optimizado
+const NavButton = memo(({ index, currentSlide, onClick, total }) => (
+  <button
+    className="w-12 h-12 flex items-center justify-center"
+    onClick={() => onClick(index)}
+    aria-label={`Ir a diapositiva ${index + 1} de ${total}`}
+    aria-current={currentSlide === index}
+  >
+    <span
+      className={`block h-2 rounded-full transition-all duration-300 ${
+        currentSlide === index
+          ? "bg-white w-8"
+          : "bg-white/50 hover:bg-white/70 w-2"
+      }`}
+    />
+  </button>
+));
+
+const Hero = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Optimizado con useCallback para evitar re-renders innecesarios
+  const handleSlideChange = useCallback((index) => {
+    setCurrentSlide(index);
+  }, []);
+
+  // UseInterval personalizado para el autoplay
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % slides.length);
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <section className="relative h-screen overflow-hidden">
+      {/* Backgrounds */}
       {slides.map((slide, index) => (
-        <div
-          key={index}
-          className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
-            index === currentSlide
-              ? 'opacity-100 z-20'
-              : index === prevSlide
-                ? 'opacity-0 z-10'
-                : 'opacity-0 z-0'
-          }`}
-          aria-hidden={currentSlide !== index}
-        >
-          <div
-            className={`absolute inset-0 bg-gradient-to-r ${slide.gradient}`}
-            role="presentation"
-          />
-          <div
-            className="absolute inset-0 bg-black/30"
-            role="presentation"
-          />
-        </div>
+        <SlideBackground
+          key={`bg-${index}`}
+          gradient={slide.gradient}
+          isActive={index === currentSlide}
+        />
       ))}
 
-      {/* Content layers */}
-      {slides.map((slide, index) => (
-        <div
-          key={`content-${index}`}
-          id={`slide-${index}`}
-          role="group"
-          aria-roledescription="slide"
-          className={`absolute inset-0 transition-all duration-700 ${
-            index === currentSlide
-              ? 'opacity-100 translate-y-0 z-30'
-              : 'opacity-0 translate-y-4 z-0'
-          }`}
-          aria-hidden={currentSlide !== index}
-        >
-          <div className="relative h-full flex flex-col justify-end pb-24 px-8 md:px-16 lg:px-24">
-            <div className="max-w-2xl mb-16">
-              <h2
-                className="text-5xl md:text-6xl font-bold mb-6 tracking-tight transform transition-transform text-white"
-              >
-                {slide.title}
-              </h2>
-              <p className="text-xl md:text-2xl mb-8 text-white/90">
-                {slide.description}
-              </p>
-              <Link
-                to="/servicios"
-                className="inline-block bg-white text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-blue-50 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-500"
-              >
-                Comenzar ahora
-              </Link>
-            </div>
-          </div>
-        </div>
-      ))}
+      {/* Content */}
+      <div className="relative h-full flex flex-col justify-end pb-24 px-4 sm:px-6 lg:px-8">
+        {slides.map((slide, index) => (
+          <SlideContent
+            key={`content-${index}`}
+            slide={slide}
+            isActive={index === currentSlide}
+          />
+        ))}
 
-      {/* Navigation controls */}
-      <div
-        className="absolute bottom-8 left-0 right-0 flex justify-center gap-4 z-40"
-        role="group"
-        aria-label="Navegación de diapositivas"
-      >
+        {/* CTA - Fuera del loop para evitar re-renders */}
+        <Link
+          to="/servicios"
+          className="inline-block bg-white text-blue-600 px-6 sm:px-8 py-3 rounded-full font-semibold hover:bg-blue-50 transition-colors focus:outline-none focus:ring-2 focus:ring-white w-fit"
+        >
+          Comenzar ahora
+        </Link>
+      </div>
+
+      {/* Navigation */}
+      <div className="absolute bottom-8 left-0 right-0 flex justify-center gap-4 z-10">
         {slides.map((_, index) => (
-          <button
-            key={index}
-            className={`w-12 h-12 flex items-center justify-center p-2 transition-all duration-300 hover:bg-white/10 rounded-full focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-500`}
-            onClick={() => handleSlideChange(index)}
-            onKeyDown={(e) => handleKeyDown(e, index)}
-            aria-label={`Ir a diapositiva ${index + 1} de ${slides.length}`}
-            aria-pressed={currentSlide === index}
-            role="button"
-            aria-controls={`slide-${index}`}
-          >
-            <span
-              className={`block w-2 h-2 rounded-full transition-all duration-300 ${
-                currentSlide === index ? "bg-white w-8" : "bg-white/50 hover:bg-white/70"
-              }`}
-              aria-hidden="true"
-            />
-          </button>
+          <NavButton
+            key={`nav-${index}`}
+            index={index}
+            currentSlide={currentSlide}
+            onClick={handleSlideChange}
+            total={slides.length}
+          />
         ))}
       </div>
 
-      {/* Live region for screen readers */}
+      {/* Live region para lectores de pantalla */}
       <div className="sr-only" aria-live="polite">
-        {`Mostrando diapositiva ${currentSlide + 1} de ${slides.length}: ${slides[currentSlide].title}`}
+        Diapositiva {currentSlide + 1} de {slides.length}: {slides[currentSlide].title}
       </div>
     </section>
   );
 };
 
-export default Hero;
+export default memo(Hero);

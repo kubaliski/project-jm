@@ -1,56 +1,105 @@
 // resources/js/components/App.jsx
-import React, { Suspense } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, { Suspense, lazy } from 'react';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from '@store';
-import { SEOProvider, ToastProvider } from '@providers';
 import { SkeletonLoader } from '@/components/ui/Skeletons/SkeletonLoader';
 import { ScrollToTop, RouteAnnouncer } from '@/components/utils/RouterUtils';
 import { publicRoutes } from '@/routes/publicRoutes';
 import { adminRoutes } from '@/routes/adminRoutes';
 
-/**
- * Componente principal de la aplicación
- * Configura el enrutamiento y los providers necesarios
- */
+// Lazy load para providers no críticos
+const ToastProvider = lazy(() => import('@providers/ToastProvider'));
+const SEOProvider = lazy(() => import('@providers/SEOProvider'));
+
+// Componente para providers
+const DeferredProviders = ({ children }) => {
+    const location = useLocation();
+    const isHome = location.pathname === '/';
+    const needsToast = location.pathname === '/contacto' || location.pathname.startsWith('/admin');
+
+    if (isHome) {
+        return (
+            <>
+                {children}
+                <Suspense fallback={null}>
+                    <SEOProvider />
+                </Suspense>
+            </>
+        );
+    }
+
+    if (needsToast) {
+        return (
+            <Suspense fallback={null}>
+                <ToastProvider>
+                    <SEOProvider>
+                        {children}
+                    </SEOProvider>
+                </ToastProvider>
+            </Suspense>
+        );
+    }
+
+    return (
+        <Suspense fallback={null}>
+            <SEOProvider>
+                {children}
+            </SEOProvider>
+        </Suspense>
+    );
+};
+
 export default function App() {
     return (
         <Provider store={store}>
             <BrowserRouter>
-                {/* Manejo de scroll y anuncios de ruta para accesibilidad */}
                 <ScrollToTop />
                 <RouteAnnouncer />
 
-                {/* Providers para funcionalidades globales */}
-                <ToastProvider>
-                    <SEOProvider>
-                        {/*
-                            Suspense para manejar la carga lazy de componentes
-                            Muestra un skeleton loader mientras se cargan
-                        */}
-                        <Suspense fallback={<SkeletonLoader />}>
-                            <Routes>
-                                {/* Rutas públicas */}
-                                {publicRoutes.map(route => (
-                                    <Route
-                                        key={route.path}
-                                        path={route.path}
-                                        element={route.element}
-                                    />
-                                ))}
+                <Routes>
+                    {/* Ruta principal */}
+                    <Route
+                        path="/"
+                        element={
+                            <Suspense fallback={<SkeletonLoader />}>
+                                <DeferredProviders>
+                                    {publicRoutes[0].element}
+                                </DeferredProviders>
+                            </Suspense>
+                        }
+                    />
 
-                                {/* Rutas administrativas */}
-                                {adminRoutes.map(route => (
-                                    <Route
-                                        key={route.path}
-                                        path={route.path}
-                                        element={route.element}
-                                    />
-                                ))}
-                            </Routes>
-                        </Suspense>
-                    </SEOProvider>
-                </ToastProvider>
+                    {/* Resto de rutas públicas */}
+                    {publicRoutes.slice(1).map(route => (
+                        <Route
+                            key={route.path}
+                            path={route.path}
+                            element={
+                                <Suspense fallback={<SkeletonLoader />}>
+                                    <DeferredProviders>
+                                        {route.element}
+                                    </DeferredProviders>
+                                </Suspense>
+                            }
+                        />
+                    ))}
+
+                    {/* Rutas administrativas */}
+                    {adminRoutes.map(route => (
+                        <Route
+                            key={route.path}
+                            path={route.path}
+                            element={
+                                <Suspense fallback={<SkeletonLoader />}>
+                                    <DeferredProviders>
+                                        {route.element}
+                                    </DeferredProviders>
+                                </Suspense>
+                            }
+                        />
+                    ))}
+                </Routes>
             </BrowserRouter>
         </Provider>
     );
