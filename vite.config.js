@@ -18,29 +18,43 @@ export default defineConfig({
             filename: 'sw.js',
             registerType: 'autoUpdate',
             manifest: {
-                name: 'TuMarca',
-                short_name: 'TuMarca',
-                description: 'Plataforma digital para servicios web y marketing',
+                id: '/',
+                name: 'Wedplan',
+                short_name: 'Wedplan',
+                description: 'Tu plataforma de planificación de bodas',
                 theme_color: '#3B82F6',
                 background_color: '#ffffff',
                 display: 'standalone',
                 orientation: 'portrait',
+                scope: '/',
+                start_url: '/',
                 icons: [
                     {
-                        src: '/favicon-192x192.png',  // Directamente en la raíz
+                        src: '/favicon-192x192.png',
                         sizes: '192x192',
-                        type: 'image/png'
+                        type: 'image/png',
+                        purpose: 'any maskable'
                     },
                     {
-                        src: '/favicon-512x512.png',  // Directamente en la raíz
+                        src: '/favicon-512x512.png',
                         sizes: '512x512',
-                        type: 'image/png'
+                        type: 'image/png',
+                        purpose: 'any maskable'
                     }
                 ]
             },
             injectRegister: false,
             devOptions: {
-                enabled: true
+                enabled: true,
+                type: 'module'
+            },
+            workbox: {
+                sourcemap: true,
+                cleanupOutdatedCaches: true,
+                navigateFallback: '/',
+                globPatterns: [
+                    '**/*.{js,css,html,ico,png,svg,woff2}'
+                ]
             }
         })
     ],

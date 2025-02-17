@@ -7,10 +7,18 @@
         <meta name="theme-color" content="#3B82F6">
         <title>{{ config('app.name') }} | Página Principal</title>
 
-        <!-- Meta tags para SEO y accesibilidad -->
-        <meta name="format-detection" content="telephone=yes">
+        <!-- Meta tags para PWA -->
         <meta name="application-name" content="{{ config('app.name') }}">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        <meta name="apple-mobile-web-app-title" content="{{ config('app.name') }}">
+        <meta name="format-detection" content="telephone=yes">
         <link rel="canonical" href="{{ url()->current() }}">
+
+        <!-- PWA icons y manifest -->
+        <link rel="icon" type="image/png" sizes="196x196" href="/favicon-192x192.png">
+        <link rel="apple-touch-icon" href="/favicon-192x192.png">
+        <link rel="manifest" href="/build/manifest.webmanifest">
 
         <!-- Preload de chunks críticos -->
         @production
