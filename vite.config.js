@@ -12,6 +12,30 @@ export default defineConfig({
         }),
         react(),
     ],
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: (id) => {
+                    // Solo dividimos en dos grandes chunks: vendors y app
+                    if (id.includes('node_modules')) {
+                        if (id.includes('@tinymce') || id.includes('tinymce-i18n')) {
+                            return 'vendor-editor'; // TinyMCE en su propio chunk por ser grande
+                        }
+                        return 'vendor'; // Todas las demás dependencias juntas
+                    }
+
+                    // Código de la aplicación por secciones
+                    if (id.includes('/pages/admin/')) {
+                        return 'admin';
+                    }
+                    if (id.includes('/pages/public/')) {
+                        return 'public';
+                    }
+                }
+            }
+        },
+        chunkSizeWarningLimit: 1000,
+    },
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './resources/js'),
@@ -27,6 +51,7 @@ export default defineConfig({
             '@features': path.resolve(__dirname, './resources/js/features'),
             '@config': path.resolve(__dirname, './resources/js/config'),
             '@store': path.resolve(__dirname, './resources/js/store'),
+            '@routes':path.resolve(__dirname, './resources/js/routes')
         }
     },
 });
