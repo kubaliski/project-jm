@@ -7,7 +7,7 @@ import { lazyWithRetry } from '@/utils/lazyLoad';
 // Lazy loading de páginas administrativas
 const AppInfoList = lazyWithRetry(() => import('@pages/admin/AppInfoList'));
 const BannersList = lazyWithRetry(() => import('@pages/admin/BannersList'));
-const Blacklist = lazyWithRetry(() => import('@pages/admin/Blacklist'));
+const Blacklist = lazyWithRetry(() => import('@/pages/admin/Blacklist'));
 const ContactsList = lazyWithRetry(() => import('@pages/admin/ContactsList'));
 const Dashboard = lazyWithRetry(() => import('@pages/admin/Dashboard'));
 const PostsList = lazyWithRetry(() => import('@pages/admin/PostsList'));
