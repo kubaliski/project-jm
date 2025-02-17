@@ -38,6 +38,13 @@ export default function PublicLayout({ children }) {
 
     return (
         <CookieManager
+            className={{
+                button: "px-3 py-1.5 text-sm font-medium rounded-md bg-blue-700 hover:bg-blue-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+                declineButton: "px-3 py-1.5 text-sm font-medium rounded-md bg-gray-200 hover:bg-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2",
+                manageButton: "text-sm font-medium text-gray-900 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md px-2 py-1",
+                saveButton: "px-3 py-1.5 text-sm font-medium rounded-md bg-blue-700 hover:bg-blue-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+                cancelButton: "px-3 py-1.5 text-sm font-medium rounded-md bg-gray-200 hover:bg-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+            }}
             translations={{
                 title: "Preferencias de Cookies",
                 message: "Este sitio web utiliza cookies para mejorar tu experiencia. Elige qué cookies deseas permitir.",
