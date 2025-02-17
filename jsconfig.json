@@ -15,6 +15,7 @@
             "@features/*": ["resources/js/features/*"],
             "@config/*": ["resources/js/config/*"],
             "@store/*": ["resources/js/store/*"],
+            "@routes/*":["resources/js/routes/*"]
         }
     },
     "exclude": ["node_modules", "public"]

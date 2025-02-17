@@ -51,6 +51,7 @@ export default defineConfig({
             '@features': path.resolve(__dirname, './resources/js/features'),
             '@config': path.resolve(__dirname, './resources/js/config'),
             '@store': path.resolve(__dirname, './resources/js/store'),
+            '@routes':path.resolve(__dirname, './resources/js/routes')
         }
     },
 });
