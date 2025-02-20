@@ -19,3 +19,8 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# Allow Service Worker to control the entire site
+<IfModule mod_headers.c>
+    Header set Service-Worker-Allowed "/"
+</IfModule>

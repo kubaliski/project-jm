@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useLocation } from 'react-router-dom';
-import {SEOManager} from '@components/common';
+import { SEOManager } from '@components/common';
 
 const APP_NAME = window.APP_NAME || 'Mi Sitio';
 
@@ -42,7 +42,6 @@ const SEOComponent = () => {
     .sort((a, b) => b[0].length - a[0].length)[0]?.[1];
 
   // Si no hay configuración específica, usa una configuración por defecto
-  // basada en si es una ruta de admin o no
   if (!seoConfig) {
     if (currentPath.startsWith('/admin')) {
       return (
@@ -69,7 +68,7 @@ const SEOComponent = () => {
 };
 
 // Componente de envoltura para manejar el SEO en toda la aplicación
-const SEOProvider = ({ children }) => {
+const SEOProvider = ({ children = null }) => {
   return (
     <>
       <SEOComponent />
@@ -78,9 +77,8 @@ const SEOProvider = ({ children }) => {
   );
 };
 
-
 SEOProvider.propTypes = {
-  children: PropTypes.node.isRequired
+  children: PropTypes.node
 };
 
 export default SEOProvider;
