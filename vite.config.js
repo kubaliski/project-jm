@@ -49,7 +49,7 @@ export default defineConfig({
                 type: 'module'
             },
             workbox: {
-                sourcemap: true,
+                sourcemap: false,
                 cleanupOutdatedCaches: true,
                 navigateFallback: '/',
                 globPatterns: [
@@ -59,46 +59,56 @@ export default defineConfig({
         })
     ],
     build: {
+        modulePreload: {
+            polyfill: true
+        },
         rollupOptions: {
             output: {
-                manualChunks: (id) => {
-                    // Vendors
-                    if (id.includes('node_modules')) {
-                        if (id.includes('@tinymce') || id.includes('tinymce-i18n')) {
-                            return 'vendor-editor';
-                        }
+                manualChunks(id) {
+                    // Mantener todas las dependencias principales juntas
+                    if (id.includes('node_modules') &&
+                        !id.includes('xlsx-js-style') &&
+                        !id.includes('@tinymce')) {
                         return 'vendor';
                     }
 
-                    // Código crítico de home
-                    if (id.includes('/features/home/Hero') ||
-                        id.includes('/features/home/hooks') ||
-                        id.includes('/features/home/utils')) {
-                        return 'home-critical';
+                    // XLSX y TinyMCE en chunks separados
+                    if (id.includes('xlsx-js-style')) {
+                        return 'vendor-xlsx';
+                    }
+                    if (id.includes('@tinymce')) {
+                        return 'vendor-editor';
                     }
 
-                    // Código no crítico de home
-                    if (id.includes('/features/home/')) {
-                        return 'home-deferred';
+                    // Todo el código de la aplicación junto
+                    if (id.includes('/resources/js/')) {
+                        return 'app';
                     }
 
-                    // Código de la aplicación por secciones
-                    if (id.includes('/pages/admin/')) {
-                        return 'admin';
-                    }
-                    if (id.includes('/pages/public/')) {
-                        return 'public';
-                    }
-                }
+                    // Todo lo demás va al chunk principal
+                    return null;
+                },
+                entryFileNames: 'assets/[name]-[hash].js',
+                chunkFileNames: 'assets/[name]-[hash].js',
+                assetFileNames: 'assets/[name]-[hash].[ext]'
             }
         },
-        chunkSizeWarningLimit: 1000,
+        chunkSizeWarningLimit: 2000,
         minify: 'esbuild',
-        sourcemap: true
+        sourcemap: false,
+        target: 'esnext'
     },
     optimizeDeps: {
-        include: ['react', 'react-dom', 'react-router-dom', '@reduxjs/toolkit', 'react-redux'],
-        force: true
+        include: [
+            'react',
+            'react-dom',
+            'react-router-dom',
+            '@reduxjs/toolkit',
+            'react-redux',
+            'lodash',
+            '@heroicons/react'
+        ],
+        exclude: ['xlsx-js-style', '@tinymce/tinymce-react']
     },
     resolve: {
         alias: {

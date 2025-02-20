@@ -41,7 +41,10 @@ const ConnectionStatus = () => {
 const DeferredProviders = ({ children }) => {
     const location = useLocation();
     const isHome = location.pathname === '/';
-    const needsToast = location.pathname === '/contacto' || location.pathname.startsWith('/admin');
+    const needsToast = location.pathname === '/contacto' ||
+                      location.pathname.startsWith('/admin') ||
+                      location.pathname === '/login' ||
+                      location.pathname === '/reset-password';
 
     if (isHome) {
         return (
